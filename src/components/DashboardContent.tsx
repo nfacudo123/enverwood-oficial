@@ -71,6 +71,13 @@ export function DashboardContent() {
       bgColor: "bg-red-50"
     },
     {
+      title: "XXXX",
+      value: "$0",
+      icon: DollarSign,
+      color: "text-green-600",
+      bgColor: "bg-green-50"
+    },
+    {
       title: "Comisiones Nivel 1",
       value: "$0",
       icon: Users,
@@ -86,6 +93,20 @@ export function DashboardContent() {
     },
     {
       title: "Comisiones Nivel 3",
+      value: "$0",
+      icon: Users,
+      color: "text-orange-600",
+      bgColor: "bg-orange-50"
+    },
+    {
+      title: "Comisiones Nivel 4",
+      value: "$0",
+      icon: Users,
+      color: "text-orange-600",
+      bgColor: "bg-orange-50"
+    },
+    {
+      title: "Comisiones Nivel 5",
       value: "$0",
       icon: Users,
       color: "text-orange-600",
