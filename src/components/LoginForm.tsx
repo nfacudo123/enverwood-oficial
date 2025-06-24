@@ -3,17 +3,31 @@ import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import { Eye, Lock } from "lucide-react";
+import { Eye, EyeOff, Lock, Loader2 } from "lucide-react";
+import { useAuth } from '@/hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
 
 const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  
+  const { login, isLoading } = useAuth();
+  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Login attempt:', { email, password, rememberMe });
+    console.log('Iniciando proceso de login:', { email, password, rememberMe });
+    
+    const success = await login({ email, password });
+    
+    if (success) {
+      console.log('Login exitoso, redirigiendo al dashboard');
+      navigate('/dashboard');
+    } else {
+      console.log('Login fallido');
+    }
   };
 
   return (
@@ -85,6 +99,7 @@ const LoginForm = () => {
                   placeholder="ejemplo@gmail.com"
                   className="h-12 px-4 border-gray-200 focus:border-purple-500 focus:ring-purple-500"
                   required
+                  disabled={isLoading}
                 />
               </div>
 
@@ -101,13 +116,15 @@ const LoginForm = () => {
                     placeholder="••••••••••"
                     className="h-12 px-4 pr-12 border-gray-200 focus:border-purple-500 focus:ring-purple-500"
                     required
+                    disabled={isLoading}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    disabled={isLoading}
                   >
-                    <Eye className="w-5 h-5" />
+                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                   </button>
                 </div>
               </div>
@@ -119,12 +136,14 @@ const LoginForm = () => {
                     checked={rememberMe}
                     onChange={(e) => setRememberMe(e.target.checked)}
                     className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+                    disabled={isLoading}
                   />
                   <span className="ml-2 text-sm text-gray-600">Recordarme</span>
                 </label>
                 <button
                   type="button"
                   className="text-sm text-purple-600 hover:text-purple-700 font-medium"
+                  disabled={isLoading}
                 >
                   ¿Olvidaste tu contraseña?
                 </button>
@@ -133,8 +152,16 @@ const LoginForm = () => {
               <Button
                 type="submit"
                 className="w-full h-12 gradient-primary text-white font-medium rounded-lg hover:opacity-90 transition-opacity"
+                disabled={isLoading}
               >
-                Iniciar Sesión
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Iniciando sesión...
+                  </>
+                ) : (
+                  'Iniciar Sesión'
+                )}
               </Button>
             </form>
           </CardContent>
