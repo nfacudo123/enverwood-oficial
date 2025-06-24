@@ -8,6 +8,8 @@ import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
 import Signup from "./pages/Signup";
+import VaucherPago from "./pages/VaucherPago";
+import Requests from "./pages/Requests";
 import ProtectedRoute from "./components/ProtectedRoute";
 import NotFound from "./pages/NotFound";
 
@@ -49,6 +51,24 @@ const App = () => (
             element={
               <ProtectedRoute>
                 <Profile />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/vaucher_pago" 
+            element={
+              <ProtectedRoute>
+                <VaucherPago />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/requests" 
+            element={
+              <ProtectedRoute>
+                <Requests />
               </ProtectedRoute>
             } 
           />

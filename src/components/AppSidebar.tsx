@@ -56,10 +56,9 @@ const menuItems = [
     title: "Mi Negocio",
     icon: DollarSign,
     items: [
-      { title: "Comprar Membresía", icon: ShoppingCart },
-      { title: "Comprar Packs", icon: ShoppingCart },
-      { title: "Mis compras", icon: ShoppingCart },
-      { title: "Mis Retiros", icon: TrendingUp },
+      { title: "Comprar Membresía", icon: ShoppingCart, url: "#" },
+      { title: "Mis compras", icon: ShoppingCart, url: "/vaucher_pago" },
+      { title: "Mis Retiros", icon: TrendingUp, url: "/requests" },
     ]
   },
   {
@@ -71,24 +70,24 @@ const menuItems = [
     title: "Comunidad",
     icon: Users,
     items: [
-      { title: "Lista de Miembros", icon: User },
-      { title: "Organización", icon: Building },
+      { title: "Lista de Miembros", icon: User, url: "#" },
+      { title: "Organización", icon: Building, url: "#" },
     ]
   },
   {
     title: "Financiera",
     icon: BarChart3,
     items: [
-      { title: "Capital en Gestión", icon: CreditCard },
-      { title: "Mis rendimientos", icon: TrendingUp },
-      { title: "Comisiones", icon: Target },
+      { title: "Capital en Gestión", icon: CreditCard, url: "#" },
+      { title: "Mis rendimientos", icon: TrendingUp, url: "#" },
+      { title: "Comisiones", icon: Target, url: "#" },
     ]
   },
   {
     title: "Recursos",
     icon: FileText,
     items: [
-      { title: "Documentos", icon: FileText },
+      { title: "Documentos", icon: FileText, url: "#" },
     ]
   }
 ];
@@ -137,18 +136,20 @@ export function AppSidebar() {
                     <Collapsible className="group/collapsible">
                       <CollapsibleTrigger asChild>
                         <SidebarMenuButton className="w-full">
-                          <item.icon className="w-4 h-4" />
-                          <span>{item.title}</span>
-                          <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]/collapsible:rotate-180" />
+                          <item.icon className="w-4 h-4 flex-shrink-0" />
+                          <span className="text-sm leading-tight break-words">{item.title}</span>
+                          <ChevronDown className="ml-auto h-4 w-4 flex-shrink-0 transition-transform group-data-[state=open]/collapsible:rotate-180" />
                         </SidebarMenuButton>
                       </CollapsibleTrigger>
                       <CollapsibleContent>
                         <SidebarMenuSub>
                           {item.items.map((subItem) => (
                             <SidebarMenuSubItem key={subItem.title}>
-                              <SidebarMenuSubButton>
-                                <subItem.icon className="w-4 h-4" />
-                                <span>{subItem.title}</span>
+                              <SidebarMenuSubButton asChild>
+                                <a href={subItem.url || "#"}>
+                                  <subItem.icon className="w-4 h-4 flex-shrink-0" />
+                                  <span className="text-sm leading-tight break-words">{subItem.title}</span>
+                                </a>
                               </SidebarMenuSubButton>
                             </SidebarMenuSubItem>
                           ))}
@@ -158,8 +159,8 @@ export function AppSidebar() {
                   ) : (
                     <SidebarMenuButton asChild>
                       <a href={item.url}>
-                        <item.icon className="w-4 h-4" />
-                        <span>{item.title}</span>
+                        <item.icon className="w-4 h-4 flex-shrink-0" />
+                        <span className="text-sm leading-tight break-words">{item.title}</span>
                       </a>
                     </SidebarMenuButton>
                   )}
@@ -178,8 +179,8 @@ export function AppSidebar() {
               {adminItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton>
-                    <item.icon className="w-4 h-4" />
-                    <span>{item.title}</span>
+                    <item.icon className="w-4 h-4 flex-shrink-0" />
+                    <span className="text-sm leading-tight break-words">{item.title}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
