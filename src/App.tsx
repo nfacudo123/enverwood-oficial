@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
+import Signup from "./pages/Signup";
 import ProtectedRoute from "./components/ProtectedRoute";
 import NotFound from "./pages/NotFound";
 
@@ -29,9 +30,9 @@ const App = () => (
             } 
           />
           
-          {/* Ruta pública - signup (siempre accesible) */}
-          <Route path="/signup" element={<div>Página de Registro</div>} />
-          <Route path="/signup/:userId" element={<div>Página de Registro con Usuario</div>} />
+          {/* Rutas públicas - signup (siempre accesibles) */}
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/signup/:userId" element={<Signup />} />
           
           {/* Rutas protegidas - requieren autenticación */}
           <Route 
