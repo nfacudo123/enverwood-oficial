@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
@@ -13,6 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 export function DashboardContent() {
   const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -21,14 +21,38 @@ export function DashboardContent() {
   const { logout } = useAuth();
   const navigate = useNavigate();
 
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(personalRegistrationLink);
-    // You could add a toast notification here
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(personalRegistrationLink);
+      await Swal.fire({
+        icon: 'success',
+        title: '¡Copiado!',
+        text: 'El link de registro ha sido copiado al portapapeles',
+        timer: 2000,
+        showConfirmButton: false,
+        background: '#fff',
+        color: '#333',
+      });
+    } catch (error) {
+      await Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se pudo copiar el link',
+        confirmButtonText: 'Entendido',
+        confirmButtonColor: '#5b73e8',
+        background: '#fff',
+        color: '#333',
+      });
+    }
   };
 
   const handleLogout = () => {
     logout();
     navigate('/');
+  };
+
+  const handleProfileClick = () => {
+    navigate('/profile');
   };
 
   const stats = [
@@ -96,7 +120,10 @@ export function DashboardContent() {
                   </Avatar>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuItem className="flex items-center gap-2">
+                  <DropdownMenuItem 
+                    className="flex items-center gap-2 cursor-pointer"
+                    onClick={handleProfileClick}
+                  >
                     <User className="w-4 h-4" />
                     <span>Perfil</span>
                   </DropdownMenuItem>
@@ -105,7 +132,10 @@ export function DashboardContent() {
                     <span>Usuario Inactivo</span>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem className="flex items-center gap-2">
+                  <DropdownMenuItem 
+                    className="flex items-center gap-2 cursor-pointer"
+                    onClick={handleCopyLink}
+                  >
                     <Link className="w-4 h-4" />
                     <span>Link de Registro</span>
                   </DropdownMenuItem>
