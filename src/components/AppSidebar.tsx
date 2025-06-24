@@ -56,7 +56,6 @@ const menuItems = [
     title: "Mi Negocio",
     icon: DollarSign,
     items: [
-      { title: "Comprar Membresía", icon: ShoppingCart, url: "#" },
       { title: "Mis compras", icon: ShoppingCart, url: "/vaucher_pago" },
       { title: "Mis Retiros", icon: TrendingUp, url: "/requests" },
     ]
@@ -71,7 +70,7 @@ const menuItems = [
     icon: Users,
     items: [
       { title: "Lista de Miembros", icon: User, url: "#" },
-      { title: "Organización", icon: Building, url: "#" },
+      { title: "Organización", icon: Building, url: "/organizacion" },
     ]
   },
   {
@@ -137,7 +136,7 @@ export function AppSidebar() {
                       <CollapsibleTrigger asChild>
                         <SidebarMenuButton className="w-full">
                           <item.icon className="w-4 h-4 flex-shrink-0" />
-                          <span className="text-sm leading-tight break-words">{item.title}</span>
+                          <span className="text-sm leading-tight break-words whitespace-normal">{item.title}</span>
                           <ChevronDown className="ml-auto h-4 w-4 flex-shrink-0 transition-transform group-data-[state=open]/collapsible:rotate-180" />
                         </SidebarMenuButton>
                       </CollapsibleTrigger>
@@ -148,7 +147,7 @@ export function AppSidebar() {
                               <SidebarMenuSubButton asChild>
                                 <a href={subItem.url || "#"}>
                                   <subItem.icon className="w-4 h-4 flex-shrink-0" />
-                                  <span className="text-sm leading-tight break-words">{subItem.title}</span>
+                                  <span className="text-sm leading-tight break-words whitespace-normal">{subItem.title}</span>
                                 </a>
                               </SidebarMenuSubButton>
                             </SidebarMenuSubItem>
@@ -160,7 +159,7 @@ export function AppSidebar() {
                     <SidebarMenuButton asChild>
                       <a href={item.url}>
                         <item.icon className="w-4 h-4 flex-shrink-0" />
-                        <span className="text-sm leading-tight break-words">{item.title}</span>
+                        <span className="text-sm leading-tight break-words whitespace-normal">{item.title}</span>
                       </a>
                     </SidebarMenuButton>
                   )}
@@ -180,7 +179,7 @@ export function AppSidebar() {
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton>
                     <item.icon className="w-4 h-4 flex-shrink-0" />
-                    <span className="text-sm leading-tight break-words">{item.title}</span>
+                    <span className="text-sm leading-tight break-words whitespace-normal">{item.title}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
