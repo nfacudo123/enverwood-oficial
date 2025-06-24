@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { Building, TrendingUp, Users, DollarSign, Copy, User, Link, LogOut } from "lucide-react";
@@ -10,6 +10,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
@@ -20,6 +29,7 @@ export function DashboardContent() {
   const personalRegistrationLink = `${currentUrl}/signup/${user.email || user.id || 'usuario'}`;
   const { logout } = useAuth();
   const navigate = useNavigate();
+  const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
 
   const handleCopyLink = async () => {
     try {
@@ -53,6 +63,18 @@ export function DashboardContent() {
 
   const handleProfileClick = () => {
     navigate('/profile');
+  };
+
+  const handleWithdrawSubmit = () => {
+    // Aquí se manejaría la lógica de retiro
+    setIsWithdrawModalOpen(false);
+    Swal.fire({
+      icon: 'success',
+      title: 'Solicitud enviada',
+      text: 'Tu solicitud de retiro ha sido enviada correctamente',
+      confirmButtonText: 'Entendido',
+      confirmButtonColor: '#22c55e',
+    });
   };
 
   const stats = [
@@ -160,7 +182,10 @@ export function DashboardContent() {
                     <Link className="w-4 h-4" />
                     <span>Link de Registro</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="flex items-center gap-2">
+                  <DropdownMenuItem 
+                    className="flex items-center gap-2 cursor-pointer"
+                    onClick={() => setIsWithdrawModalOpen(true)}
+                  >
                     <TrendingUp className="w-4 h-4" />
                     <span>Retirar Ganancias</span>
                   </DropdownMenuItem>
@@ -290,6 +315,76 @@ export function DashboardContent() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Modal de Retiro */}
+      <Dialog open={isWithdrawModalOpen} onOpenChange={setIsWithdrawModalOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Solicitar Retiro</DialogTitle>
+          </DialogHeader>
+          
+          {/* Alerta */}
+          <div className="bg-teal-50 border border-teal-200 rounded-lg p-3 mb-4">
+            <p className="text-sm text-teal-700">
+              <span className="font-medium">Alerta:</span> Puedes realizar la solicitud de tu retiro del 1 al 5 de cada mes.
+              Recuerda que el valor se verá reflejado en tu Wallet el día 10 de cada mes.
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="payment-method">Medio de pago</Label>
+              <Input
+                id="payment-method"
+                defaultValue="USDT TRC20"
+                className="mt-1"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="destination-account">Cuenta de Destino</Label>
+              <Input
+                id="destination-account"
+                defaultValue="4444"
+                className="mt-1"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="withdrawal-amount">Monto del Retiro</Label>
+              <Input
+                id="withdrawal-amount"
+                placeholder="Monto Disponible"
+                className="mt-1"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="auth-code">Código de Autentificación</Label>
+              <Input
+                id="auth-code"
+                className="mt-1"
+              />
+            </div>
+
+            <Button 
+              onClick={handleWithdrawSubmit}
+              className="w-full bg-green-500 hover:bg-green-600 text-white"
+            >
+              Solicitar Token de retiro
+            </Button>
+          </div>
+
+          <div className="flex justify-end pt-4">
+            <Button 
+              onClick={handleWithdrawSubmit}
+              className="bg-green-500 hover:bg-green-600 text-white"
+            >
+              Solicitar
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </SidebarInset>
   );
 }
