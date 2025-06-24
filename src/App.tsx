@@ -18,7 +18,21 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
+          {/* Ruta pública - login (no puede acceder si ya está autenticado) */}
+          <Route 
+            path="/" 
+            element={
+              <ProtectedRoute requireAuth={false}>
+                <Index />
+              </ProtectedRoute>
+            } 
+          />
+          
+          {/* Ruta pública - signup (siempre accesible) */}
+          <Route path="/signup" element={<div>Página de Registro</div>} />
+          <Route path="/signup/:userId" element={<div>Página de Registro con Usuario</div>} />
+          
+          {/* Rutas protegidas - requieren autenticación */}
           <Route 
             path="/dashboard" 
             element={
@@ -27,6 +41,7 @@ const App = () => (
               </ProtectedRoute>
             } 
           />
+          
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

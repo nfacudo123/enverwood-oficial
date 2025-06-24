@@ -2,16 +2,33 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
-import { Building, TrendingUp, Users, DollarSign, Copy } from "lucide-react";
+import { Building, TrendingUp, Users, DollarSign, Copy, User, Link, LogOut } from "lucide-react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useAuth } from '@/hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
 
 export function DashboardContent() {
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const currentUrl = window.location.origin;
   const personalRegistrationLink = `${currentUrl}/signup/${user.email || user.id || 'usuario'}`;
+  const { logout } = useAuth();
+  const navigate = useNavigate();
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(personalRegistrationLink);
     // You could add a toast notification here
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
   };
 
   const stats = [
@@ -69,21 +86,43 @@ export function DashboardContent() {
               Panel de Control
             </h1>
             <div className="flex items-center gap-4">
-              <div className="relative">
-                <input
-                  type="search"
-                  placeholder="Buscar"
-                  className="w-64 pl-4 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-gray-600">Bienvenido, {user.name || user.email}</span>
-                <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
-                  <span className="text-white text-sm font-medium">
-                    {(user.name || user.email)?.charAt(0)?.toUpperCase()}
-                  </span>
-                </div>
-              </div>
+              <span className="text-gray-600">Bienvenido, {user.name || user.email}</span>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Avatar className="cursor-pointer">
+                    <AvatarFallback className="bg-orange-500 text-white">
+                      {(user.name || user.email)?.charAt(0)?.toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuItem className="flex items-center gap-2">
+                    <User className="w-4 h-4" />
+                    <span>Perfil</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="flex items-center gap-2 text-red-600">
+                    <User className="w-4 h-4" />
+                    <span>Usuario Inactivo</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem className="flex items-center gap-2">
+                    <Link className="w-4 h-4" />
+                    <span>Link de Registro</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="flex items-center gap-2">
+                    <TrendingUp className="w-4 h-4" />
+                    <span>Retirar Ganancias</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    className="flex items-center gap-2 text-red-600 cursor-pointer"
+                    onClick={handleLogout}
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span>Cerrar Sesión</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         </div>
