@@ -52,12 +52,12 @@ export const UserNavbar = () => {
   };
 
   return (
-    <div className="flex items-center gap-3 px-4 py-2 bg-white border-b">
-      <span className="text-sm text-gray-600">
+    <div className="flex items-center justify-end gap-3 px-6 py-3 bg-white border-b">
+      <span className="text-sm text-gray-700">
         Bienvenido, {userInfo?.username || 'Usuario'}
       </span>
-      <Avatar className="h-8 w-8">
-        <AvatarFallback className="bg-orange-500 text-white text-sm">
+      <Avatar className="h-10 w-10">
+        <AvatarFallback className="bg-orange-500 text-white text-sm font-medium">
           {getInitials()}
         </AvatarFallback>
       </Avatar>

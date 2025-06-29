@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
@@ -11,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { UserNavbar } from '@/components/UserNavbar';
 
 interface UserProfile {
   id: string;
@@ -259,29 +259,28 @@ const Profile = () => {
   };
 
   const handlePasswordSave = () => {
-    // Si no hay nueva contraseña, no hacer nada
-    if (!passwordData.newPassword.trim()) {
+    // Solo validar si el usuario ingresó una nueva contraseña
+    if (passwordData.newPassword.trim()) {
+      if (passwordData.newPassword !== passwordData.confirmPassword) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "La nueva contraseña y su confirmación no coinciden",
+        });
+        return;
+      }
+      
+      updateProfile({
+        nuevaContrasena: passwordData.newPassword,
+        confirmarContrasena: passwordData.confirmPassword
+      });
+    } else {
       toast({
         variant: "destructive",
-        title: "Error",
-        description: "Por favor ingresa una nueva contraseña",
+        title: "Información",
+        description: "No se ha ingresado una nueva contraseña para cambiar",
       });
-      return;
     }
-
-    if (passwordData.newPassword !== passwordData.confirmPassword) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "La nueva contraseña y su confirmación no coinciden",
-      });
-      return;
-    }
-
-    updateProfile({
-      nuevaContrasena: passwordData.newPassword,
-      confirmarContrasena: passwordData.confirmPassword
-    });
   };
 
   if (loading) {
@@ -339,6 +338,7 @@ const Profile = () => {
       <div className="min-h-screen flex w-full">
         <AppSidebar />
         <SidebarInset className="flex-1">
+          <UserNavbar />
           <div className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
             <SidebarTrigger className="-ml-1" />
             <div className="flex-1">
