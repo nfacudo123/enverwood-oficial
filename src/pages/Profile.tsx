@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
@@ -9,14 +9,134 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+
+interface UserProfile {
+  id: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  address: string;
+  city: string;
+  state: string;
+  country: string;
+  walletAddress: string;
+}
 
 const Profile = () => {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
 
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          setError('No se encontró token de autenticación');
+          return;
+        }
+
+        console.log('Fetching user profile from:', 'http://localhost:4000/api/perfil');
+        
+        const response = await fetch('http://localhost:4000/api/perfil', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        console.log('Profile response status:', response.status);
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Profile data received:', data);
+          setUserProfile(data);
+        } else {
+          const errorData = await response.json().catch(() => ({ message: 'Error del servidor' }));
+          console.error('Profile fetch error:', errorData);
+          setError(errorData.message || 'Error al cargar el perfil');
+          
+          toast({
+            variant: "destructive",
+            title: "Error",
+            description: "No se pudo cargar la información del perfil",
+          });
+        }
+      } catch (error) {
+        console.error('Network error:', error);
+        setError('Error de conexión al servidor');
+        
+        toast({
+          variant: "destructive",
+          title: "Error de conexión",
+          description: "No se pudo conectar al servidor",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserProfile();
+  }, [toast]);
+
+  if (loading) {
+    return (
+      <SidebarProvider>
+        <div className="min-h-screen flex w-full">
+          <AppSidebar />
+          <SidebarInset className="flex-1">
+            <div className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+              <SidebarTrigger className="-ml-1" />
+              <h1 className="text-xl font-semibold text-gray-900">
+                Perfil de Usuario
+              </h1>
+            </div>
+            <div className="flex-1 p-4 md:p-8 flex items-center justify-center">
+              <div className="flex items-center gap-2">
+                <Loader2 className="h-6 w-6 animate-spin" />
+                <span>Cargando perfil...</span>
+              </div>
+            </div>
+          </SidebarInset>
+        </div>
+      </SidebarProvider>
+    );
+  }
+
+  if (error) {
+    return (
+      <SidebarProvider>
+        <div className="min-h-screen flex w-full">
+          <AppSidebar />
+          <SidebarInset className="flex-1">
+            <div className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+              <SidebarTrigger className="-ml-1" />
+              <h1 className="text-xl font-semibold text-gray-900">
+                Perfil de Usuario
+              </h1>
+            </div>
+            <div className="flex-1 p-4 md:p-8 flex items-center justify-center">
+              <div className="text-center">
+                <p className="text-red-600 mb-4">{error}</p>
+                <Button onClick={() => window.location.reload()}>
+                  Reintentar
+                </Button>
+              </div>
+            </div>
+          </SidebarInset>
+        </div>
+      </SidebarProvider>
+    );
+  }
 
   return (
     <SidebarProvider>
@@ -42,8 +162,8 @@ const Profile = () => {
                   <div className="w-12 h-12 bg-green-500 rounded-full"></div>
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold">Enverwood System</h2>
-                  <p className="text-gray-600">Patrocinador:</p>
+                  <h2 className="text-xl font-bold">{userProfile?.firstName} {userProfile?.lastName}</h2>
+                  <p className="text-gray-600">Usuario: {userProfile?.username}</p>
                 </div>
               </div>
 
@@ -71,7 +191,7 @@ const Profile = () => {
                         <Label htmlFor="wallet-address">Dirección Wallet USDT(TRC20)</Label>
                         <Input 
                           id="wallet-address" 
-                          placeholder="4444" 
+                          value={userProfile?.walletAddress || ''} 
                           className="mt-1"
                         />
                       </div>
@@ -105,7 +225,7 @@ const Profile = () => {
                         <Label htmlFor="username">Usuario</Label>
                         <Input 
                           id="username" 
-                          value="enverwood" 
+                          value={userProfile?.username || ''} 
                           className="mt-1 bg-gray-100"
                           readOnly
                         />
@@ -115,7 +235,7 @@ const Profile = () => {
                           <Label htmlFor="first-name">Nombres</Label>
                           <Input 
                             id="first-name" 
-                            value="Enverwood" 
+                            value={userProfile?.firstName || ''} 
                             className="mt-1"
                           />
                         </div>
@@ -123,7 +243,7 @@ const Profile = () => {
                           <Label htmlFor="last-name">Apellidos</Label>
                           <Input 
                             id="last-name" 
-                            value="System" 
+                            value={userProfile?.lastName || ''} 
                             className="mt-1"
                           />
                         </div>
@@ -159,7 +279,7 @@ const Profile = () => {
                           <Label htmlFor="address">Dirección</Label>
                           <Input 
                             id="address" 
-                            value="Bogotá" 
+                            value={userProfile?.address || ''} 
                             className="mt-1"
                           />
                         </div>
@@ -167,7 +287,7 @@ const Profile = () => {
                           <Label htmlFor="city">Ciudad/Provincia</Label>
                           <Input 
                             id="city" 
-                            value="Bogotá" 
+                            value={userProfile?.city || ''} 
                             className="mt-1"
                           />
                         </div>
@@ -177,13 +297,13 @@ const Profile = () => {
                           <Label htmlFor="state">Departamento/Estado</Label>
                           <Input 
                             id="state" 
-                            value="Bogotá" 
+                            value={userProfile?.state || ''} 
                             className="mt-1"
                           />
                         </div>
                         <div>
                           <Label htmlFor="country">País</Label>
-                          <Select defaultValue="colombia">
+                          <Select value={userProfile?.country || ''}>
                             <SelectTrigger>
                               <SelectValue />
                             </SelectTrigger>
@@ -200,7 +320,7 @@ const Profile = () => {
                           <Label htmlFor="email">Email/Correo</Label>
                           <Input 
                             id="email" 
-                            value="admongcapitalgroup@gmail.com" 
+                            value={userProfile?.email || ''} 
                             className="mt-1"
                           />
                         </div>
@@ -208,7 +328,7 @@ const Profile = () => {
                           <Label htmlFor="phone">Teléfono/Celular</Label>
                           <Input 
                             id="phone" 
-                            value="3213956746" 
+                            value={userProfile?.phone || ''} 
                             className="mt-1"
                           />
                         </div>
