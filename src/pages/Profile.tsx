@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
@@ -66,9 +65,11 @@ const Profile = () => {
         const token = localStorage.getItem('token');
         if (!token) {
           setError('No se encontró token de autenticación');
+          console.log('No token found in localStorage');
           return;
         }
 
+        console.log('Token found:', token);
         console.log('Fetching user profile from:', 'http://localhost:4000/api/perfil');
         
         const response = await fetch('http://localhost:4000/api/perfil', {
@@ -79,7 +80,8 @@ const Profile = () => {
           },
         });
 
-        console.log('Profile response status:', response.status);
+        console.log('Profile GET response status:', response.status);
+        console.log('Profile GET response headers:', response.headers);
 
         if (response.ok) {
           const data = await response.json();
@@ -88,21 +90,21 @@ const Profile = () => {
           
           // Inicializar los estados con los datos del usuario
           setProfileData({
-            firstName: data.firstName || '',
-            lastName: data.lastName || ''
+            firstName: data.firstName || data.name || '',
+            lastName: data.lastName || data.apellidos || ''
           });
           
           setContactData({
-            address: data.address || '',
-            city: data.city || '',
-            state: data.state || '',
-            country: data.country || '',
+            address: data.address || data.direccion || '',
+            city: data.city || data.ciudad || '',
+            state: data.state || data.estado || '',
+            country: data.country || (data.pais_id === 1 ? 'colombia' : data.pais_id === 2 ? 'mexico' : 'argentina') || '',
             email: data.email || '',
-            phone: data.phone || ''
+            phone: data.phone || data.telefono || ''
           });
           
           setWalletData({
-            walletAddress: data.walletAddress || ''
+            walletAddress: data.walletAddress || data.wallet_usdt || ''
           });
         } else {
           const errorData = await response.json().catch(() => ({ message: 'Error del servidor' }));
@@ -150,7 +152,7 @@ const Profile = () => {
       console.log('Using Bearer token:', token);
 
       const response = await fetch('http://localhost:4000/api/perfil/update', {
-        method: 'PATCH',
+        method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -158,9 +160,9 @@ const Profile = () => {
         body: JSON.stringify(updateData),
       });
 
-      console.log('Update response status:', response.status);
+      console.log('Update PUT response status:', response.status);
       const result = await response.json();
-      console.log('Update response data:', result);
+      console.log('Update PUT response data:', result);
 
       if (response.ok) {
         toast({
@@ -179,25 +181,26 @@ const Profile = () => {
 
         if (profileResponse.ok) {
           const updatedData = await profileResponse.json();
+          console.log('Updated profile data after PUT:', updatedData);
           setUserProfile(updatedData);
           
           // Actualizar estados locales
           setProfileData({
-            firstName: updatedData.firstName || '',
-            lastName: updatedData.lastName || ''
+            firstName: updatedData.firstName || updatedData.name || '',
+            lastName: updatedData.lastName || updatedData.apellidos || ''
           });
           
           setContactData({
-            address: updatedData.address || '',
-            city: updatedData.city || '',
-            state: updatedData.state || '',
-            country: updatedData.country || '',
+            address: updatedData.address || updatedData.direccion || '',
+            city: updatedData.city || updatedData.ciudad || '',
+            state: updatedData.state || updatedData.estado || '',
+            country: updatedData.country || (updatedData.pais_id === 1 ? 'colombia' : updatedData.pais_id === 2 ? 'mexico' : 'argentina') || '',
             email: updatedData.email || '',
-            phone: updatedData.phone || ''
+            phone: updatedData.phone || updatedData.telefono || ''
           });
           
           setWalletData({
-            walletAddress: updatedData.walletAddress || ''
+            walletAddress: updatedData.walletAddress || updatedData.wallet_usdt || ''
           });
         }
       } else {
@@ -339,7 +342,7 @@ const Profile = () => {
                   <div className="w-12 h-12 bg-green-500 rounded-full"></div>
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold">{userProfile?.firstName} {userProfile?.lastName}</h2>
+                  <h2 className="text-xl font-bold">{userProfile?.firstName || userProfile?.name} {userProfile?.lastName || userProfile?.apellidos}</h2>
                   <p className="text-gray-600">Usuario: {userProfile?.username}</p>
                 </div>
               </div>
