@@ -40,6 +40,7 @@ export const useAuth = () => {
         // Guardar token y datos del usuario
         if (data.token) {
           localStorage.setItem('token', data.token);
+          localStorage.setItem('idUser', data.userId);
         }
         
         const user: User = {
@@ -101,6 +102,7 @@ export const useAuth = () => {
 
   const logout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('idUser');
     localStorage.removeItem('user');
   };
 
