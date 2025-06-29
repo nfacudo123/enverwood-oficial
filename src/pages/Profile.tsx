@@ -342,7 +342,7 @@ const Profile = () => {
                   <div className="w-12 h-12 bg-green-500 rounded-full"></div>
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold">{userProfile?.firstName || userProfile?.name} {userProfile?.lastName || userProfile?.apellidos}</h2>
+                  <h2 className="text-xl font-bold">{userProfile?.firstName} {userProfile?.lastName}</h2>
                   <p className="text-gray-600">Usuario: {userProfile?.username}</p>
                 </div>
               </div>
