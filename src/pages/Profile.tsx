@@ -277,12 +277,7 @@ const Profile = () => {
         <div className="min-h-screen flex w-full">
           <AppSidebar />
           <SidebarInset className="flex-1">
-            <div className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-              <SidebarTrigger className="-ml-1" />
-              <h1 className="text-xl font-semibold text-gray-900">
-                Perfil de Usuario
-              </h1>
-            </div>
+            <UserNavbar title="Perfil de Usuario" />
             <div className="flex-1 p-4 md:p-8 flex items-center justify-center">
               <div className="flex items-center gap-2">
                 <Loader2 className="h-6 w-6 animate-spin" />
@@ -301,12 +296,7 @@ const Profile = () => {
         <div className="min-h-screen flex w-full">
           <AppSidebar />
           <SidebarInset className="flex-1">
-            <div className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-              <SidebarTrigger className="-ml-1" />
-              <h1 className="text-xl font-semibold text-gray-900">
-                Perfil de Usuario
-              </h1>
-            </div>
+            <UserNavbar title="Perfil de Usuario" />
             <div className="flex-1 p-4 md:p-8 flex items-center justify-center">
               <div className="text-center">
                 <p className="text-red-600 mb-4">{error}</p>
