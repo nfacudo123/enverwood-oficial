@@ -37,7 +37,7 @@ export const useAuth = () => {
         const data = await response.json();
         console.log('Datos recibidos:', data);
         
-        // Guardar token y datos del usuario
+        // Guardar token y datos del username
         if (data.token) {
           localStorage.setItem('token', data.token);
           localStorage.setItem('idUser', data.userId);

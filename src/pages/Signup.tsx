@@ -114,9 +114,9 @@ const Signup = () => {
             />
           </div>
 
-          {/* Nombre de usuario */}
+          {/* Nombre de username */}
           <div>
-            <Label htmlFor="nombreUsuario" className="text-white">Nombre de usuario</Label>
+            <Label htmlFor="nombreUsuario" className="text-white">Nombre de username</Label>
             <Input
               id="nombreUsuario"
               type="text"

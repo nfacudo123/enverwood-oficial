@@ -27,14 +27,14 @@ interface UserProfile {
 }
 
 interface UpdateProfileData {
-  nombre: string;
+  name: string;
   apellidos: string;
-  usuario: string;
+  username: string;
   email: string;
   pais_id: number;
   telefono: string;
   wallet_usdt: string;
-  direccion_residencia: string;
+  direccion: string;
   ciudad: string;
   estado: string;
   nuevaContrasena: string;
@@ -102,7 +102,7 @@ const Profile = () => {
           console.log('Profile data received:', data);
           setUserProfile(data);
           
-          // Inicializar los estados con los datos del usuario
+          // Inicializar los estados con los datos del username
           setProfileData({
             firstName: data.firstName || '',
             lastName: data.lastName || ''
@@ -164,14 +164,14 @@ const Profile = () => {
 
       // Preparar los datos para enviar
       const updateData: UpdateProfileData = {
-        nombre: data.nombre || profileData.firstName,
+        name: data.name || profileData.firstName,
         apellidos: data.apellidos || profileData.lastName,
-        usuario: userProfile?.username || '',
+        username: userProfile?.username || '',
         email: data.email || contactData.email,
         pais_id: data.pais_id || (contactData.country === 'colombia' ? 1 : contactData.country === 'mexico' ? 2 : 3),
         telefono: data.telefono || contactData.phone,
         wallet_usdt: data.wallet_usdt || walletData.walletAddress,
-        direccion_residencia: data.direccion_residencia || contactData.address,
+        direccion: data.direccion || contactData.address,
         ciudad: data.ciudad || contactData.city,
         estado: data.estado || contactData.state,
         nuevaContrasena: data.nuevaContrasena || '',
@@ -227,7 +227,7 @@ const Profile = () => {
 
   const handleProfileSave = () => {
     updateProfile({
-      nombre: profileData.firstName,
+      name: profileData.firstName,
       apellidos: profileData.lastName
     });
   };
@@ -240,14 +240,14 @@ const Profile = () => {
       email: contactData.email,
       pais_id: paisId,
       telefono: contactData.phone,
-      direccion_residencia: contactData.address,
+      direccion: contactData.address,
       ciudad: contactData.city,
       estado: contactData.state
     });
   };
 
   const handlePasswordSave = () => {
-    // Solo validar si el usuario ingresó una nueva contraseña
+    // Solo validar si el username ingresó una nueva contraseña
     if (passwordData.newPassword.trim()) {
       if (passwordData.newPassword !== passwordData.confirmPassword) {
         toast({
@@ -320,7 +320,7 @@ const Profile = () => {
 
           <div className="flex-1 p-4 md:p-8">
             <div className="max-w-4xl mx-auto">
-              {/* Header con información del usuario */}
+              {/* Header con información del username */}
               <div className="flex items-center gap-4 mb-6 p-4 bg-gray-50 rounded-lg">
                 <div className="w-16 h-16 bg-gray-400 rounded-full flex items-center justify-center">
                   <div className="w-12 h-12 bg-green-500 rounded-full"></div>

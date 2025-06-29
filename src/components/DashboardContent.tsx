@@ -26,7 +26,7 @@ import Swal from 'sweetalert2';
 export function DashboardContent() {
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const currentUrl = window.location.origin;
-  const personalRegistrationLink = `${currentUrl}/signup/${user.email || user.id || 'usuario'}`;
+  const personalRegistrationLink = `${currentUrl}/signup/${user.email || user.id || 'username'}`;
   const { logout } = useAuth();
   const navigate = useNavigate();
   const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
