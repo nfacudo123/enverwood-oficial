@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
-import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarInset } from "@/components/ui/sidebar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -42,7 +42,6 @@ interface UpdateProfileData {
 }
 
 const Profile = () => {
-  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
@@ -71,7 +70,6 @@ const Profile = () => {
   });
   
   const [passwordData, setPasswordData] = useState({
-    currentPassword: '',
     newPassword: '',
     confirmPassword: ''
   });
@@ -151,15 +149,6 @@ const Profile = () => {
   }, [toast]);
 
   const updateProfile = async (data: Partial<UpdateProfileData>) => {
-    if (!validationToken.trim()) {
-      toast({
-        variant: "destructive",
-        title: "Token requerido",
-        description: "Por favor ingresa el token de validación",
-      });
-      return;
-    }
-
     setUpdating(true);
     
     try {
@@ -208,7 +197,6 @@ const Profile = () => {
           title: "Éxito",
           description: "Perfil actualizado correctamente",
         });
-        setValidationToken('');
         
         // Recargar los datos del perfil
         window.location.reload();
@@ -338,17 +326,7 @@ const Profile = () => {
       <div className="min-h-screen flex w-full">
         <AppSidebar />
         <SidebarInset className="flex-1">
-          <UserNavbar />
-          <div className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-            <SidebarTrigger className="-ml-1" />
-            <div className="flex-1">
-              <div className="flex items-center justify-between">
-                <h1 className="text-xl font-semibold text-gray-900">
-                  Perfil de Usuario
-                </h1>
-              </div>
-            </div>
-          </div>
+          <UserNavbar title="Perfil de Usuario" />
 
           <div className="flex-1 p-4 md:p-8">
             <div className="max-w-4xl mx-auto">
@@ -375,11 +353,6 @@ const Profile = () => {
                 <TabsContent value="wallet">
                   <Card>
                     <CardHeader>
-                      <div className="flex justify-center mb-4">
-                        <Button className="bg-green-500 hover:bg-green-600 text-white px-8 py-2">
-                          Solicitar Token para cambio de Perfil
-                        </Button>
-                      </div>
                       <CardTitle>Información de la Wallet</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
@@ -389,15 +362,6 @@ const Profile = () => {
                           id="wallet-address" 
                           value={walletData.walletAddress}
                           onChange={(e) => setWalletData({...walletData, walletAddress: e.target.value})}
-                          className="mt-1"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="validation-token">Token para validar cambios en perfil</Label>
-                        <Input 
-                          id="validation-token" 
-                          value={validationToken}
-                          onChange={(e) => setValidationToken(e.target.value)}
                           className="mt-1"
                         />
                       </div>
@@ -417,11 +381,6 @@ const Profile = () => {
                 <TabsContent value="profile">
                   <Card>
                     <CardHeader>
-                      <div className="flex justify-center mb-4">
-                        <Button className="bg-green-500 hover:bg-green-600 text-white px-8 py-2">
-                          Solicitar Token para cambio de Perfil
-                        </Button>
-                      </div>
                       <CardTitle>Información de Perfil</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
@@ -454,15 +413,6 @@ const Profile = () => {
                           />
                         </div>
                       </div>
-                      <div>
-                        <Label htmlFor="profile-token">Token para validar cambios en perfil</Label>
-                        <Input 
-                          id="profile-token" 
-                          value={validationToken}
-                          onChange={(e) => setValidationToken(e.target.value)}
-                          className="mt-1"
-                        />
-                      </div>
                       <Button 
                         className="w-full bg-green-500 hover:bg-green-600 text-white"
                         onClick={handleProfileSave}
@@ -479,11 +429,6 @@ const Profile = () => {
                 <TabsContent value="contact">
                   <Card>
                     <CardHeader>
-                      <div className="flex justify-center mb-4">
-                        <Button className="bg-green-500 hover:bg-green-600 text-white px-8 py-2">
-                          Solicitar Token para cambio de Perfil
-                        </Button>
-                      </div>
                       <CardTitle>Información de Contacto</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
@@ -554,15 +499,6 @@ const Profile = () => {
                           />
                         </div>
                       </div>
-                      <div>
-                        <Label htmlFor="contact-token">Token para validar cambios en perfil</Label>
-                        <Input 
-                          id="contact-token" 
-                          value={validationToken}
-                          onChange={(e) => setValidationToken(e.target.value)}
-                          className="mt-1"
-                        />
-                      </div>
                       <Button 
                         className="w-full bg-green-500 hover:bg-green-600 text-white"
                         onClick={handleContactSave}
@@ -579,37 +515,12 @@ const Profile = () => {
                 <TabsContent value="password">
                   <Card>
                     <CardHeader>
-                      <div className="flex justify-center mb-4">
-                        <Button className="bg-green-500 hover:bg-green-600 text-white px-8 py-2">
-                          Solicitar Token para cambio de Perfil
-                        </Button>
-                      </div>
-                      <CardTitle>Información de Contraseña</CardTitle>
+                      <CardTitle>Cambiar Contraseña</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                      <div className="grid grid-cols-3 gap-4">
+                      <div className="grid grid-cols-2 gap-4">
                         <div>
-                          <Label htmlFor="current-password">Contraseña Anterior</Label>
-                          <div className="relative">
-                            <Input 
-                              id="current-password" 
-                              type={showCurrentPassword ? "text" : "password"}
-                              placeholder="****"
-                              value={passwordData.currentPassword}
-                              onChange={(e) => setPasswordData({...passwordData, currentPassword: e.target.value})}
-                              className="mt-1 pr-10"
-                            />
-                            <button
-                              type="button"
-                              onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                              className="absolute right-3 top-1/2 transform -translate-y-1/2"
-                            >
-                              {showCurrentPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                            </button>
-                          </div>
-                        </div>
-                        <div>
-                          <Label htmlFor="new-password">Nueva Contraseña</Label>
+                          <Label htmlFor="new-password">Nueva Contraseña (Opcional)</Label>
                           <div className="relative">
                             <Input 
                               id="new-password" 
@@ -629,7 +540,7 @@ const Profile = () => {
                           </div>
                         </div>
                         <div>
-                          <Label htmlFor="confirm-password">Confirmar Contraseña</Label>
+                          <Label htmlFor="confirm-password">Confirmar Nueva Contraseña</Label>
                           <div className="relative">
                             <Input 
                               id="confirm-password" 
@@ -648,15 +559,6 @@ const Profile = () => {
                             </button>
                           </div>
                         </div>
-                      </div>
-                      <div>
-                        <Label htmlFor="password-token">Token para validar cambios en perfil</Label>
-                        <Input 
-                          id="password-token" 
-                          value={validationToken}
-                          onChange={(e) => setValidationToken(e.target.value)}
-                          className="mt-1"
-                        />
                       </div>
                       <Button 
                         className="w-full bg-green-500 hover:bg-green-600 text-white"

@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
 interface UserInfo {
   username: string;
@@ -8,7 +9,11 @@ interface UserInfo {
   lastName: string;
 }
 
-export const UserNavbar = () => {
+interface UserNavbarProps {
+  title: string;
+}
+
+export const UserNavbar = ({ title }: UserNavbarProps) => {
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
 
   useEffect(() => {
@@ -52,15 +57,25 @@ export const UserNavbar = () => {
   };
 
   return (
-    <div className="flex items-center justify-end gap-3 px-6 py-3 bg-white border-b">
-      <span className="text-sm text-gray-700">
-        Bienvenido, {userInfo?.username || 'Usuario'}
-      </span>
-      <Avatar className="h-10 w-10">
-        <AvatarFallback className="bg-orange-500 text-white text-sm font-medium">
-          {getInitials()}
-        </AvatarFallback>
-      </Avatar>
+    <div className="flex h-16 shrink-0 items-center gap-2 border-b px-4 bg-white">
+      <SidebarTrigger className="-ml-1" />
+      <div className="flex-1">
+        <div className="flex items-center justify-between">
+          <h1 className="text-xl font-semibold text-gray-900">
+            {title}
+          </h1>
+          <div className="flex items-center gap-3">
+            <span className="text-sm text-gray-700">
+              Bienvenido, {userInfo?.username || 'Usuario'}
+            </span>
+            <Avatar className="h-10 w-10">
+              <AvatarFallback className="bg-orange-500 text-white text-sm font-medium">
+                {getInitials()}
+              </AvatarFallback>
+            </Avatar>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
