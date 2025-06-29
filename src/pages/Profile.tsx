@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
@@ -258,20 +259,21 @@ const Profile = () => {
   };
 
   const handlePasswordSave = () => {
+    // Si no hay nueva contraseña, no hacer nada
+    if (!passwordData.newPassword.trim()) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Por favor ingresa una nueva contraseña",
+      });
+      return;
+    }
+
     if (passwordData.newPassword !== passwordData.confirmPassword) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Las contraseñas no coinciden",
-      });
-      return;
-    }
-    
-    if (passwordData.newPassword.trim() === '') {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "La nueva contraseña no puede estar vacía",
+        description: "La nueva contraseña y su confirmación no coinciden",
       });
       return;
     }
