@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
@@ -24,21 +25,6 @@ interface UserProfile {
   state: string;
   country: string;
   walletAddress: string;
-}
-
-interface UpdateProfileData {
-  name: string;
-  apellidos: string;
-  username: string;
-  email: string;
-  pais_id: number;
-  telefono: string;
-  wallet_usdt: string;
-  direccion: string;
-  ciudad: string;
-  estado: string;
-  nuevaContrasena: string;
-  confirmarContrasena: string;
 }
 
 const Profile = () => {
@@ -73,8 +59,6 @@ const Profile = () => {
     newPassword: '',
     confirmPassword: ''
   });
-  
-  const [validationToken, setValidationToken] = useState('');
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -102,7 +86,7 @@ const Profile = () => {
           console.log('Profile data received:', data);
           setUserProfile(data);
           
-          // Inicializar los estados con los datos del username
+          // Inicializar los estados con los datos del usuario
           setProfileData({
             firstName: data.firstName || '',
             lastName: data.lastName || ''
@@ -148,7 +132,7 @@ const Profile = () => {
     fetchUserProfile();
   }, [toast]);
 
-  const updateProfile = async (data: Partial<UpdateProfileData>) => {
+  const updateProfile = async (updateData: any) => {
     setUpdating(true);
     
     try {
@@ -162,26 +146,11 @@ const Profile = () => {
         return;
       }
 
-      // Preparar los datos para enviar
-      const updateData: UpdateProfileData = {
-        name: data.name || profileData.firstName,
-        apellidos: data.apellidos || profileData.lastName,
-        username: userProfile?.username || '',
-        email: data.email || contactData.email,
-        pais_id: data.pais_id || (contactData.country === 'colombia' ? 1 : contactData.country === 'mexico' ? 2 : 3),
-        telefono: data.telefono || contactData.phone,
-        wallet_usdt: data.wallet_usdt || walletData.walletAddress,
-        direccion: data.direccion || contactData.address,
-        ciudad: data.ciudad || contactData.city,
-        estado: data.estado || contactData.state,
-        nuevaContrasena: data.nuevaContrasena || '',
-        confirmarContrasena: data.confirmarContrasena || ''
-      };
-
       console.log('Updating profile with data:', updateData);
+      console.log('Using Bearer token:', token);
 
       const response = await fetch('http://localhost:4000/api/perfil/update', {
-        method: 'PUT',
+        method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -189,8 +158,9 @@ const Profile = () => {
         body: JSON.stringify(updateData),
       });
 
+      console.log('Update response status:', response.status);
       const result = await response.json();
-      console.log('Update response:', result);
+      console.log('Update response data:', result);
 
       if (response.ok) {
         toast({
@@ -198,9 +168,40 @@ const Profile = () => {
           description: "Perfil actualizado correctamente",
         });
         
-        // Recargar los datos del perfil
-        window.location.reload();
+        // Recargar los datos del perfil después de la actualización
+        const profileResponse = await fetch('http://localhost:4000/api/perfil', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (profileResponse.ok) {
+          const updatedData = await profileResponse.json();
+          setUserProfile(updatedData);
+          
+          // Actualizar estados locales
+          setProfileData({
+            firstName: updatedData.firstName || '',
+            lastName: updatedData.lastName || ''
+          });
+          
+          setContactData({
+            address: updatedData.address || '',
+            city: updatedData.city || '',
+            state: updatedData.state || '',
+            country: updatedData.country || '',
+            email: updatedData.email || '',
+            phone: updatedData.phone || ''
+          });
+          
+          setWalletData({
+            walletAddress: updatedData.walletAddress || ''
+          });
+        }
       } else {
+        console.error('Update failed:', result);
         toast({
           variant: "destructive",
           title: "Error",
@@ -220,12 +221,14 @@ const Profile = () => {
   };
 
   const handleWalletSave = () => {
+    console.log('Saving wallet data:', walletData);
     updateProfile({
       wallet_usdt: walletData.walletAddress
     });
   };
 
   const handleProfileSave = () => {
+    console.log('Saving profile data:', profileData);
     updateProfile({
       name: profileData.firstName,
       apellidos: profileData.lastName
@@ -233,6 +236,7 @@ const Profile = () => {
   };
 
   const handleContactSave = () => {
+    console.log('Saving contact data:', contactData);
     const paisId = contactData.country === 'colombia' ? 1 : 
                    contactData.country === 'mexico' ? 2 : 3;
     
@@ -247,7 +251,9 @@ const Profile = () => {
   };
 
   const handlePasswordSave = () => {
-    // Solo validar si el username ingresó una nueva contraseña
+    console.log('Attempting to save password...');
+    
+    // Solo validar si el usuario ingresó una nueva contraseña
     if (passwordData.newPassword.trim()) {
       if (passwordData.newPassword !== passwordData.confirmPassword) {
         toast({
@@ -258,9 +264,16 @@ const Profile = () => {
         return;
       }
       
+      console.log('Saving new password');
       updateProfile({
         nuevaContrasena: passwordData.newPassword,
         confirmarContrasena: passwordData.confirmPassword
+      });
+      
+      // Limpiar campos después del intento de actualización
+      setPasswordData({
+        newPassword: '',
+        confirmPassword: ''
       });
     } else {
       toast({
@@ -320,7 +333,7 @@ const Profile = () => {
 
           <div className="flex-1 p-4 md:p-8">
             <div className="max-w-4xl mx-auto">
-              {/* Header con información del username */}
+              {/* Header con información del usuario */}
               <div className="flex items-center gap-4 mb-6 p-4 bg-gray-50 rounded-lg">
                 <div className="w-16 h-16 bg-gray-400 rounded-full flex items-center justify-center">
                   <div className="w-12 h-12 bg-green-500 rounded-full"></div>
