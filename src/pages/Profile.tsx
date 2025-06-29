@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
@@ -26,6 +25,21 @@ interface UserProfile {
   walletAddress: string;
 }
 
+interface UpdateProfileData {
+  nombre: string;
+  apellidos: string;
+  usuario: string;
+  email: string;
+  pais_id: number;
+  telefono: string;
+  wallet_usdt: string;
+  direccion_residencia: string;
+  ciudad: string;
+  estado: string;
+  nuevaContrasena: string;
+  confirmarContrasena: string;
+}
+
 const Profile = () => {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
@@ -33,7 +47,35 @@ const Profile = () => {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [updating, setUpdating] = useState(false);
   const { toast } = useToast();
+
+  // Estados para los formularios
+  const [profileData, setProfileData] = useState({
+    firstName: '',
+    lastName: ''
+  });
+  
+  const [contactData, setContactData] = useState({
+    address: '',
+    city: '',
+    state: '',
+    country: '',
+    email: '',
+    phone: ''
+  });
+  
+  const [walletData, setWalletData] = useState({
+    walletAddress: ''
+  });
+  
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
+  
+  const [validationToken, setValidationToken] = useState('');
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -60,6 +102,25 @@ const Profile = () => {
           const data = await response.json();
           console.log('Profile data received:', data);
           setUserProfile(data);
+          
+          // Inicializar los estados con los datos del usuario
+          setProfileData({
+            firstName: data.firstName || '',
+            lastName: data.lastName || ''
+          });
+          
+          setContactData({
+            address: data.address || '',
+            city: data.city || '',
+            state: data.state || '',
+            country: data.country || '',
+            email: data.email || '',
+            phone: data.phone || ''
+          });
+          
+          setWalletData({
+            walletAddress: data.walletAddress || ''
+          });
         } else {
           const errorData = await response.json().catch(() => ({ message: 'Error del servidor' }));
           console.error('Profile fetch error:', errorData);
@@ -87,6 +148,139 @@ const Profile = () => {
 
     fetchUserProfile();
   }, [toast]);
+
+  const updateProfile = async (data: Partial<UpdateProfileData>) => {
+    if (!validationToken.trim()) {
+      toast({
+        variant: "destructive",
+        title: "Token requerido",
+        description: "Por favor ingresa el token de validación",
+      });
+      return;
+    }
+
+    setUpdating(true);
+    
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "No se encontró token de autenticación",
+        });
+        return;
+      }
+
+      // Preparar los datos para enviar
+      const updateData: UpdateProfileData = {
+        nombre: data.nombre || profileData.firstName,
+        apellidos: data.apellidos || profileData.lastName,
+        usuario: userProfile?.username || '',
+        email: data.email || contactData.email,
+        pais_id: data.pais_id || (contactData.country === 'colombia' ? 1 : contactData.country === 'mexico' ? 2 : 3),
+        telefono: data.telefono || contactData.phone,
+        wallet_usdt: data.wallet_usdt || walletData.walletAddress,
+        direccion_residencia: data.direccion_residencia || contactData.address,
+        ciudad: data.ciudad || contactData.city,
+        estado: data.estado || contactData.state,
+        nuevaContrasena: data.nuevaContrasena || '',
+        confirmarContrasena: data.confirmarContrasena || ''
+      };
+
+      console.log('Updating profile with data:', updateData);
+
+      const response = await fetch('http://localhost:4000/api/perfil/update', {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updateData),
+      });
+
+      const result = await response.json();
+      console.log('Update response:', result);
+
+      if (response.ok) {
+        toast({
+          title: "Éxito",
+          description: "Perfil actualizado correctamente",
+        });
+        setValidationToken('');
+        
+        // Recargar los datos del perfil
+        window.location.reload();
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: result.message || "Error al actualizar el perfil",
+        });
+      }
+    } catch (error) {
+      console.error('Update error:', error);
+      toast({
+        variant: "destructive",
+        title: "Error de conexión",
+        description: "No se pudo conectar al servidor",
+      });
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const handleWalletSave = () => {
+    updateProfile({
+      wallet_usdt: walletData.walletAddress
+    });
+  };
+
+  const handleProfileSave = () => {
+    updateProfile({
+      nombre: profileData.firstName,
+      apellidos: profileData.lastName
+    });
+  };
+
+  const handleContactSave = () => {
+    const paisId = contactData.country === 'colombia' ? 1 : 
+                   contactData.country === 'mexico' ? 2 : 3;
+    
+    updateProfile({
+      email: contactData.email,
+      pais_id: paisId,
+      telefono: contactData.phone,
+      direccion_residencia: contactData.address,
+      ciudad: contactData.city,
+      estado: contactData.state
+    });
+  };
+
+  const handlePasswordSave = () => {
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Las contraseñas no coinciden",
+      });
+      return;
+    }
+    
+    if (passwordData.newPassword.trim() === '') {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "La nueva contraseña no puede estar vacía",
+      });
+      return;
+    }
+
+    updateProfile({
+      nuevaContrasena: passwordData.newPassword,
+      confirmarContrasena: passwordData.confirmPassword
+    });
+  };
 
   if (loading) {
     return (
@@ -191,7 +385,8 @@ const Profile = () => {
                         <Label htmlFor="wallet-address">Dirección Wallet USDT(TRC20)</Label>
                         <Input 
                           id="wallet-address" 
-                          value={userProfile?.walletAddress || ''} 
+                          value={walletData.walletAddress}
+                          onChange={(e) => setWalletData({...walletData, walletAddress: e.target.value})}
                           className="mt-1"
                         />
                       </div>
@@ -199,10 +394,17 @@ const Profile = () => {
                         <Label htmlFor="validation-token">Token para validar cambios en perfil</Label>
                         <Input 
                           id="validation-token" 
+                          value={validationToken}
+                          onChange={(e) => setValidationToken(e.target.value)}
                           className="mt-1"
                         />
                       </div>
-                      <Button className="w-full bg-green-500 hover:bg-green-600 text-white">
+                      <Button 
+                        className="w-full bg-green-500 hover:bg-green-600 text-white"
+                        onClick={handleWalletSave}
+                        disabled={updating}
+                      >
+                        {updating ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
                         Guardar Cambios
                       </Button>
                     </CardContent>
@@ -235,7 +437,8 @@ const Profile = () => {
                           <Label htmlFor="first-name">Nombres</Label>
                           <Input 
                             id="first-name" 
-                            value={userProfile?.firstName || ''} 
+                            value={profileData.firstName}
+                            onChange={(e) => setProfileData({...profileData, firstName: e.target.value})}
                             className="mt-1"
                           />
                         </div>
@@ -243,7 +446,8 @@ const Profile = () => {
                           <Label htmlFor="last-name">Apellidos</Label>
                           <Input 
                             id="last-name" 
-                            value={userProfile?.lastName || ''} 
+                            value={profileData.lastName}
+                            onChange={(e) => setProfileData({...profileData, lastName: e.target.value})}
                             className="mt-1"
                           />
                         </div>
@@ -252,10 +456,17 @@ const Profile = () => {
                         <Label htmlFor="profile-token">Token para validar cambios en perfil</Label>
                         <Input 
                           id="profile-token" 
+                          value={validationToken}
+                          onChange={(e) => setValidationToken(e.target.value)}
                           className="mt-1"
                         />
                       </div>
-                      <Button className="w-full bg-green-500 hover:bg-green-600 text-white">
+                      <Button 
+                        className="w-full bg-green-500 hover:bg-green-600 text-white"
+                        onClick={handleProfileSave}
+                        disabled={updating}
+                      >
+                        {updating ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
                         Guardar Cambios
                       </Button>
                     </CardContent>
@@ -279,7 +490,8 @@ const Profile = () => {
                           <Label htmlFor="address">Dirección</Label>
                           <Input 
                             id="address" 
-                            value={userProfile?.address || ''} 
+                            value={contactData.address}
+                            onChange={(e) => setContactData({...contactData, address: e.target.value})}
                             className="mt-1"
                           />
                         </div>
@@ -287,7 +499,8 @@ const Profile = () => {
                           <Label htmlFor="city">Ciudad/Provincia</Label>
                           <Input 
                             id="city" 
-                            value={userProfile?.city || ''} 
+                            value={contactData.city}
+                            onChange={(e) => setContactData({...contactData, city: e.target.value})}
                             className="mt-1"
                           />
                         </div>
@@ -297,13 +510,17 @@ const Profile = () => {
                           <Label htmlFor="state">Departamento/Estado</Label>
                           <Input 
                             id="state" 
-                            value={userProfile?.state || ''} 
+                            value={contactData.state}
+                            onChange={(e) => setContactData({...contactData, state: e.target.value})}
                             className="mt-1"
                           />
                         </div>
                         <div>
                           <Label htmlFor="country">País</Label>
-                          <Select value={userProfile?.country || ''}>
+                          <Select 
+                            value={contactData.country}
+                            onValueChange={(value) => setContactData({...contactData, country: value})}
+                          >
                             <SelectTrigger>
                               <SelectValue />
                             </SelectTrigger>
@@ -320,7 +537,8 @@ const Profile = () => {
                           <Label htmlFor="email">Email/Correo</Label>
                           <Input 
                             id="email" 
-                            value={userProfile?.email || ''} 
+                            value={contactData.email}
+                            onChange={(e) => setContactData({...contactData, email: e.target.value})}
                             className="mt-1"
                           />
                         </div>
@@ -328,7 +546,8 @@ const Profile = () => {
                           <Label htmlFor="phone">Teléfono/Celular</Label>
                           <Input 
                             id="phone" 
-                            value={userProfile?.phone || ''} 
+                            value={contactData.phone}
+                            onChange={(e) => setContactData({...contactData, phone: e.target.value})}
                             className="mt-1"
                           />
                         </div>
@@ -337,10 +556,17 @@ const Profile = () => {
                         <Label htmlFor="contact-token">Token para validar cambios en perfil</Label>
                         <Input 
                           id="contact-token" 
+                          value={validationToken}
+                          onChange={(e) => setValidationToken(e.target.value)}
                           className="mt-1"
                         />
                       </div>
-                      <Button className="w-full bg-green-500 hover:bg-green-600 text-white">
+                      <Button 
+                        className="w-full bg-green-500 hover:bg-green-600 text-white"
+                        onClick={handleContactSave}
+                        disabled={updating}
+                      >
+                        {updating ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
                         Guardar Cambios
                       </Button>
                     </CardContent>
@@ -367,6 +593,8 @@ const Profile = () => {
                               id="current-password" 
                               type={showCurrentPassword ? "text" : "password"}
                               placeholder="****"
+                              value={passwordData.currentPassword}
+                              onChange={(e) => setPasswordData({...passwordData, currentPassword: e.target.value})}
                               className="mt-1 pr-10"
                             />
                             <button
@@ -385,6 +613,8 @@ const Profile = () => {
                               id="new-password" 
                               type={showNewPassword ? "text" : "password"}
                               placeholder="****"
+                              value={passwordData.newPassword}
+                              onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})}
                               className="mt-1 pr-10"
                             />
                             <button
@@ -403,6 +633,8 @@ const Profile = () => {
                               id="confirm-password" 
                               type={showConfirmPassword ? "text" : "password"}
                               placeholder="****"
+                              value={passwordData.confirmPassword}
+                              onChange={(e) => setPasswordData({...passwordData, confirmPassword: e.target.value})}
                               className="mt-1 pr-10"
                             />
                             <button
@@ -419,10 +651,17 @@ const Profile = () => {
                         <Label htmlFor="password-token">Token para validar cambios en perfil</Label>
                         <Input 
                           id="password-token" 
+                          value={validationToken}
+                          onChange={(e) => setValidationToken(e.target.value)}
                           className="mt-1"
                         />
                       </div>
-                      <Button className="w-full bg-green-500 hover:bg-green-600 text-white">
+                      <Button 
+                        className="w-full bg-green-500 hover:bg-green-600 text-white"
+                        onClick={handlePasswordSave}
+                        disabled={updating}
+                      >
+                        {updating ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
                         Guardar Cambios
                       </Button>
                     </CardContent>
