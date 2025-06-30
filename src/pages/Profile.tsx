@@ -88,23 +88,23 @@ const Profile = () => {
           console.log('Profile data received:', data);
           setUserProfile(data);
           
-          // Inicializar los estados con los datos del usuario
+          // Inicializar los estados con los datos del usuario según el JSON del API
           setProfileData({
-            firstName: data.firstName || data.name || '',
-            lastName: data.lastName || data.apellidos || ''
+            firstName: data.name || '',
+            lastName: data.apellidos || ''
           });
           
           setContactData({
-            address: data.address || data.direccion || '',
-            city: data.city || data.ciudad || '',
-            state: data.state || data.estado || '',
-            country: data.country || (data.pais_id === 1 ? 'colombia' : data.pais_id === 2 ? 'mexico' : 'argentina') || '',
+            address: data.direccion || '',
+            city: data.ciudad || '',
+            state: data.estado || '',
+            country: data.pais_id === 57 ? 'colombia' : data.pais_id === 2 ? 'mexico' : 'argentina',
             email: data.email || '',
-            phone: data.phone || data.telefono || ''
+            phone: data.telefono || ''
           });
           
           setWalletData({
-            walletAddress: data.walletAddress || data.wallet_usdt || ''
+            walletAddress: data.wallet_usdt || ''
           });
         } else {
           const errorData = await response.json().catch(() => ({ message: 'Error del servidor' }));
@@ -184,23 +184,23 @@ const Profile = () => {
           console.log('Updated profile data after PUT:', updatedData);
           setUserProfile(updatedData);
           
-          // Actualizar estados locales
+          // Actualizar estados locales según el JSON del API
           setProfileData({
-            firstName: updatedData.firstName || updatedData.name || '',
-            lastName: updatedData.lastName || updatedData.apellidos || ''
+            firstName: updatedData.name || '',
+            lastName: updatedData.apellidos || ''
           });
           
           setContactData({
-            address: updatedData.address || updatedData.direccion || '',
-            city: updatedData.city || updatedData.ciudad || '',
-            state: updatedData.state || updatedData.estado || '',
-            country: updatedData.country || (updatedData.pais_id === 1 ? 'colombia' : updatedData.pais_id === 2 ? 'mexico' : 'argentina') || '',
+            address: updatedData.direccion || '',
+            city: updatedData.ciudad || '',
+            state: updatedData.estado || '',
+            country: updatedData.pais_id === 57 ? 'colombia' : updatedData.pais_id === 2 ? 'mexico' : 'argentina',
             email: updatedData.email || '',
-            phone: updatedData.phone || updatedData.telefono || ''
+            phone: updatedData.telefono || ''
           });
           
           setWalletData({
-            walletAddress: updatedData.walletAddress || updatedData.wallet_usdt || ''
+            walletAddress: updatedData.wallet_usdt || ''
           });
         }
       } else {
@@ -256,7 +256,7 @@ const Profile = () => {
   const handlePasswordSave = () => {
     console.log('Attempting to save password...');
     
-    // Solo validar si el usuario ingresó una nueva contraseña
+    // Validación mejorada según el JSON del API
     if (passwordData.newPassword.trim()) {
       if (passwordData.newPassword !== passwordData.confirmPassword) {
         toast({
@@ -269,7 +269,7 @@ const Profile = () => {
       
       console.log('Saving new password');
       updateProfile({
-        nuevaContrasena: passwordData.newPassword,
+        password: passwordData.newPassword,
         confirmarContrasena: passwordData.confirmPassword
       });
       

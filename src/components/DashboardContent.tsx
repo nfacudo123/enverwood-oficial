@@ -1,35 +1,13 @@
-import React, { useState } from 'react';
+
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
-import { Building, TrendingUp, Users, DollarSign, Copy, User, Link, LogOut } from "lucide-react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useAuth } from '@/hooks/useAuth';
-import { useNavigate } from 'react-router-dom';
+import { Building, TrendingUp, Users, DollarSign, Copy } from "lucide-react";
 import Swal from 'sweetalert2';
 
 export function DashboardContent() {
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const currentUrl = window.location.origin;
   const personalRegistrationLink = `${currentUrl}/signup/${user.email || user.id || 'username'}`;
-  const { logout } = useAuth();
-  const navigate = useNavigate();
-  const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
 
   const handleCopyLink = async () => {
     try {
@@ -54,27 +32,6 @@ export function DashboardContent() {
         color: '#333',
       });
     }
-  };
-
-  const handleLogout = () => {
-    logout();
-    navigate('/');
-  };
-
-  const handleProfileClick = () => {
-    navigate('/profile');
-  };
-
-  const handleWithdrawSubmit = () => {
-    // Aquí se manejaría la lógica de retiro
-    setIsWithdrawModalOpen(false);
-    Swal.fire({
-      icon: 'success',
-      title: 'Solicitud enviada',
-      text: 'Tu solicitud de retiro ha sido enviada correctamente',
-      confirmButtonText: 'Entendido',
-      confirmButtonColor: '#22c55e',
-    });
   };
 
   const stats = [
@@ -144,247 +101,116 @@ export function DashboardContent() {
   ];
 
   return (
-    <SidebarInset className="flex-1">
-      <div className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-        <SidebarTrigger className="-ml-1" />
-        <div className="flex-1">
-          <div className="flex items-center justify-between">
-            <h1 className="text-xl font-semibold text-gray-900">
-              Panel de Control
-            </h1>
-            <div className="flex items-center gap-4">
-              <span className="text-gray-600">Bienvenido, {user.name || user.email}</span>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Avatar className="cursor-pointer">
-                    <AvatarFallback className="bg-orange-500 text-white">
-                      {(user.name || user.email)?.charAt(0)?.toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuItem 
-                    className="flex items-center gap-2 cursor-pointer"
-                    onClick={handleProfileClick}
-                  >
-                    <User className="w-4 h-4" />
-                    <span>Perfil</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="flex items-center gap-2 text-red-600">
-                    <User className="w-4 h-4" />
-                    <span>Usuario Inactivo</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem 
-                    className="flex items-center gap-2 cursor-pointer"
-                    onClick={handleCopyLink}
-                  >
-                    <Link className="w-4 h-4" />
-                    <span>Link de Registro</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem 
-                    className="flex items-center gap-2 cursor-pointer"
-                    onClick={() => setIsWithdrawModalOpen(true)}
-                  >
-                    <TrendingUp className="w-4 h-4" />
-                    <span>Retirar Ganancias</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem 
-                    className="flex items-center gap-2 text-red-600 cursor-pointer"
-                    onClick={handleLogout}
-                  >
-                    <LogOut className="w-4 h-4" />
-                    <span>Cerrar Sesión</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+    <div className="flex-1 space-y-6 p-4 md:p-8">
+      {/* Welcome Header */}
+      <div className="bg-gray-100 rounded-lg p-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <p className="text-sm text-gray-600">
+              <span className="font-medium">Bienvenido a Enverwood</span> tu perfil es: <span className="font-medium">Estudiante - Embajador</span>
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium">Link de Registro Personal:</span>
+            <div className="flex items-center gap-2 bg-white rounded px-3 py-1">
+              <span className="text-sm text-blue-600 truncate max-w-xs">{personalRegistrationLink}</span>
+              <button
+                onClick={handleCopyLink}
+                className="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded text-xs flex items-center gap-1"
+              >
+                <Copy className="w-3 h-3" />
+                Copiar
+              </button>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="flex-1 space-y-6 p-4 md:p-8">
-        {/* Welcome Header */}
-        <div className="bg-gray-100 rounded-lg p-4">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <p className="text-sm text-gray-600">
-                <span className="font-medium">Bienvenido a Enverwood</span> tu perfil es: <span className="font-medium">Estudiante - Embajador</span>
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium">Link de Registro Personal:</span>
-              <div className="flex items-center gap-2 bg-white rounded px-3 py-1">
-                <span className="text-sm text-blue-600 truncate max-w-xs">{personalRegistrationLink}</span>
-                <button
-                  onClick={handleCopyLink}
-                  className="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded text-xs flex items-center gap-1"
-                >
-                  <Copy className="w-3 h-3" />
-                  Copiar
-                </button>
+      {/* Stats Cards */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {stats.map((stat, index) => (
+          <Card key={index} className="hover:shadow-lg transition-shadow">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-gray-600">
+                {stat.title}
+              </CardTitle>
+              <div className={`p-2 rounded-lg ${stat.bgColor}`}>
+                <stat.icon className={`h-4 w-4 ${stat.color}`} />
               </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Stats Cards */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {stats.map((stat, index) => (
-            <Card key={index} className="hover:shadow-lg transition-shadow">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-gray-600">
-                  {stat.title}
-                </CardTitle>
-                <div className={`p-2 rounded-lg ${stat.bgColor}`}>
-                  <stat.icon className={`h-4 w-4 ${stat.color}`} />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stat.value}</div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        <div className="grid gap-6 md:grid-cols-2">
-          {/* Progreso de pack actual */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Progreso de pack actual</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="bg-red-100 text-red-800 text-center py-8 rounded-lg">
-                <p className="font-medium">Sin Pack</p>
-              </div>
+              <div className="text-2xl font-bold">{stat.value}</div>
             </CardContent>
           </Card>
+        ))}
+      </div>
 
-          {/* Resumen de tu negocio */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Resumen de tu negocio</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <p className="text-sm font-medium text-gray-600 mb-2">Patrocinador: N/A</p>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-gray-50 p-3 rounded-lg">
-                  <p className="text-sm text-gray-600">Estado:</p>
-                  <p className="font-medium">Inactivo</p>
-                  <p className="text-sm text-gray-600 mt-2">Volumen Equipo:</p>
-                  <p className="font-medium">Sin Rango</p>
-                </div>
-                <div className="bg-gray-50 p-3 rounded-lg">
-                  <p className="text-sm text-gray-600">Totales en equipo:</p>
-                  <p className="font-medium">0</p>
-                  <p className="text-sm text-gray-600 mt-2">Mis Directos:</p>
-                  <p className="font-medium">1</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Afiliados Recientes */}
+      <div className="grid gap-6 md:grid-cols-2">
+        {/* Progreso de pack actual */}
         <Card>
           <CardHeader>
-            <CardTitle>Afiliados Recientes</CardTitle>
+            <CardTitle>Progreso de pack actual</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b">
-                    <th className="text-left py-2">Usuario</th>
-                    <th className="text-left py-2">País</th>
-                    <th className="text-left py-2">Fecha</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr className="border-b">
-                    <td className="py-2">gcol</td>
-                    <td className="py-2">Colombia</td>
-                    <td className="py-2">2024-07-08</td>
-                  </tr>
-                </tbody>
-              </table>
+            <div className="bg-red-100 text-red-800 text-center py-8 rounded-lg">
+              <p className="font-medium">Sin Pack</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Resumen de tu negocio */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Resumen de tu negocio</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <p className="text-sm font-medium text-gray-600 mb-2">Patrocinador: N/A</p>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-gray-50 p-3 rounded-lg">
+                <p className="text-sm text-gray-600">Estado:</p>
+                <p className="font-medium">Inactivo</p>
+                <p className="text-sm text-gray-600 mt-2">Volumen Equipo:</p>
+                <p className="font-medium">Sin Rango</p>
+              </div>
+              <div className="bg-gray-50 p-3 rounded-lg">
+                <p className="text-sm text-gray-600">Totales en equipo:</p>
+                <p className="font-medium">0</p>
+                <p className="text-sm text-gray-600 mt-2">Mis Directos:</p>
+                <p className="font-medium">1</p>
+              </div>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Modal de Retiro */}
-      <Dialog open={isWithdrawModalOpen} onOpenChange={setIsWithdrawModalOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Solicitar Retiro</DialogTitle>
-          </DialogHeader>
-          
-          {/* Alerta */}
-          <div className="bg-teal-50 border border-teal-200 rounded-lg p-3 mb-4">
-            <p className="text-sm text-teal-700">
-              <span className="font-medium">Alerta:</span> Puedes realizar la solicitud de tu retiro del 1 al 5 de cada mes.
-              Recuerda que el valor se verá reflejado en tu Wallet el día 10 de cada mes.
-            </p>
+      {/* Afiliados Recientes */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Afiliados Recientes</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b">
+                  <th className="text-left py-2">Usuario</th>
+                  <th className="text-left py-2">País</th>
+                  <th className="text-left py-2">Fecha</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-b">
+                  <td className="py-2">gcol</td>
+                  <td className="py-2">Colombia</td>
+                  <td className="py-2">2024-07-08</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
-
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="payment-method">Medio de pago</Label>
-              <Input
-                id="payment-method"
-                defaultValue="USDT TRC20"
-                className="mt-1"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="destination-account">Cuenta de Destino</Label>
-              <Input
-                id="destination-account"
-                defaultValue="4444"
-                className="mt-1"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="withdrawal-amount">Monto del Retiro</Label>
-              <Input
-                id="withdrawal-amount"
-                placeholder="Monto Disponible"
-                className="mt-1"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="auth-code">Código de Autentificación</Label>
-              <Input
-                id="auth-code"
-                className="mt-1"
-              />
-            </div>
-
-            <Button 
-              onClick={handleWithdrawSubmit}
-              className="w-full bg-green-500 hover:bg-green-600 text-white"
-            >
-              Solicitar Token de retiro
-            </Button>
-          </div>
-
-          <div className="flex justify-end pt-4">
-            <Button 
-              onClick={handleWithdrawSubmit}
-              className="bg-green-500 hover:bg-green-600 text-white"
-            >
-              Solicitar
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-    </SidebarInset>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
