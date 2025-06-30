@@ -119,7 +119,7 @@ export function AppSidebar() {
           <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
             <TrendingUp className="w-4 h-4 text-white" />
           </div>
-          <span className="font-bold text-lg text-gray-900">ENVERWOOD</span>
+          <span className="font-bold text-lg text-gray-900">ENVERWOOOD</span>
         </div>
       </SidebarHeader>
       
