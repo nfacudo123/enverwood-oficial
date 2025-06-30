@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
@@ -50,23 +49,53 @@ const Organizacion = () => {
           },
         });
 
+        console.log('Status de la respuesta:', response.status);
+        console.log('Headers de respuesta:', response.headers);
+
         if (!response.ok) {
+          const errorText = await response.text();
+          console.error('Error en la respuesta:', errorText);
           throw new Error(`Error ${response.status}: ${response.statusText}`);
         }
 
-        const data: MisReferidosResponse = await response.json();
-        console.log('Datos de referidos recibidos:', data);
+        const data = await response.json();
+        console.log('Datos completos recibidos:', JSON.stringify(data, null, 2));
 
-        if (data.success) {
+        // Verificar diferentes estructuras posibles de respuesta
+        if (data.success && data.data) {
+          console.log('Estructura con success encontrada');
           setReferidosData(data.data.arbol);
-          setTotalEquipo(data.data.totalEquipo);
-          setDirectos(data.data.directos);
+          setTotalEquipo(data.data.totalEquipo || 0);
+          setDirectos(data.data.directos || 0);
+        } else if (data.arbol) {
+          console.log('Estructura directa encontrada');
+          setReferidosData(data.arbol);
+          setTotalEquipo(data.totalEquipo || 0);
+          setDirectos(data.directos || 0);
+        } else if (data.id) {
+          console.log('Estructura de árbol directo encontrada');
+          setReferidosData(data);
+          // Calcular totales si no vienen en la respuesta
+          const calculateTotals = (node: ReferidoData): { total: number, directos: number } => {
+            const directos = node.children ? node.children.length : 0;
+            let total = directos;
+            if (node.children) {
+              node.children.forEach(child => {
+                total += calculateTotals(child).total;
+              });
+            }
+            return { total, directos };
+          };
+          const totals = calculateTotals(data);
+          setTotalEquipo(totals.total);
+          setDirectos(totals.directos);
         } else {
-          setError('Error al obtener los datos de referidos');
+          console.error('Estructura de datos no reconocida:', data);
+          setError('Estructura de datos no válida recibida del servidor');
         }
       } catch (error) {
-        console.error('Error al obtener referidos:', error);
-        setError(error instanceof Error ? error.message : 'Error desconocido');
+        console.error('Error completo al obtener referidos:', error);
+        setError(error instanceof Error ? error.message : 'Error desconocido al conectar con el servidor');
       } finally {
         setIsLoading(false);
       }
@@ -142,6 +171,7 @@ const Organizacion = () => {
               Organización
             </h1>
           </div>
+          
           
           <div className="p-6 space-y-6">
             {/* Estadísticas */}
