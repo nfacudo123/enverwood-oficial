@@ -36,7 +36,7 @@ const App = () => (
           
           {/* Rutas públicas - signup (siempre accesibles) */}
           <Route path="/signup" element={<Signup />} />
-          <Route path="/signup/:userId" element={<Signup />} />
+          <Route path="/signup/:username" element={<Signup />} />
           
           {/* Rutas protegidas - requieren autenticación */}
           <Route 

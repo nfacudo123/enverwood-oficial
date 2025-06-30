@@ -1,29 +1,56 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Eye, EyeOff, Mail } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
+import Swal from 'sweetalert2';
 
 const Signup = () => {
-  const { userId } = useParams();
+  const { username } = useParams();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [sponsorId, setSponsorId] = useState<number | null>(null);
   const [formData, setFormData] = useState({
-    nombres: '',
+    name: '',
     apellidos: '',
-    nombreUsuario: '',
+    username: '',
     email: '',
-    confirmToken: '',
-    pais: '',
+    pais_id: '',
     telefono: '',
     password: '',
     confirmPassword: '',
     acceptTerms: false
   });
+
+  // Función para obtener el sponsorId basado en el username
+  useEffect(() => {
+    const fetchSponsorId = async () => {
+      if (username) {
+        try {
+          console.log('Obteniendo sponsorId para username:', username);
+          const response = await fetch(`http://localhost:4000/api/users/by-username/${username}`);
+          
+          if (response.ok) {
+            const userData = await response.json();
+            console.log('Datos del sponsor:', userData);
+            setSponsorId(userData.id);
+          } else {
+            console.error('No se pudo obtener el sponsorId para el username:', username);
+            setSponsorId(null);
+          }
+        } catch (error) {
+          console.error('Error al obtener sponsorId:', error);
+          setSponsorId(null);
+        }
+      }
+    };
+
+    fetchSponsorId();
+  }, [username]);
 
   const handleInputChange = (field: string, value: string | boolean) => {
     setFormData(prev => ({
@@ -32,19 +59,102 @@ const Signup = () => {
     }));
   };
 
-  const handleGenerarCodigo = () => {
-    // Lógica para generar código
-    console.log('Generando código...');
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Datos del formulario:', formData);
+    
+    // Validación de contraseñas
+    if (formData.password !== formData.confirmPassword) {
+      await Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Las contraseñas no coinciden',
+        confirmButtonColor: '#5b73e8',
+      });
+      return;
+    }
+
+    // Validación de términos
+    if (!formData.acceptTerms) {
+      await Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Debes aceptar los términos y condiciones',
+        confirmButtonColor: '#5b73e8',
+      });
+      return;
+    }
+
+    // Preparar datos para envío
+    const registrationData = {
+      name: formData.name,
+      apellidos: formData.apellidos,
+      username: formData.username,
+      email: formData.email,
+      password: formData.password,
+      pais_id: parseInt(formData.pais_id),
+      telefono: formData.telefono,
+      sponsorId: sponsorId
+    };
+
+    try {
+      console.log('Enviando datos de registro:', registrationData);
+      
+      const response = await fetch('http://localhost:4000/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(registrationData),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Registro exitoso:', data);
+        
+        await Swal.fire({
+          icon: 'success',
+          title: '¡Registro exitoso!',
+          text: 'Tu cuenta ha sido creada correctamente',
+          confirmButtonColor: '#5b73e8',
+        });
+        
+        // Redireccionar al login
+        window.location.href = '/';
+      } else {
+        const errorData = await response.json().catch(() => ({ message: 'Error de servidor' }));
+        console.error('Error en el registro:', errorData);
+        
+        await Swal.fire({
+          icon: 'error',
+          title: 'Error en el registro',
+          text: errorData.message || 'Ha ocurrido un error durante el registro',
+          confirmButtonColor: '#5b73e8',
+        });
+      }
+    } catch (error) {
+      console.error('Error de conexión:', error);
+      
+      await Swal.fire({
+        icon: 'error',
+        title: 'Error de conexión',
+        text: 'No se pudo conectar al servidor. Verifica tu conexión a internet.',
+        confirmButtonColor: '#5b73e8',
+      });
+    }
   };
 
   const paises = [
-    'Albania', 'Afganistán', 'Argentina', 'Brasil', 'Colombia', 'España', 
-    'Estados Unidos', 'Francia', 'México', 'Perú', 'Venezuela'
+    { id: 1, nombre: 'Albania' },
+    { id: 2, nombre: 'Afganistán' },
+    { id: 3, nombre: 'Argentina' },
+    { id: 4, nombre: 'Brasil' },
+    { id: 5, nombre: 'Colombia' },
+    { id: 6, nombre: 'España' },
+    { id: 7, nombre: 'Estados Unidos' },
+    { id: 8, nombre: 'Francia' },
+    { id: 9, nombre: 'México' },
+    { id: 10, nombre: 'Perú' },
+    { id: 57, nombre: 'Venezuela' }
   ];
 
   const codigosPais = [
@@ -79,25 +189,33 @@ const Signup = () => {
         </div>
 
         {/* Referido por */}
-        <div className="bg-gray-800 rounded-lg p-4">
-          <div className="text-center">
-            <p className="text-gray-300">Referido por: <span className="text-blue-400">{userId || 'user'}</span></p>
-            <p className="text-gray-500 text-sm mt-1">Puedes modificar este valor en el formulario si es necesario</p>
+        {username && (
+          <div className="bg-gray-800 rounded-lg p-4">
+            <div className="text-center">
+              <p className="text-gray-300">Referido por: <span className="text-blue-400">{username}</span></p>
+              <p className="text-gray-500 text-sm mt-1">
+                {sponsorId ? `ID del sponsor: ${sponsorId}` : 'Verificando sponsor...'}
+              </p>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Formulario */}
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Campo oculto para sponsorId */}
+          <input type="hidden" value={sponsorId || ''} />
+
           {/* Nombres */}
           <div>
-            <Label htmlFor="nombres" className="text-white">Nombres</Label>
+            <Label htmlFor="name" className="text-white">Nombres</Label>
             <Input
-              id="nombres"
+              id="name"
               type="text"
               placeholder="Ingresar Nombre completo"
-              value={formData.nombres}
-              onChange={(e) => handleInputChange('nombres', e.target.value)}
+              value={formData.name}
+              onChange={(e) => handleInputChange('name', e.target.value)}
               className="bg-gray-800 border-gray-700 text-white placeholder-gray-500"
+              required
             />
           </div>
 
@@ -111,82 +229,49 @@ const Signup = () => {
               value={formData.apellidos}
               onChange={(e) => handleInputChange('apellidos', e.target.value)}
               className="bg-gray-800 border-gray-700 text-white placeholder-gray-500"
+              required
             />
           </div>
 
           {/* Nombre de username */}
           <div>
-            <Label htmlFor="nombreUsuario" className="text-white">Nombre de username</Label>
+            <Label htmlFor="username" className="text-white">Nombre de username</Label>
             <Input
-              id="nombreUsuario"
+              id="username"
               type="text"
               placeholder="gprofits"
-              value={formData.nombreUsuario}
-              onChange={(e) => handleInputChange('nombreUsuario', e.target.value)}
+              value={formData.username}
+              onChange={(e) => handleInputChange('username', e.target.value)}
               className="bg-gray-800 border-gray-700 text-white placeholder-gray-500"
+              required
             />
-          </div>
-
-          {/* Usuario Referente */}
-          <div>
-            <Label htmlFor="usuarioReferente" className="text-white">Usuario Referente</Label>
-            <Input
-              id="usuarioReferente"
-              type="text"
-              value={userId || 'user'}
-              readOnly
-              className="bg-gray-800 border-gray-700 text-white"
-            />
-            <p className="text-gray-500 text-sm mt-1">Este campo se llena automáticamente desde el enlace de referido</p>
           </div>
 
           {/* Correo Electrónico */}
           <div>
             <Label htmlFor="email" className="text-white">Correo Electrónico</Label>
-            <div className="relative">
-              <Input
-                id="email"
-                type="email"
-                placeholder="Email"
-                value={formData.email}
-                onChange={(e) => handleInputChange('email', e.target.value)}
-                className="bg-gray-800 border-gray-700 text-white placeholder-gray-500 pl-10"
-              />
-              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
-              <Button
-                type="button"
-                onClick={handleGenerarCodigo}
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-red-600 hover:bg-red-700 text-white px-4 py-1 text-sm rounded"
-              >
-                Generar Código
-              </Button>
-            </div>
-          </div>
-
-          {/* Confirmar Token */}
-          <div>
-            <Label htmlFor="confirmToken" className="text-white">Confirmar Token</Label>
             <Input
-              id="confirmToken"
-              type="text"
-              placeholder="Confirmar código email"
-              value={formData.confirmToken}
-              onChange={(e) => handleInputChange('confirmToken', e.target.value)}
+              id="email"
+              type="email"
+              placeholder="Email"
+              value={formData.email}
+              onChange={(e) => handleInputChange('email', e.target.value)}
               className="bg-gray-800 border-gray-700 text-white placeholder-gray-500"
+              required
             />
           </div>
 
           {/* País */}
           <div>
             <Label htmlFor="pais" className="text-white">País</Label>
-            <Select value={formData.pais} onValueChange={(value) => handleInputChange('pais', value)}>
+            <Select value={formData.pais_id} onValueChange={(value) => handleInputChange('pais_id', value)}>
               <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
-                <SelectValue placeholder="Albania" />
+                <SelectValue placeholder="Seleccionar país" />
               </SelectTrigger>
               <SelectContent className="bg-gray-800 border-gray-700">
                 {paises.map((pais) => (
-                  <SelectItem key={pais} value={pais} className="text-white hover:bg-gray-700">
-                    {pais}
+                  <SelectItem key={pais.id} value={pais.id.toString()} className="text-white hover:bg-gray-700">
+                    {pais.nombre}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -197,7 +282,7 @@ const Signup = () => {
           <div>
             <Label htmlFor="telefono" className="text-white">Teléfono o Whatsapp</Label>
             <div className="flex space-x-2">
-              <Select defaultValue="+93">
+              <Select defaultValue="+57">
                 <SelectTrigger className="bg-gray-800 border-gray-700 text-white w-32">
                   <SelectValue />
                 </SelectTrigger>
@@ -216,6 +301,7 @@ const Signup = () => {
                 value={formData.telefono}
                 onChange={(e) => handleInputChange('telefono', e.target.value)}
                 className="bg-gray-800 border-gray-700 text-white placeholder-gray-500 flex-1"
+                required
               />
             </div>
           </div>
@@ -231,6 +317,7 @@ const Signup = () => {
                 value={formData.password}
                 onChange={(e) => handleInputChange('password', e.target.value)}
                 className="bg-gray-800 border-gray-700 text-white placeholder-gray-500 pr-10"
+                required
               />
               <button
                 type="button"
@@ -253,6 +340,7 @@ const Signup = () => {
                 value={formData.confirmPassword}
                 onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
                 className="bg-gray-800 border-gray-700 text-white placeholder-gray-500 pr-10"
+                required
               />
               <button
                 type="button"
