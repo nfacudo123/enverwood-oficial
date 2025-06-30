@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { SidebarTrigger } from "@/components/ui/sidebar";
@@ -31,9 +30,10 @@ interface UserInfo {
 
 interface UserNavbarProps {
   title: string;
+  showSidebarTrigger?: boolean;
 }
 
-export const UserNavbar = ({ title }: UserNavbarProps) => {
+export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProps) => {
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
   const { logout } = useAuth();
@@ -130,7 +130,7 @@ export const UserNavbar = ({ title }: UserNavbarProps) => {
   return (
     <>
       <div className="flex h-16 shrink-0 items-center gap-2 border-b px-4 bg-white">
-        <SidebarTrigger className="-ml-1" />
+        {showSidebarTrigger && <SidebarTrigger className="-ml-1" />}
         <div className="flex-1">
           <div className="flex items-center justify-between">
             <h1 className="text-xl font-semibold text-gray-900">
