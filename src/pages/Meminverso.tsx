@@ -14,7 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Upload, Leaf } from "lucide-react";
+import { Upload, Leaf, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface Inversion {
@@ -23,6 +23,7 @@ interface Inversion {
   monto: number;
   activo: boolean;
   fecha_creacion: string;
+  creado_en: string;
 }
 
 export default function Meminverso() {
@@ -30,6 +31,7 @@ export default function Meminverso() {
   const [inversion, setInversion] = useState<Inversion | null>(null);
   const [loading, setLoading] = useState(true);
   const [purchasing, setPurchasing] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [montoInversion, setMontoInversion] = useState<string>('');
   const { toast } = useToast();
 
@@ -147,6 +149,56 @@ export default function Meminverso() {
     }
   };
 
+  const handleDelete = async () => {
+    if (!inversion) return;
+    
+    setDeleting(true);
+    try {
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        toast({
+          title: "Error",
+          description: "No se encontró información de usuario",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const response = await fetch(`http://localhost:4000/api/inversiones/${inversion.id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        setInversion(null);
+        toast({
+          title: "Eliminado",
+          description: "La inversión ha sido eliminada correctamente",
+        });
+      } else {
+        const errorData = await response.json();
+        toast({
+          title: "Error",
+          description: errorData.message || "Error al eliminar la inversión",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Error deleting investment:', error);
+      toast({
+        title: "Error",
+        description: "Error de conexión al servidor",
+        variant: "destructive",
+      });
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   useEffect(() => {
     checkUserInvestment();
   }, []);
@@ -174,7 +226,7 @@ export default function Meminverso() {
             <div className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
               <SidebarTrigger className="-ml-1" />
               <h1 className="text-xl font-semibold text-gray-900">
-                Comprar membresía G-Profits
+                Comprar membresía Enverwood
               </h1>
             </div>
             <div className="flex-1 flex items-center justify-center">
@@ -306,35 +358,41 @@ export default function Meminverso() {
                       <Table>
                         <TableHeader>
                           <TableRow>
-                            <TableHead className="text-center">#</TableHead>
-                            <TableHead className="text-center">Id compra</TableHead>
-                            <TableHead className="text-center">Precio compra</TableHead>
+                            <TableHead className="text-center">Monto</TableHead>
                             <TableHead className="text-center">Fecha compra</TableHead>
                             <TableHead className="text-center">Comprobante</TableHead>
                             <TableHead className="text-center">Estado</TableHead>
-                            <TableHead className="text-center">Borrar</TableHead>
+                            <TableHead className="text-center">Acción</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {compras.map((compra, index) => (
-                            <TableRow key={compra.id}>
-                              <TableCell className="text-center">{index + 1}</TableCell>
-                              <TableCell className="text-center">{compra.idCompra}</TableCell>
-                              <TableCell className="text-center">{compra.precioCompra}</TableCell>
-                              <TableCell className="text-center">{compra.fechaCompra}</TableCell>
-                              <TableCell className="text-center text-red-600">{compra.comprobante}</TableCell>
-                              <TableCell className="text-center">{compra.estado}</TableCell>
-                              <TableCell className="text-center">
+                          <TableRow>
+                            <TableCell className="text-center">${inversion?.monto}</TableCell>
+                            <TableCell className="text-center">
+                              {inversion?.creado_en ? new Date(inversion.creado_en).toLocaleString() : ''}
+                            </TableCell>
+                            <TableCell className="text-center text-red-600">Sin comprobante</TableCell>
+                            <TableCell className="text-center">
+                              {inversion?.activo ? 'Realizado' : 'Pendiente'}
+                            </TableCell>
+                            <TableCell className="text-center">
+                              {!inversion?.activo ? (
                                 <Button 
                                   variant="destructive" 
                                   size="sm"
                                   className="bg-red-500 hover:bg-red-600"
+                                  onClick={handleDelete}
+                                  disabled={deleting}
                                 >
-                                  Borrar
+                                  {deleting ? "Eliminando..." : "Borrar"}
                                 </Button>
-                              </TableCell>
-                            </TableRow>
-                          ))}
+                              ) : (
+                                <div className="flex justify-center">
+                                  <Check className="w-5 h-5 text-green-500" />
+                                </div>
+                              )}
+                            </TableCell>
+                          </TableRow>
                         </TableBody>
                       </Table>
                     </div>
