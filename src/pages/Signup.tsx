@@ -31,7 +31,7 @@ const Signup = () => {
       if (username) {
         try {
           console.log('Obteniendo sponsorId para username:', username);
-          const response = await fetch(`http://localhost:4000/api/users/by-username/${username}`);
+          const response = await fetch(`http://localhost:4000/api/users/u/${username}`);
           
           if (response.ok) {
             const userData = await response.json();
@@ -194,9 +194,7 @@ const Signup = () => {
           <div className="bg-gray-800 rounded-lg p-4">
             <div className="text-center">
               <p className="text-gray-300">Referido por: <span className="text-blue-400">{username}</span></p>
-              {sponsorId && (
-                <p className="text-gray-400 text-sm">ID del sponsor: {sponsorId}</p>
-              )}
+              
             </div>
           </div>
         )}
