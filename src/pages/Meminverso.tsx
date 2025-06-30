@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
@@ -50,7 +49,7 @@ export default function Meminverso() {
         return;
       }
 
-      const response = await fetch(`http://localhost:4000/api/inversiones/${userId}`, {
+      const response = await fetch(`http://localhost:4000/api/inversiones`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -60,13 +59,23 @@ export default function Meminverso() {
 
       if (response.ok) {
         const data = await response.json();
-        setInversion(data);
+        console.log('Inversiones data:', data);
+        console.log('Current user ID:', userId);
+        
+        // Buscar inversión que coincida con el usuario_id actual
+        const userInvestment = data.find((investment: any) => 
+          investment.usuario_id === parseInt(userId)
+        );
+        
+        console.log('User investment found:', userInvestment);
+        setInversion(userInvestment || null);
       } else if (response.status === 404) {
-        // No investment found, which is expected for new users
+        // No investment found
         setInversion(null);
       }
     } catch (error) {
       console.error('Error checking investment:', error);
+      setInversion(null);
     } finally {
       setLoading(false);
     }
@@ -95,7 +104,7 @@ export default function Meminverso() {
         },
         body: JSON.stringify({
           usuario_id: parseInt(userId),
-          monto: 50
+          monto: 100
         }),
       });
 
@@ -141,7 +150,8 @@ export default function Meminverso() {
     }
   ];
 
-  const shouldShowPurchaseButton = !inversion || (inversion && !inversion.activo);
+  // Mostrar botón de compra si no existe inversión para este usuario
+  const shouldShowPurchaseButton = !inversion;
 
   if (loading) {
     return (
@@ -194,7 +204,7 @@ export default function Meminverso() {
                           className="w-24 h-24 object-contain"
                         />
                       </div>
-                      <p className="text-xl font-semibold">Valor: $50 USD</p>
+                      <p className="text-xl font-semibold">Valor: $100 USD</p>
                       <Button 
                         onClick={handlePurchase}
                         disabled={purchasing}
