@@ -67,49 +67,63 @@ export const useReferidos = () => {
     };
   };
 
-  // Función para validar estructura de un nodo
-  const isValidNode = (node: any): boolean => {
-    if (!node || typeof node !== 'object') return false;
-    
-    const hasBasicFields = (
-      (node.id || node.usuario_id) &&
-      (node.name || node.nombre) &&
-      (node.username || node.usuario || node.email)
-    );
-    
-    console.log('Validando nodo:', node);
-    console.log('Tiene campos básicos:', hasBasicFields);
-    
-    return hasBasicFields;
-  };
-
   // Función para normalizar un nodo
-  const normalizeNode = (node: any, nivel: number = 0): ReferidoData => {
-    const normalized = {
+  const normalizeNode = (node: any): ReferidoData => {
+    return {
       id: node.id || node.usuario_id || Math.random(),
       name: node.name || node.nombre || 'Usuario',
       apellidos: node.apellidos || node.apellido || node.last_name || '',
       username: node.username || node.usuario || node.email?.split('@')[0] || 'usuario',
       email: node.email || '',
-      nivel: node.nivel || nivel,
+      nivel: node.nivel || 0,
       parent_id: node.parent_id || node.sponsor_id || null,
       usuario_id: node.usuario_id,
       sponsor_id: node.sponsor_id,
       children: []
     };
+  };
 
-    // Procesar hijos si existen
-    if (Array.isArray(node.children)) {
-      normalized.children = node.children
-        .filter(isValidNode)
-        .map(child => normalizeNode(child, nivel + 1));
-    } else if (Array.isArray(node.referidos)) {
-      normalized.children = node.referidos
-        .filter(isValidNode)
-        .map(child => normalizeNode(child, nivel + 1));
-    }
+  // Función para construir el árbol desde una lista plana usando sponsor_id
+  const buildTreeFromList = (nodes: any[], currentUser: any): ReferidoData => {
+    console.log('Construyendo árbol desde lista:', nodes);
+    console.log('Usuario actual:', currentUser);
+    
+    // Normalizar todos los nodos
+    const normalizedNodes = nodes.map(node => normalizeNode(node));
+    
+    // Crear el nodo raíz (usuario actual)
+    const rootNode: ReferidoData = currentUser ? normalizeNode(currentUser) : {
+      id: 1,
+      name: "Usuario",
+      apellidos: "Actual",
+      username: "usuario_actual",
+      email: "usuario@example.com",
+      nivel: 0,
+      parent_id: null,
+      children: []
+    };
 
-    return normalized;
+    // Función recursiva para construir hijos
+    const buildChildren = (parentId: number, nivel: number = 1): ReferidoData[] => {
+      return normalizedNodes
+        .filter(node => {
+          // Buscar nodos que tengan como sponsor_id o parent_id al padre actual
+          const isChild = node.sponsor_id === parentId || node.parent_id === parentId;
+          console.log(`Nodo ${node.id} (${node.name}) - sponsor_id: ${node.sponsor_id}, parent_id: ${node.parent_id}, es hijo de ${parentId}:`, isChild);
+          return isChild;
+        })
+        .map(node => ({
+          ...node,
+          nivel,
+          children: buildChildren(node.id, nivel + 1)
+        }));
+    };
+
+    // Construir los hijos del usuario actual
+    rootNode.children = buildChildren(rootNode.id);
+    console.log('Árbol construido:', rootNode);
+    
+    return rootNode;
   };
 
   // Función para calcular totales recursivamente
@@ -151,14 +165,12 @@ export const useReferidos = () => {
         });
 
         console.log('Status de respuesta:', response.status);
-        console.log('Headers:', Object.fromEntries(response.headers.entries()));
 
         if (!response.ok) {
           const errorText = await response.text();
           console.error('Error HTTP:', response.status, errorText);
           
           // Si hay error del servidor, usar datos de ejemplo
-          console.log('Error del servidor, usando datos de ejemplo');
           const sampleData = createSampleData();
           const totals = calculateTotals(sampleData);
           setReferidosData(sampleData);
@@ -171,98 +183,72 @@ export const useReferidos = () => {
 
         const data = await response.json();
         console.log('Respuesta completa del servidor:', JSON.stringify(data, null, 2));
-        console.log('Tipo de respuesta:', typeof data);
-        console.log('Es array:', Array.isArray(data));
         
         let processedData: ReferidoData | null = null;
         let calculatedTotals = { total: 0, directos: 0 };
 
-        // Intentar procesar diferentes estructuras
+        // Procesar diferentes estructuras de respuesta
         if (data && typeof data === 'object') {
-          // Caso 1: { success: true, data: {...} }
+          let referidosList: any[] = [];
+          let currentUser: any = null;
+          
+          // Caso 1: { success: true, data: { usuario: {...}, referidos: [...] } }
           if (data.success && data.data) {
             console.log('Procesando estructura success.data');
-            if (isValidNode(data.data)) {
-              processedData = normalizeNode(data.data);
-            } else if (data.data.arbol && isValidNode(data.data.arbol)) {
-              processedData = normalizeNode(data.data.arbol);
-            }
-            
-            if (processedData) {
-              calculatedTotals = calculateTotals(processedData);
-              setTotalEquipo(data.data.totalEquipo || calculatedTotals.total);
-              setDirectos(data.data.directos || calculatedTotals.directos);
-            }
+            currentUser = data.data.usuario || data.data.user;
+            referidosList = data.data.referidos || data.data.referrals || [];
           }
-          // Caso 2: { arbol: {...}, totalEquipo: X, directos: Y }
-          else if (data.arbol && isValidNode(data.arbol)) {
-            console.log('Procesando estructura con arbol');
-            processedData = normalizeNode(data.arbol);
-            calculatedTotals = calculateTotals(processedData);
-            setTotalEquipo(data.totalEquipo || calculatedTotals.total);
-            setDirectos(data.directos || calculatedTotals.directos);
+          // Caso 2: { usuario: {...}, referidos: [...] }
+          else if (data.usuario || data.user) {
+            console.log('Procesando estructura con usuario/referidos');
+            currentUser = data.usuario || data.user;
+            referidosList = data.referidos || data.referrals || [];
           }
-          // Caso 3: Objeto usuario directo
-          else if (isValidNode(data)) {
-            console.log('Procesando nodo directo');
-            processedData = normalizeNode(data);
-            calculatedTotals = calculateTotals(processedData);
-            setTotalEquipo(calculatedTotals.total);
-            setDirectos(calculatedTotals.directos);
+          // Caso 3: Array directo de referidos
+          else if (Array.isArray(data)) {
+            console.log('Procesando array directo');
+            referidosList = data;
           }
-          // Caso 4: Array de usuarios
-          else if (Array.isArray(data) && data.length > 0) {
-            console.log('Procesando array de datos');
-            const firstValid = data.find(isValidNode);
-            if (firstValid) {
-              processedData = normalizeNode(firstValid);
-              calculatedTotals = calculateTotals(processedData);
-              setTotalEquipo(calculatedTotals.total);
-              setDirectos(calculatedTotals.directos);
-            }
-          }
-          // Caso 5: Buscar en propiedades del objeto
+          // Caso 4: Buscar arrays en propiedades
           else {
-            console.log('Buscando datos válidos en propiedades del objeto');
+            console.log('Buscando arrays en propiedades');
             const keys = Object.keys(data);
-            console.log('Claves disponibles:', keys);
-            
             for (const key of keys) {
-              if (data[key] && typeof data[key] === 'object') {
-                if (isValidNode(data[key])) {
-                  console.log(`Encontrado datos válidos en: ${key}`);
-                  processedData = normalizeNode(data[key]);
-                  calculatedTotals = calculateTotals(processedData);
-                  setTotalEquipo(calculatedTotals.total);
-                  setDirectos(calculatedTotals.directos);
-                  break;
-                } else if (Array.isArray(data[key])) {
-                  const validItem = data[key].find(isValidNode);
-                  if (validItem) {
-                    console.log(`Encontrado datos válidos en array: ${key}`);
-                    processedData = normalizeNode(validItem);
-                    calculatedTotals = calculateTotals(processedData);
-                    setTotalEquipo(calculatedTotals.total);
-                    setDirectos(calculatedTotals.directos);
-                    break;
-                  }
-                }
+              if (Array.isArray(data[key])) {
+                console.log(`Encontrado array en: ${key}`);
+                referidosList = data[key];
+                break;
               }
             }
           }
-        }
 
-        // Si no se pudo procesar ningún dato, usar datos de ejemplo
-        if (!processedData) {
-          console.log('No se pudo procesar datos del servidor, usando datos de ejemplo');
+          console.log('Usuario actual encontrado:', currentUser);
+          console.log('Lista de referidos:', referidosList);
+
+          if (referidosList.length > 0 || currentUser) {
+            // Construir el árbol desde la lista
+            processedData = buildTreeFromList(referidosList, currentUser);
+            calculatedTotals = calculateTotals(processedData);
+            
+            // Usar totales del servidor si están disponibles
+            setTotalEquipo(data.totalEquipo || data.total_equipo || calculatedTotals.total);
+            setDirectos(data.directos || data.directos_count || calculatedTotals.directos);
+            setError(null);
+          } else {
+            console.log('No se encontraron referidos, usando datos de ejemplo');
+            processedData = createSampleData();
+            calculatedTotals = calculateTotals(processedData);
+            setTotalEquipo(calculatedTotals.total);
+            setDirectos(calculatedTotals.directos);
+            setError('No se encontraron referidos en la respuesta del servidor');
+          }
+        } else {
+          console.log('Estructura de datos no reconocida, usando datos de ejemplo');
           processedData = createSampleData();
           calculatedTotals = calculateTotals(processedData);
           setTotalEquipo(calculatedTotals.total);
           setDirectos(calculatedTotals.directos);
-          setError('No se pudieron procesar los datos del servidor, mostrando estructura de ejemplo');
-        } else {
-          console.log('Datos procesados exitosamente');
-          setError(null);
+          setError('Estructura de datos no reconocida del servidor');
         }
 
         setReferidosData(processedData);
@@ -276,7 +262,7 @@ export const useReferidos = () => {
         setReferidosData(sampleData);
         setTotalEquipo(totals.total);
         setDirectos(totals.directos);
-        setError(`Error de conexión: ${error instanceof Error ? error.message : 'Error desconocido'}. Mostrando datos de ejemplo.`);
+        setError(`Error de conexión: ${error instanceof Error ? error.message : 'Error desconocido'}`);
       } finally {
         setIsLoading(false);
       }
