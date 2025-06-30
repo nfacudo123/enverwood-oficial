@@ -1,12 +1,39 @@
-import React from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Building, TrendingUp, Users, DollarSign, Copy } from "lucide-react";
 import Swal from 'sweetalert2';
 
 export function DashboardContent() {
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const [userInfo, setUserInfo] = useState<any>(null);
   const currentUrl = window.location.origin;
-  const personalRegistrationLink = `${currentUrl}/signup/${user.username || 'username'}`;
+  const personalRegistrationLink = `${currentUrl}/signup/${userInfo?.username || 'username'}`;
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        const response = await fetch('http://localhost:4000/api/perfil', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setUserInfo(data);
+        }
+      } catch (error) {
+        console.error('Error fetching user info:', error);
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
 
   const handleCopyLink = async () => {
     try {
@@ -106,7 +133,9 @@ export function DashboardContent() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <p className="text-sm text-gray-600">
-              <span className="font-medium">Bienvenido a Enverwood</span> tu perfil es: <span className="font-medium">Estudiante - Embajador</span>
+              <span className="font-medium">
+                Bienvenido a Enverwood {userInfo?.name || ''} {userInfo?.apellidos || ''}
+              </span>
             </p>
           </div>
           <div className="flex items-center gap-2">
