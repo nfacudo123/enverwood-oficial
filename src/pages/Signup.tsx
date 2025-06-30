@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -193,9 +192,6 @@ const Signup = () => {
           <div className="bg-gray-800 rounded-lg p-4">
             <div className="text-center">
               <p className="text-gray-300">Referido por: <span className="text-blue-400">{username}</span></p>
-              <p className="text-gray-500 text-sm mt-1">
-                {sponsorId ? `ID del sponsor: ${sponsorId}` : 'Verificando sponsor...'}
-              </p>
             </div>
           </div>
         )}
@@ -233,13 +229,13 @@ const Signup = () => {
             />
           </div>
 
-          {/* Nombre de username */}
+          {/* Nombre de usuario */}
           <div>
-            <Label htmlFor="username" className="text-white">Nombre de username</Label>
+            <Label htmlFor="username" className="text-white">Nombre de usuario</Label>
             <Input
               id="username"
               type="text"
-              placeholder="gprofits"
+              placeholder="Usuario"
               value={formData.username}
               onChange={(e) => handleInputChange('username', e.target.value)}
               className="bg-gray-800 border-gray-700 text-white placeholder-gray-500"

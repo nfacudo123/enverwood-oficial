@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Building, TrendingUp, Users, DollarSign, Copy } from "lucide-react";
@@ -7,7 +6,7 @@ import Swal from 'sweetalert2';
 export function DashboardContent() {
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const currentUrl = window.location.origin;
-  const personalRegistrationLink = `${currentUrl}/signup/${user.email || user.id || 'username'}`;
+  const personalRegistrationLink = `${currentUrl}/signup/${user.username || 'username'}`;
 
   const handleCopyLink = async () => {
     try {
