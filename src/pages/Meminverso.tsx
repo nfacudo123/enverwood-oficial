@@ -14,7 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Upload } from "lucide-react";
+import { Upload, Leaf } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface Inversion {
@@ -30,6 +30,7 @@ export default function Meminverso() {
   const [inversion, setInversion] = useState<Inversion | null>(null);
   const [loading, setLoading] = useState(true);
   const [purchasing, setPurchasing] = useState(false);
+  const [montoInversion, setMontoInversion] = useState<string>('');
   const { toast } = useToast();
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -82,6 +83,17 @@ export default function Meminverso() {
   };
 
   const handlePurchase = async () => {
+    const monto = parseFloat(montoInversion);
+    
+    if (!monto || monto <= 0) {
+      toast({
+        title: "Error",
+        description: "La inversión tiene que ser mayor a cero",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setPurchasing(true);
     try {
       const token = localStorage.getItem('token');
@@ -104,7 +116,7 @@ export default function Meminverso() {
         },
         body: JSON.stringify({
           usuario_id: parseInt(userId),
-          monto: 100
+          monto: monto
         }),
       });
 
@@ -113,7 +125,7 @@ export default function Meminverso() {
         setInversion(data);
         toast({
           title: "¡Compra exitosa!",
-          description: "Tu membresía G-Profits ha sido adquirida correctamente",
+          description: "Tu membresía Enverwood ha sido adquirida correctamente",
         });
       } else {
         const errorData = await response.json();
@@ -185,7 +197,7 @@ export default function Meminverso() {
           <div className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
             <SidebarTrigger className="-ml-1" />
             <h1 className="text-xl font-semibold text-gray-900">
-              Comprar membresía G-Profits
+              Comprar membresía Enverwood
             </h1>
           </div>
 
@@ -196,15 +208,27 @@ export default function Meminverso() {
                 <Card className="bg-gradient-to-br from-gray-800 to-gray-900 text-white">
                   <CardContent className="p-8">
                     <div className="flex flex-col items-center space-y-6">
-                      <h2 className="text-2xl font-bold">Membresía G-Profits</h2>
+                      <h2 className="text-2xl font-bold">Membresía Enverwood</h2>
                       <div className="flex items-center justify-center">
-                        <img 
-                          src="/lovable-uploads/d11e2623-8abd-4cfb-a98f-3740f3dae6de.png" 
-                          alt="G-Profits Logo" 
-                          className="w-24 h-24 object-contain"
+                        <Leaf className="w-24 h-24 text-green-400" />
+                      </div>
+                      
+                      <div className="w-full max-w-md space-y-4">
+                        <Label htmlFor="monto" className="text-white text-lg">
+                          Monto de inversión (USD)
+                        </Label>
+                        <Input
+                          id="monto"
+                          type="number"
+                          min="1"
+                          step="0.01"
+                          placeholder="Ingresa el monto a invertir"
+                          value={montoInversion}
+                          onChange={(e) => setMontoInversion(e.target.value)}
+                          className="bg-white text-gray-900 text-center text-lg"
                         />
                       </div>
-                      <p className="text-xl font-semibold">Valor: $100 USD</p>
+                      
                       <Button 
                         onClick={handlePurchase}
                         disabled={purchasing}
