@@ -35,7 +35,8 @@ const Signup = () => {
           
           if (response.ok) {
             const userData = await response.json();
-            console.log('Datos del sponsor:', userData);
+            console.log('Datos del sponsor encontrados:', userData);
+            console.log('ID del sponsor:', userData.id);
             setSponsorId(userData.id);
           } else {
             console.error('No se pudo obtener el sponsorId para el username:', username);
@@ -83,7 +84,7 @@ const Signup = () => {
       return;
     }
 
-    // Preparar datos para envío
+    // Preparar datos para envío - asegurándose de incluir sponsorId
     const registrationData = {
       name: formData.name,
       apellidos: formData.apellidos,
@@ -92,11 +93,12 @@ const Signup = () => {
       password: formData.password,
       pais_id: parseInt(formData.pais_id),
       telefono: formData.telefono,
-      sponsorId: sponsorId
+      sponsorId: sponsorId // Esto debe ser el ID numérico del sponsor
     };
 
     try {
-      console.log('Enviando datos de registro:', registrationData);
+      console.log('Enviando datos de registro con sponsorId:', registrationData);
+      console.log('SponsorId siendo enviado:', sponsorId);
       
       const response = await fetch('http://localhost:4000/api/auth/register', {
         method: 'POST',
@@ -192,6 +194,9 @@ const Signup = () => {
           <div className="bg-gray-800 rounded-lg p-4">
             <div className="text-center">
               <p className="text-gray-300">Referido por: <span className="text-blue-400">{username}</span></p>
+              {sponsorId && (
+                <p className="text-gray-400 text-sm">ID del sponsor: {sponsorId}</p>
+              )}
             </div>
           </div>
         )}
@@ -199,7 +204,9 @@ const Signup = () => {
         {/* Formulario */}
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Campo oculto para sponsorId */}
-          <input type="hidden" value={sponsorId || ''} />
+          {sponsorId && (
+            <input type="hidden" name="sponsorId" value={sponsorId} />
+          )}
 
           {/* Nombres */}
           <div>
