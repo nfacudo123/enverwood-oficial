@@ -42,12 +42,13 @@ const Refes = () => {
     
     const processNode = (n: any, level: number = 0) => {
       // Incluir TODOS los nodos EXCEPTO el usuario actual
-      if (n.id !== currentUserId && n.usuario_id !== currentUserId) {
+      const nodeId = n.id || n.usuario_id || n.user_id;
+      if (nodeId !== currentUserId) {
         const directos = n.children ? n.children.length : 0;
         const subordinados = countAllSubordinates(n);
         
         result.push({
-          id: n.id || n.usuario_id || Math.random(),
+          id: nodeId || Math.random(),
           name: n.name || n.nombre || 'Usuario',
           apellidos: n.apellidos || n.apellido || n.last_name || '',
           username: n.username || n.usuario || n.email?.split('@')[0] || 'usuario',
@@ -87,7 +88,8 @@ const Refes = () => {
       const userData = localStorage.getItem('user');
       if (userData) {
         const user = JSON.parse(userData);
-        return user.id || user.usuario_id || null;
+        console.log('Usuario actual desde localStorage:', user);
+        return user.id || user.usuario_id || user.user_id || null;
       }
       return null;
     } catch (error) {
@@ -100,10 +102,10 @@ const Refes = () => {
   const processReferidosList = (referidosList: any[], currentUserId: number | null): ReferidoFlat[] => {
     return referidosList
       .filter(referido => {
-        // Excluir SOLO el usuario actual
-        const isCurrentUser = (referido.id === currentUserId) || 
-                             (referido.usuario_id === currentUserId) ||
-                             (referido.user_id === currentUserId);
+        // Excluir SOLO el usuario actual - comparar todos los posibles IDs
+        const referidoId = referido.id || referido.usuario_id || referido.user_id;
+        const isCurrentUser = referidoId === currentUserId;
+        console.log(`Comparando referido ID ${referidoId} con usuario actual ${currentUserId}: ${isCurrentUser ? 'EXCLUIR' : 'INCLUIR'}`);
         return !isCurrentUser; // Incluir todos EXCEPTO el usuario actual
       })
       .map(referido => ({
@@ -259,7 +261,7 @@ const Refes = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Users className="w-5 h-5" />
-              Usuarios de mi comunidad - Lista de Miembros Inversionistas
+              Mi comunidad de Referidos
             </CardTitle>
             
             {/* Controles superiores */}
