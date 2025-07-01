@@ -283,6 +283,14 @@ export default function Meminverso() {
     checkUserInvestment();
   }, []);
 
+  // Función para extraer el nombre del archivo de la ruta completa
+  const getFileName = (filePath: string) => {
+    if (filePath && filePath.includes('/')) {
+      return filePath.split('/').pop() || filePath;
+    }
+    return filePath;
+  };
+
   // Mostrar botón de compra si no existe inversión para este usuario
   const shouldShowPurchaseButton = !inversion;
 
@@ -509,7 +517,7 @@ export default function Meminverso() {
                 <div className="bg-gray-50 p-4 rounded-lg border w-full">
                   {inversion?.comprobante ? (
                     <img 
-                      src={`http://localhost:4000/soportes/${inversion.comprobante}`}
+                      src={`http://localhost:4000/${getFileName(inversion.comprobante)}`}
                       alt="Comprobante de pago" 
                       className="w-full h-auto max-h-96 object-contain rounded"
                       onError={(e) => {
