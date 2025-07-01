@@ -452,7 +452,7 @@ export default function Meminverso() {
                                     onClick={() => setIsProofModalOpen(true)}
                                     className="text-green-600 hover:text-green-800 hover:underline cursor-pointer"
                                   >
-                                    {inversion.comprobante}
+                                    Ver archivo
                                   </button>
                                 </div>
                               ) : (
@@ -509,7 +509,7 @@ export default function Meminverso() {
                 <div className="bg-gray-50 p-4 rounded-lg border w-full">
                   {inversion?.comprobante ? (
                     <img 
-                      src={`http://localhost:4000/uploads/${inversion.comprobante}`}
+                      src={`http://localhost:4000/soportes/${inversion.comprobante}`}
                       alt="Comprobante de pago" 
                       className="w-full h-auto max-h-96 object-contain rounded"
                       onError={(e) => {
