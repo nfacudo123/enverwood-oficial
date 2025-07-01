@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -42,7 +41,7 @@ const Refes = () => {
     const result: ReferidoFlat[] = [];
     
     const processNode = (n: any, level: number = 0) => {
-      // Excluir al usuario actual
+      // Incluir TODOS los nodos EXCEPTO el usuario actual
       if (n.id !== currentUserId && n.usuario_id !== currentUserId) {
         const directos = n.children ? n.children.length : 0;
         const subordinados = countAllSubordinates(n);
@@ -97,6 +96,29 @@ const Refes = () => {
     }
   };
 
+  // Función para procesar lista plana de referidos
+  const processReferidosList = (referidosList: any[], currentUserId: number | null): ReferidoFlat[] => {
+    return referidosList
+      .filter(referido => {
+        // Excluir SOLO el usuario actual
+        const isCurrentUser = (referido.id === currentUserId) || 
+                             (referido.usuario_id === currentUserId) ||
+                             (referido.user_id === currentUserId);
+        return !isCurrentUser; // Incluir todos EXCEPTO el usuario actual
+      })
+      .map(referido => ({
+        id: referido.id || referido.usuario_id || referido.user_id || Math.random(),
+        name: referido.name || referido.nombre || referido.first_name || 'Usuario',
+        apellidos: referido.apellidos || referido.apellido || referido.last_name || '',
+        username: referido.username || referido.usuario || referido.email?.split('@')[0] || 'usuario',
+        email: referido.email || '',
+        nivel: referido.nivel || referido.level || 0,
+        parent_id: referido.parent_id || referido.sponsor_id || null,
+        directos: referido.directos || referido.direct_count || 0,
+        subordinados: referido.subordinados || referido.subordinate_count || 0
+      }));
+  };
+
   useEffect(() => {
     const fetchReferidos = async () => {
       try {
@@ -107,6 +129,7 @@ const Refes = () => {
           return;
         }
 
+        console.log('Obteniendo referidos...');
         const response = await fetch('http://localhost:4000/api/mis-referidos', {
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -119,32 +142,43 @@ const Refes = () => {
         }
 
         const data = await response.json();
-        console.log('Respuesta del servidor:', data);
+        console.log('Respuesta completa del servidor:', data);
 
         const currentUserId = getCurrentUserId();
-        let referidosTree = null;
+        console.log('ID del usuario actual:', currentUserId);
+        
+        let processedList: ReferidoFlat[] = [];
 
         // Procesar diferentes estructuras de respuesta
         if (data && typeof data === 'object') {
-          if (data.success && data.data) {
-            referidosTree = data.data.usuario || data.data.user || data.data;
-          } else if (data.usuario || data.user) {
-            referidosTree = data.usuario || data.user;
-          } else {
-            referidosTree = data;
+          // Caso 1: { success: true, data: { referidos: [...] } }
+          if (data.success && data.data && data.data.referidos) {
+            console.log('Procesando estructura success.data.referidos');
+            processedList = processReferidosList(data.data.referidos, currentUserId);
+          }
+          // Caso 2: { referidos: [...] }
+          else if (data.referidos && Array.isArray(data.referidos)) {
+            console.log('Procesando estructura data.referidos');
+            processedList = processReferidosList(data.referidos, currentUserId);
+          }
+          // Caso 3: Array directo
+          else if (Array.isArray(data)) {
+            console.log('Procesando array directo');
+            processedList = processReferidosList(data, currentUserId);
+          }
+          // Caso 4: Estructura de árbol - necesita aplanar
+          else if (data.usuario || data.user || data.data) {
+            console.log('Procesando estructura de árbol');
+            const treeData = data.usuario || data.user || data.data;
+            processedList = flattenReferidosTree(treeData, currentUserId);
           }
         }
 
-        if (referidosTree) {
-          const flatList = flattenReferidosTree(referidosTree, currentUserId);
-          setReferidosList(flatList);
-          setFilteredList(flatList);
-        } else {
-          setReferidosList([]);
-          setFilteredList([]);
-        }
-
+        console.log('Lista procesada de referidos:', processedList);
+        setReferidosList(processedList);
+        setFilteredList(processedList);
         setError(null);
+
       } catch (error) {
         console.error('Error al obtener referidos:', error);
         setError(`Error: ${error instanceof Error ? error.message : 'Error desconocido'}`);
