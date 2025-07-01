@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
 import { Button } from "@/components/ui/button";
@@ -11,20 +11,97 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { File, X } from "lucide-react";
+
+interface Inversion {
+  id: number;
+  usuario_id: number;
+  monto: number;
+  activo: boolean;
+  fecha_creacion: string;
+  creado_en: string;
+  comprobante?: string;
+}
 
 const VaucherPago = () => {
-  // Datos de ejemplo
-  const compras = [
-    {
-      id: 60,
-      idCompra: 60,
-      nombrePaquete: "",
-      montoCompra: "$50",
-      verComprobante: "Sin comprobante",
-      fechaCompra: "2025-05-24 19:35:38",
-      estado: "Pendiente"
+  const [inversiones, setInversiones] = useState<Inversion[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isProofModalOpen, setIsProofModalOpen] = useState(false);
+  const [selectedComprobante, setSelectedComprobante] = useState<string>('');
+
+  // Función para extraer el nombre del archivo de la ruta completa
+  const getFileName = (filePath: string) => {
+    if (filePath && filePath.includes('/')) {
+      return filePath.split('/').pop() || filePath;
     }
-  ];
+    return filePath;
+  };
+
+  const fetchInversiones = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
+      const response = await fetch('http://localhost:4000/api/inversiones', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Inversiones data:', data);
+        setInversiones(data);
+      } else {
+        console.error('Error fetching inversiones:', response.status);
+        setInversiones([]);
+      }
+    } catch (error) {
+      console.error('Error fetching inversiones:', error);
+      setInversiones([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleViewComprobante = (comprobante: string) => {
+    setSelectedComprobante(comprobante);
+    setIsProofModalOpen(true);
+  };
+
+  useEffect(() => {
+    fetchInversiones();
+  }, []);
+
+  if (loading) {
+    return (
+      <SidebarProvider>
+        <div className="min-h-screen flex w-full">
+          <AppSidebar />
+          <SidebarInset className="flex-1">
+            <div className="flex-1 flex items-center justify-center">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
+                <p className="mt-4 text-gray-600">Cargando...</p>
+              </div>
+            </div>
+          </SidebarInset>
+        </div>
+      </SidebarProvider>
+    );
+  }
 
   return (
     <SidebarProvider>
@@ -41,40 +118,101 @@ const VaucherPago = () => {
                 <TableHeader>
                   <TableRow className="bg-gray-50">
                     <TableHead className="font-medium text-gray-900">#</TableHead>
-                    <TableHead className="font-medium text-gray-900">Id compra</TableHead>
-                    <TableHead className="font-medium text-gray-900">Nombre del Paquete</TableHead>
-                    <TableHead className="font-medium text-gray-900">Monto de compra</TableHead>
-                    <TableHead className="font-medium text-gray-900">Ver Comprobante</TableHead>
+                    <TableHead className="font-medium text-gray-900">Monto</TableHead>
                     <TableHead className="font-medium text-gray-900">Fecha compra</TableHead>
+                    <TableHead className="font-medium text-gray-900">Comprobante</TableHead>
                     <TableHead className="font-medium text-gray-900">Estado</TableHead>
-                    <TableHead className="font-medium text-gray-900">Borrar</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {compras.map((compra, index) => (
-                    <TableRow key={compra.id}>
-                      <TableCell>{index + 1}</TableCell>
-                      <TableCell>{compra.idCompra}</TableCell>
-                      <TableCell>{compra.nombrePaquete}</TableCell>
-                      <TableCell>{compra.montoCompra}</TableCell>
-                      <TableCell className="text-red-600">{compra.verComprobante}</TableCell>
-                      <TableCell>{compra.fechaCompra}</TableCell>
-                      <TableCell>{compra.estado}</TableCell>
-                      <TableCell>
-                        <Button 
-                          variant="destructive" 
-                          size="sm"
-                          className="bg-red-500 hover:bg-red-600 text-white"
-                        >
-                          Borrar
-                        </Button>
+                  {inversiones.length > 0 ? (
+                    inversiones.map((inversion, index) => (
+                      <TableRow key={inversion.id}>
+                        <TableCell>{index + 1}</TableCell>
+                        <TableCell>${inversion.monto}</TableCell>
+                        <TableCell>
+                          {inversion.creado_en ? new Date(inversion.creado_en).toLocaleString() : ''}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {inversion.comprobante ? (
+                            <div className="flex items-center justify-center gap-2">
+                              <File className="w-4 h-4 text-green-600" />
+                              <button
+                                onClick={() => handleViewComprobante(inversion.comprobante!)}
+                                className="text-green-600 hover:text-green-800 hover:underline cursor-pointer"
+                              >
+                                Ver archivo
+                              </button>
+                            </div>
+                          ) : (
+                            <span className="text-red-600">Sin comprobante</span>
+                          )}
+                        </TableCell>
+                        <TableCell>{inversion.activo ? 'Realizado' : 'Pendiente'}</TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={5} className="text-center text-gray-500 py-8">
+                        No hay compras registradas
                       </TableCell>
                     </TableRow>
-                  ))}
+                  )}
                 </TableBody>
               </Table>
             </div>
           </div>
+
+          {/* Modal para mostrar comprobante */}
+          <Dialog open={isProofModalOpen} onOpenChange={setIsProofModalOpen}>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle>Comprobante</DialogTitle>
+                <Button
+                  className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none"
+                  onClick={() => setIsProofModalOpen(false)}
+                  variant="ghost"
+                  size="sm"
+                >
+                  <X className="h-4 w-4" />
+                  <span className="sr-only">Cerrar</span>
+                </Button>
+              </DialogHeader>
+              
+              <div className="flex flex-col items-center space-y-4">
+                <div className="bg-gray-50 p-4 rounded-lg border w-full">
+                  {selectedComprobante ? (
+                    <img 
+                      src={`http://localhost:4000/${getFileName(selectedComprobante)}`}
+                      alt="Comprobante de pago" 
+                      className="w-full h-auto max-h-96 object-contain rounded"
+                      onError={(e) => {
+                        // En caso de error al cargar la imagen, mostrar un ícono
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = 'none';
+                        const parent = target.parentElement;
+                        if (parent) {
+                          parent.innerHTML = '<div class="flex flex-col items-center justify-center h-32"><File class="w-16 h-16 text-gray-400 mb-2" /><span class="text-gray-500">Archivo no disponible</span></div>';
+                        }
+                      }}
+                    />
+                  ) : (
+                    <div className="flex flex-col items-center justify-center h-32">
+                      <File className="w-16 h-16 text-gray-400 mb-2" />
+                      <span className="text-gray-500">No hay comprobante disponible</span>
+                    </div>
+                  )}
+                </div>
+                
+                <Button 
+                  onClick={() => setIsProofModalOpen(false)}
+                  className="w-full"
+                >
+                  Cerrar
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
         </SidebarInset>
       </div>
     </SidebarProvider>
