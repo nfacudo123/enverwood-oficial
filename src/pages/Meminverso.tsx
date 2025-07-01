@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
@@ -15,7 +14,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Upload, Leaf, Check } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Upload, Leaf, Check, File, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface Inversion {
@@ -36,6 +41,7 @@ export default function Meminverso() {
   const [deleting, setDeleting] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [montoInversion, setMontoInversion] = useState<string>('');
+  const [isProofModalOpen, setIsProofModalOpen] = useState(false);
   const { toast } = useToast();
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -440,7 +446,15 @@ export default function Meminverso() {
                             </TableCell>
                             <TableCell className="text-center">
                               {inversion?.comprobante ? (
-                                <span className="text-green-600">{inversion.comprobante}</span>
+                                <div className="flex items-center justify-center gap-2">
+                                  <File className="w-4 h-4 text-green-600" />
+                                  <button
+                                    onClick={() => setIsProofModalOpen(true)}
+                                    className="text-green-600 hover:text-green-800 hover:underline cursor-pointer"
+                                  >
+                                    {inversion.comprobante}
+                                  </button>
+                                </div>
                               ) : (
                                 <span className="text-red-600">Sin comprobante</span>
                               )}
@@ -474,6 +488,57 @@ export default function Meminverso() {
               </>
             )}
           </div>
+
+          {/* Modal para mostrar comprobante */}
+          <Dialog open={isProofModalOpen} onOpenChange={setIsProofModalOpen}>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle>Comprobante</DialogTitle>
+                <Button
+                  className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none"
+                  onClick={() => setIsProofModalOpen(false)}
+                  variant="ghost"
+                  size="sm"
+                >
+                  <X className="h-4 w-4" />
+                  <span className="sr-only">Cerrar</span>
+                </Button>
+              </DialogHeader>
+              
+              <div className="flex flex-col items-center space-y-4">
+                <div className="bg-gray-50 p-4 rounded-lg border w-full">
+                  {inversion?.comprobante ? (
+                    <img 
+                      src={`http://localhost:4000/uploads/${inversion.comprobante}`}
+                      alt="Comprobante de pago" 
+                      className="w-full h-auto max-h-96 object-contain rounded"
+                      onError={(e) => {
+                        // En caso de error al cargar la imagen, mostrar un ícono
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = 'none';
+                        const parent = target.parentElement;
+                        if (parent) {
+                          parent.innerHTML = '<div class="flex flex-col items-center justify-center h-32"><File class="w-16 h-16 text-gray-400 mb-2" /><span class="text-gray-500">Archivo no disponible</span></div>';
+                        }
+                      }}
+                    />
+                  ) : (
+                    <div className="flex flex-col items-center justify-center h-32">
+                      <File className="w-16 h-16 text-gray-400 mb-2" />
+                      <span className="text-gray-500">No hay comprobante disponible</span>
+                    </div>
+                  )}
+                </div>
+                
+                <Button 
+                  onClick={() => setIsProofModalOpen(false)}
+                  className="w-full"
+                >
+                  Cerrar
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
         </SidebarInset>
       </div>
     </SidebarProvider>
