@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
@@ -24,6 +25,7 @@ interface Inversion {
   activo: boolean;
   fecha_creacion: string;
   creado_en: string;
+  comprobante?: string;
 }
 
 export default function Meminverso() {
@@ -32,6 +34,7 @@ export default function Meminverso() {
   const [loading, setLoading] = useState(true);
   const [purchasing, setPurchasing] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [montoInversion, setMontoInversion] = useState<string>('');
   const { toast } = useToast();
 
@@ -125,6 +128,7 @@ export default function Meminverso() {
       if (response.ok) {
         const data = await response.json();
         setInversion(data);
+        setMontoInversion('');
         toast({
           title: "¡Compra exitosa!",
           description: "Tu membresía Enverwood ha sido adquirida correctamente",
@@ -199,20 +203,79 @@ export default function Meminverso() {
     }
   };
 
+  const handleUploadProof = async () => {
+    if (!selectedFile || !inversion) {
+      toast({
+        title: "Error",
+        description: "Por favor selecciona un archivo",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        toast({
+          title: "Error",
+          description: "No se encontró información de usuario",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('comprobante', selectedFile);
+
+      const response = await fetch(`http://localhost:4000/api/inversiones/comprobante/${inversion.id}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        // Actualizar la información de la inversión con el comprobante
+        setInversion(prev => prev ? { ...prev, comprobante: data.comprobante || selectedFile.name } : null);
+        setSelectedFile(null);
+        
+        // Limpiar el input file
+        const fileInput = document.getElementById('comprobante') as HTMLInputElement;
+        if (fileInput) {
+          fileInput.value = '';
+        }
+        
+        toast({
+          title: "¡Comprobante subido!",
+          description: "Tu comprobante ha sido enviado correctamente",
+        });
+      } else {
+        const errorData = await response.json();
+        toast({
+          title: "Error al subir comprobante",
+          description: errorData.message || "Error al subir el archivo",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Error uploading proof:', error);
+      toast({
+        title: "Error",
+        description: "Error de conexión al servidor",
+        variant: "destructive",
+      });
+    } finally {
+      setUploading(false);
+    }
+  };
+
   useEffect(() => {
     checkUserInvestment();
   }, []);
-
-  const compras = [
-    {
-      id: 1,
-      idCompra: "60",
-      precioCompra: "$50",
-      fechaCompra: "2025-05-24 19:36:48",
-      comprobante: "Sin comprobante",
-      estado: "Pendiente",
-    }
-  ];
 
   // Mostrar botón de compra si no existe inversión para este usuario
   const shouldShowPurchaseButton = !inversion;
@@ -343,9 +406,13 @@ export default function Meminverso() {
                         </div>
                       </div>
 
-                      <Button className="bg-green-500 hover:bg-green-600 text-white">
+                      <Button 
+                        onClick={handleUploadProof}
+                        disabled={uploading || !selectedFile}
+                        className="bg-green-500 hover:bg-green-600 text-white"
+                      >
                         <Upload className="w-4 h-4 mr-2" />
-                        Agregar Comprobante
+                        {uploading ? "Subiendo..." : "Agregar Comprobante"}
                       </Button>
                     </div>
                   </CardContent>
@@ -371,7 +438,13 @@ export default function Meminverso() {
                             <TableCell className="text-center">
                               {inversion?.creado_en ? new Date(inversion.creado_en).toLocaleString() : ''}
                             </TableCell>
-                            <TableCell className="text-center text-red-600">Sin comprobante</TableCell>
+                            <TableCell className="text-center">
+                              {inversion?.comprobante ? (
+                                <span className="text-green-600">{inversion.comprobante}</span>
+                              ) : (
+                                <span className="text-red-600">Sin comprobante</span>
+                              )}
+                            </TableCell>
                             <TableCell className="text-center">
                               {inversion?.activo ? 'Realizado' : 'Pendiente'}
                             </TableCell>
