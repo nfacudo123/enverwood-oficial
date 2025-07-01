@@ -245,8 +245,6 @@ export default function Meminverso() {
 
       if (response.ok) {
         const data = await response.json();
-        // Actualizar la información de la inversión con el comprobante
-        setInversion(prev => prev ? { ...prev, comprobante: data.comprobante || selectedFile.name } : null);
         setSelectedFile(null);
         
         // Limpiar el input file
@@ -259,6 +257,9 @@ export default function Meminverso() {
           title: "¡Comprobante subido!",
           description: "Tu comprobante ha sido enviado correctamente",
         });
+
+        // Recargar los datos de la inversión para mostrar el comprobante actualizado
+        await checkUserInvestment();
       } else {
         const errorData = await response.json();
         toast({
@@ -286,6 +287,7 @@ export default function Meminverso() {
   // Función para extraer el nombre del archivo de la ruta completa
   const getFileName = (filePath: string) => {
     if (filePath && filePath.includes('/')) {
+      // Extraer solo el nombre del archivo de la ruta 'soportes/nombre_archivo'
       return filePath.split('/').pop() || filePath;
     }
     return filePath;
