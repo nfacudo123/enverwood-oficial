@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -51,8 +52,8 @@ const Refes = () => {
           id: nodeId || Math.random(),
           name: n.name || n.nombre || 'Usuario',
           apellidos: n.apellidos || n.apellido || n.last_name || '',
-          username: n.username || n.usuario || n.email?.split('@')[0] || 'usuario',
-          email: n.email || '',
+          username: n.username || n.usuario || n.correo?.split('@')[0] || 'usuario',
+          email: n.correo || n.email || '',
           nivel: level,
           parent_id: n.parent_id || n.sponsor_id || null,
           directos,
@@ -112,8 +113,8 @@ const Refes = () => {
         id: referido.id || referido.usuario_id || referido.user_id || Math.random(),
         name: referido.name || referido.nombre || referido.first_name || 'Usuario',
         apellidos: referido.apellidos || referido.apellido || referido.last_name || '',
-        username: referido.username || referido.usuario || referido.email?.split('@')[0] || 'usuario',
-        email: referido.email || '',
+        username: referido.username || referido.usuario || referido.correo?.split('@')[0] || 'usuario',
+        email: referido.correo || referido.email || '',
         nivel: referido.nivel || referido.level || 0,
         parent_id: referido.parent_id || referido.sponsor_id || null,
         directos: referido.directos || referido.direct_count || 0,
