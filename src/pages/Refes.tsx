@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -265,27 +264,8 @@ const Refes = () => {
               Mi comunidad de Referidos
             </CardTitle>
             
-            {/* Controles superiores */}
-            <div className="flex items-center justify-between gap-4 pt-4">
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm">
-                  <Copy className="w-4 h-4 mr-2" />
-                  Copy
-                </Button>
-                <Button variant="outline" size="sm">
-                  <FileSpreadsheet className="w-4 h-4 mr-2" />
-                  Excel
-                </Button>
-                <Button variant="outline" size="sm">
-                  <FileText className="w-4 h-4 mr-2" />
-                  PDF
-                </Button>
-                <Button variant="outline" size="sm">
-                  <Settings className="w-4 h-4 mr-2" />
-                  Column visibility
-                </Button>
-              </div>
-              
+            {/* Controles superiores - solo búsqueda */}
+            <div className="flex items-center justify-end gap-4 pt-4">
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">Search:</span>
                 <Input

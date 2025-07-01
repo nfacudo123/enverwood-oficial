@@ -86,7 +86,7 @@ const menuItems = [
     title: "Recursos",
     icon: FileText,
     items: [
-      { title: "Documentos", icon: FileText, url: "#" },
+      { title: "Documentos", icon: FileText, url: "/material" },
     ]
   }
 ];

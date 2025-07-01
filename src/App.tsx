@@ -13,6 +13,7 @@ import Requests from "./pages/Requests";
 import Organizacion from "./pages/Organizacion";
 import Refes from "./pages/Refes";
 import Meminverso from "./pages/Meminverso";
+import Material from "./pages/Material";
 import ProtectedRoute from "./components/ProtectedRoute";
 import NotFound from "./pages/NotFound";
 
@@ -99,6 +100,15 @@ const App = () => (
             element={
               <ProtectedRoute>
                 <Meminverso />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/material" 
+            element={
+              <ProtectedRoute>
+                <Material />
               </ProtectedRoute>
             } 
           />
