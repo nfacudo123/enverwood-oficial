@@ -1,3 +1,4 @@
+
 import React from 'react';
 import {
   Sidebar,
@@ -61,11 +62,6 @@ const menuItems = [
     ]
   },
   {
-    title: "Mis Inversiones", 
-    icon: TrendingUp,
-    url: "#"
-  },
-  {
     title: "Comunidad",
     icon: Users,
     items: [
@@ -77,7 +73,6 @@ const menuItems = [
     title: "Financiera",
     icon: BarChart3,
     items: [
-      { title: "Capital en Gestión", icon: CreditCard, url: "#" },
       { title: "Mis rendimientos", icon: TrendingUp, url: "#" },
       { title: "Comisiones", icon: Target, url: "#" },
     ]
@@ -95,8 +90,14 @@ const adminItems = [
   { title: "Usuarios", icon: Users },
   { title: "Liquidaciones", icon: Gavel },
   { title: "Liquidar Rendimientos", icon: Settings },
-  { title: "Compras Pendientes", icon: Clock },
-  { title: "Compras Aprobadas", icon: CheckCircle },
+  {
+    title: "Compras",
+    icon: ShoppingCart,
+    items: [
+      { title: "Compras Pendientes", icon: Clock },
+      { title: "Compras Aprobadas", icon: CheckCircle },
+    ]
+  },
   { title: "Configurar Cursos", icon: GraduationCap },
   { title: "Noticias", icon: Bell },
   { title: "Pagos", icon: CreditCard },
@@ -178,10 +179,34 @@ export function AppSidebar() {
             <SidebarMenu>
               {adminItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton>
-                    <item.icon className="w-4 h-4 flex-shrink-0" />
-                    <span className="text-sm leading-tight break-words whitespace-normal">{item.title}</span>
-                  </SidebarMenuButton>
+                  {item.items ? (
+                    <Collapsible className="group/collapsible">
+                      <CollapsibleTrigger asChild>
+                        <SidebarMenuButton className="w-full">
+                          <item.icon className="w-4 h-4 flex-shrink-0" />
+                          <span className="text-sm leading-tight break-words whitespace-normal">{item.title}</span>
+                          <ChevronDown className="ml-auto h-4 w-4 flex-shrink-0 transition-transform group-data-[state=open]/collapsible:rotate-180" />
+                        </SidebarMenuButton>
+                      </CollapsibleTrigger>
+                      <CollapsibleContent>
+                        <SidebarMenuSub>
+                          {item.items.map((subItem) => (
+                            <SidebarMenuSubItem key={subItem.title}>
+                              <SidebarMenuSubButton>
+                                <subItem.icon className="w-4 h-4 flex-shrink-0" />
+                                <span className="text-sm leading-tight break-words whitespace-normal">{subItem.title}</span>
+                              </SidebarMenuSubButton>
+                            </SidebarMenuSubItem>
+                          ))}
+                        </SidebarMenuSub>
+                      </CollapsibleContent>
+                    </Collapsible>
+                  ) : (
+                    <SidebarMenuButton>
+                      <item.icon className="w-4 h-4 flex-shrink-0" />
+                      <span className="text-sm leading-tight break-words whitespace-normal">{item.title}</span>
+                    </SidebarMenuButton>
+                  )}
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
