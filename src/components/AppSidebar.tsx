@@ -69,7 +69,7 @@ const menuItems = [
     title: "Comunidad",
     icon: Users,
     items: [
-      { title: "Lista de Miembros", icon: User, url: "#" },
+      { title: "Lista de Miembros", icon: User, url: "/refes" },
       { title: "Organización", icon: Building, url: "/organizacion" },
     ]
   },

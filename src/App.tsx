@@ -11,6 +11,7 @@ import Signup from "./pages/Signup";
 import VaucherPago from "./pages/VaucherPago";
 import Requests from "./pages/Requests";
 import Organizacion from "./pages/Organizacion";
+import Refes from "./pages/Refes";
 import Meminverso from "./pages/Meminverso";
 import ProtectedRoute from "./components/ProtectedRoute";
 import NotFound from "./pages/NotFound";
@@ -80,6 +81,15 @@ const App = () => (
             element={
               <ProtectedRoute>
                 <Organizacion />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/refes" 
+            element={
+              <ProtectedRoute>
+                <Refes />
               </ProtectedRoute>
             } 
           />
