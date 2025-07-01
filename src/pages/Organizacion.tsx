@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users } from "lucide-react";
@@ -12,7 +11,7 @@ const Organizacion = () => {
 
   if (isLoading) {
     return (
-      <OrganizationLayout>
+      <OrganizationLayout title="Organización">
         <div className="p-6 flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
@@ -25,7 +24,7 @@ const Organizacion = () => {
 
   if (error) {
     return (
-      <OrganizationLayout>
+      <OrganizationLayout title="Organización">
         <div className="p-6 flex items-center justify-center">
           <div className="text-center">
             <p className="text-red-600 mb-4">Error: {error}</p>
@@ -42,7 +41,7 @@ const Organizacion = () => {
   }
 
   return (
-    <OrganizationLayout>
+    <OrganizationLayout title="Organización">
       <div className="p-6 space-y-6">
         {/* Estadísticas */}
         <OrganizationStats totalEquipo={totalEquipo} directos={directos} />

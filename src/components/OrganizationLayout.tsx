@@ -6,15 +6,19 @@ import { UserNavbar } from '@/components/UserNavbar';
 
 interface OrganizationLayoutProps {
   children: React.ReactNode;
+  title?: string;
 }
 
-export const OrganizationLayout: React.FC<OrganizationLayoutProps> = ({ children }) => {
+export const OrganizationLayout: React.FC<OrganizationLayoutProps> = ({ 
+  children, 
+  title = "Panel de Control" 
+}) => {
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full">
         <AppSidebar />
         <SidebarInset className="flex-1">
-          <UserNavbar title="Organización" showSidebarTrigger={true} />
+          <UserNavbar title={title} showSidebarTrigger={true} />
           {children}
         </SidebarInset>
       </div>
