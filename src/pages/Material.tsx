@@ -37,13 +37,22 @@ const Material = () => {
   const fetchResources = async () => {
     setIsLoadingResources(true);
     try {
+      console.log('Fetching resources from API...');
       const response = await fetch('http://localhost:4000/api/recursos');
+      console.log('API response status:', response.status);
+      
       if (!response.ok) {
         throw new Error('Error al cargar los recursos');
       }
+      
       const data = await response.json();
+      console.log('API response data:', data);
+      
       // Ensure data is an array
-      setResources(Array.isArray(data) ? data : []);
+      const resourcesArray = Array.isArray(data) ? data : [];
+      console.log('Resources array:', resourcesArray);
+      
+      setResources(resourcesArray);
     } catch (error) {
       console.error('Error fetching resources:', error);
       setResources([]); // Set empty array on error
