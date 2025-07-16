@@ -43,13 +43,7 @@ const Material = () => {
       const token = localStorage.getItem('authToken');
       console.log('Token from localStorage:', token ? 'Token exists' : 'No token found');
       
-      if (!token) {
-        // Set a default token for testing
-        localStorage.setItem('authToken', 'test-token-123');
-        console.log('Setting default token for testing');
-      }
-      
-      const authToken = localStorage.getItem('authToken') || 'test-token-123';
+      const authToken = localStorage.getItem('authToken');
       console.log('Using auth token:', authToken);
       
       const response = await fetch('http://localhost:4000/api/recursos', {
@@ -93,7 +87,7 @@ const Material = () => {
 
   const handleDelete = async (id: number) => {
     try {
-      const token = localStorage.getItem('authToken') || 'your-bearer-token-here';
+      const token = localStorage.getItem('authToken');
       
       const response = await fetch(`http://localhost:4000/api/recursos/${id}`, {
         method: 'DELETE',
@@ -123,10 +117,10 @@ const Material = () => {
   };
 
   const handleViewDocument = (id: number) => {
-    const token = localStorage.getItem('authToken') || 'your-bearer-token-here';
+    const token = localStorage.getItem('authToken');
     // For opening a document in a new tab with authentication, we need to create a temporary link
     // or handle the authentication differently since we can't add headers to window.open
-    const url = `http://localhost:4000/api/recursos/${id}?token=${token}`;
+    const url = `http://localhost:4000/api/recursos/${id}`;
     window.open(url, '_blank');
   };
 
@@ -157,7 +151,7 @@ const Material = () => {
     setIsLoading(true);
     
     try {
-      const token = localStorage.getItem('authToken') || 'your-bearer-token-here';
+      const token = localStorage.getItem('authToken');
       
       const formData = new FormData();
       formData.append('nombre', materialName);
