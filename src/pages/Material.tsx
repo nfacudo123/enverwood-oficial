@@ -305,9 +305,6 @@ const Material = () => {
                     Ver <span className="text-gray-400">↕</span>
                   </TableHead>
                   <TableHead className="font-medium text-gray-900 cursor-pointer">
-                    Documento <span className="text-gray-400">↕</span>
-                  </TableHead>
-                  <TableHead className="font-medium text-gray-900 cursor-pointer">
                     Eliminar <span className="text-gray-400">↕</span>
                   </TableHead>
                 </TableRow>
@@ -315,13 +312,13 @@ const Material = () => {
               <TableBody>
                 {isLoadingResources ? (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center py-8 text-gray-500">
+                    <TableCell colSpan={4} className="text-center py-8 text-gray-500">
                       Cargando recursos...
                     </TableCell>
                   </TableRow>
                 ) : resources.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center py-8 text-gray-500">
+                    <TableCell colSpan={4} className="text-center py-8 text-gray-500">
                       No data available in table
                     </TableCell>
                   </TableRow>
@@ -343,16 +340,6 @@ const Material = () => {
                             className="bg-blue-600 text-white hover:bg-blue-700"
                           >
                             Ver
-                          </Button>
-                        </TableCell>
-                        <TableCell>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleViewDocument(resource.id)}
-                            className="bg-gray-600 text-white hover:bg-gray-700"
-                          >
-                            Documento
                           </Button>
                         </TableCell>
                         <TableCell>
