@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
 import {
   Dialog,
   DialogContent,
@@ -28,6 +29,62 @@ const Material = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [materialName, setMaterialName] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+
+  const handleSubmit = async () => {
+    if (!materialName.trim()) {
+      toast({
+        title: "Error",
+        description: "El nombre es requerido",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!selectedFile) {
+      toast({
+        title: "Error",
+        description: "Debe seleccionar un archivo",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    
+    try {
+      const formData = new FormData();
+      formData.append('nombre', materialName);
+      formData.append('archivo', selectedFile);
+
+      const response = await fetch('http://localhost:4000/api/recursos/subir', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al subir el recurso');
+      }
+
+      toast({
+        title: "Éxito",
+        description: "Recurso agregado correctamente",
+      });
+
+      setIsDialogOpen(false);
+      setMaterialName('');
+      setSelectedFile(null);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Error al agregar el recurso",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <OrganizationLayout title="Recursos y ayudas">
@@ -93,17 +150,11 @@ const Material = () => {
                 </Button>
                 <Button
                   type="button"
-                  onClick={() => {
-                    // Handle form submission here
-                    console.log('Material name:', materialName);
-                    console.log('Selected file:', selectedFile);
-                    setIsDialogOpen(false);
-                    setMaterialName('');
-                    setSelectedFile(null);
-                  }}
+                  onClick={handleSubmit}
+                  disabled={isLoading}
                   className="bg-green-600 hover:bg-green-700 text-white"
                 >
-                  Agregar
+                  {isLoading ? "Subiendo..." : "Agregar"}
                 </Button>
               </DialogFooter>
             </DialogContent>
