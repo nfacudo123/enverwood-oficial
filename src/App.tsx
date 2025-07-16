@@ -14,6 +14,7 @@ import Organizacion from "./pages/Organizacion";
 import Refes from "./pages/Refes";
 import Meminverso from "./pages/Meminverso";
 import Material from "./pages/Material";
+import UserAdmin from "./pages/UserAdmin";
 import ProtectedRoute from "./components/ProtectedRoute";
 import NotFound from "./pages/NotFound";
 
@@ -109,6 +110,15 @@ const App = () => (
             element={
               <ProtectedRoute>
                 <Material />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/userad" 
+            element={
+              <ProtectedRoute>
+                <UserAdmin />
               </ProtectedRoute>
             } 
           />
