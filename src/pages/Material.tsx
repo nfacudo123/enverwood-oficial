@@ -42,8 +42,11 @@ const Material = () => {
         throw new Error('Error al cargar los recursos');
       }
       const data = await response.json();
-      setResources(data);
+      // Ensure data is an array
+      setResources(Array.isArray(data) ? data : []);
     } catch (error) {
+      console.error('Error fetching resources:', error);
+      setResources([]); // Set empty array on error
       toast({
         title: "Error",
         description: "Error al cargar los recursos",
