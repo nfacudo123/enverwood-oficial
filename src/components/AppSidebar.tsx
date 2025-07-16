@@ -87,7 +87,7 @@ const menuItems = [
 ];
 
 const adminItems = [
-  { title: "Usuarios", icon: Users },
+  { title: "Usuarios", icon: Users, url: "/userad" },
   { title: "Liquidaciones", icon: Gavel },
   { title: "Liquidar Rendimientos", icon: Settings },
   {
@@ -202,9 +202,11 @@ export function AppSidebar() {
                       </CollapsibleContent>
                     </Collapsible>
                   ) : (
-                    <SidebarMenuButton>
-                      <item.icon className="w-4 h-4 flex-shrink-0" />
-                      <span className="text-sm leading-tight break-words whitespace-normal">{item.title}</span>
+                    <SidebarMenuButton asChild>
+                      <a href={item.url || "#"}>
+                        <item.icon className="w-4 h-4 flex-shrink-0" />
+                        <span className="text-sm leading-tight break-words whitespace-normal">{item.title}</span>
+                      </a>
                     </SidebarMenuButton>
                   )}
                 </SidebarMenuItem>
