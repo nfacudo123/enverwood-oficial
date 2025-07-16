@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -30,7 +30,63 @@ const Material = () => {
   const [materialName, setMaterialName] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [resources, setResources] = useState<any[]>([]);
+  const [isLoadingResources, setIsLoadingResources] = useState(false);
   const { toast } = useToast();
+
+  const fetchResources = async () => {
+    setIsLoadingResources(true);
+    try {
+      const response = await fetch('http://localhost:4000/api/recursos');
+      if (!response.ok) {
+        throw new Error('Error al cargar los recursos');
+      }
+      const data = await response.json();
+      setResources(data);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Error al cargar los recursos",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoadingResources(false);
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    try {
+      const response = await fetch(`http://localhost:4000/api/recursos/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al eliminar el recurso');
+      }
+
+      toast({
+        title: "Éxito",
+        description: "Recurso eliminado correctamente",
+      });
+
+      fetchResources(); // Refresh the list
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Error al eliminar el recurso",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleViewDocument = (id: number) => {
+    window.open(`http://localhost:4000/api/recursos/${id}`, '_blank');
+  };
+
+  // Fetch resources on component mount
+  useEffect(() => {
+    fetchResources();
+  }, []);
 
   const handleSubmit = async () => {
     if (!materialName.trim()) {
@@ -75,6 +131,7 @@ const Material = () => {
       setIsDialogOpen(false);
       setMaterialName('');
       setSelectedFile(null);
+      fetchResources(); // Refresh the list
     } catch (error) {
       toast({
         title: "Error",
@@ -218,11 +275,61 @@ const Material = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                <TableRow>
-                  <TableCell colSpan={5} className="text-center py-8 text-gray-500">
-                    No data available in table
-                  </TableCell>
-                </TableRow>
+                {isLoadingResources ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center py-8 text-gray-500">
+                      Cargando recursos...
+                    </TableCell>
+                  </TableRow>
+                ) : resources.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center py-8 text-gray-500">
+                      No data available in table
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  resources
+                    .filter(resource => 
+                      resource.nombre?.toLowerCase().includes(searchTerm.toLowerCase())
+                    )
+                    .slice(0, entriesPerPage)
+                    .map((resource, index) => (
+                      <TableRow key={resource.id}>
+                        <TableCell>{index + 1}</TableCell>
+                        <TableCell>{resource.nombre}</TableCell>
+                        <TableCell>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleViewDocument(resource.id)}
+                            className="bg-blue-600 text-white hover:bg-blue-700"
+                          >
+                            Ver
+                          </Button>
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleViewDocument(resource.id)}
+                            className="bg-gray-600 text-white hover:bg-gray-700"
+                          >
+                            Documento
+                          </Button>
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleDelete(resource.id)}
+                            className="bg-red-600 text-white hover:bg-red-700"
+                          >
+                            Eliminar
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                )}
               </TableBody>
             </Table>
           </div>
@@ -230,7 +337,11 @@ const Material = () => {
           {/* Pagination info and controls */}
           <div className="flex justify-between items-center mt-4">
             <span className="text-sm text-gray-600">
-              Showing 0 to 0 of 0 entries
+              Showing {resources.length > 0 ? 1 : 0} to {Math.min(entriesPerPage, resources.filter(resource => 
+                resource.nombre?.toLowerCase().includes(searchTerm.toLowerCase())
+              ).length)} of {resources.filter(resource => 
+                resource.nombre?.toLowerCase().includes(searchTerm.toLowerCase())
+              ).length} entries
             </span>
             <div className="flex gap-2">
               <Button 
