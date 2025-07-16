@@ -40,10 +40,10 @@ const Material = () => {
       console.log('Fetching resources from API...');
       
       // Get bearer token from localStorage or provide default
-      const token = localStorage.getItem('authToken');
+      const token = localStorage.getItem('token');
       console.log('Token from localStorage:', token ? 'Token exists' : 'No token found');
       
-      const authToken = localStorage.getItem('authToken');
+      const authToken = localStorage.getItem('token');
       console.log('Using auth token:', authToken);
       
       const response = await fetch('http://localhost:4000/api/recursos', {
@@ -87,7 +87,7 @@ const Material = () => {
 
   const handleDelete = async (id: number) => {
     try {
-      const token = localStorage.getItem('authToken');
+      const token = localStorage.getItem('token');
       
       const response = await fetch(`http://localhost:4000/api/recursos/${id}`, {
         method: 'DELETE',

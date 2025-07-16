@@ -44,7 +44,7 @@ const UserAdmin = () => {
       setLoading(true);
       console.log('Fetching users from API...');
       
-      const token = localStorage.getItem('authToken');
+      const token = localStorage.getItem('token');
       console.log('Token from localStorage:', token ? 'Token exists' : 'No token found');
       
       if (!token) {
