@@ -40,36 +40,54 @@ const Material = () => {
       console.log('Fetching resources from API...');
       
       // Get bearer token from localStorage or provide default
-      const token = localStorage.getItem('authToken') || 'your-bearer-token-here';
+      const token = localStorage.getItem('authToken');
+      console.log('Token from localStorage:', token ? 'Token exists' : 'No token found');
+      
+      if (!token) {
+        // Set a default token for testing
+        localStorage.setItem('authToken', 'test-token-123');
+        console.log('Setting default token for testing');
+      }
+      
+      const authToken = localStorage.getItem('authToken') || 'test-token-123';
+      console.log('Using auth token:', authToken);
       
       const response = await fetch('http://localhost:4000/api/recursos', {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${authToken}`,
           'Content-Type': 'application/json',
         },
       });
       
       console.log('API response status:', response.status);
+      console.log('API response headers:', response.headers);
       
       if (!response.ok) {
-        throw new Error(`Error al cargar los recursos: ${response.status}`);
+        const errorText = await response.text();
+        console.error('API Error Response:', errorText);
+        throw new Error(`Error al cargar los recursos: ${response.status} - ${errorText}`);
       }
       
       const data = await response.json();
       console.log('API response data:', data);
+      console.log('Data type:', typeof data);
+      console.log('Is array:', Array.isArray(data));
       
-      // Ensure data is an array
-      const resourcesArray = Array.isArray(data) ? data : [];
-      console.log('Resources array:', resourcesArray);
-      
-      setResources(resourcesArray);
+      if (Array.isArray(data)) {
+        console.log('Setting resources with data:', data);
+        setResources(data);
+      } else {
+        console.error('Expected array but got:', typeof data);
+        console.error('Data content:', data);
+        setResources([]);
+      }
     } catch (error) {
       console.error('Error fetching resources:', error);
       setResources([]); // Set empty array on error
       toast({
         title: "Error",
-        description: "Error al cargar los recursos",
+        description: `Error al cargar los recursos: ${error.message}`,
         variant: "destructive",
       });
     } finally {
