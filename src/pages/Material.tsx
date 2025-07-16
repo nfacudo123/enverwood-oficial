@@ -38,11 +38,22 @@ const Material = () => {
     setIsLoadingResources(true);
     try {
       console.log('Fetching resources from API...');
-      const response = await fetch('http://localhost:4000/api/recursos');
+      
+      // Get bearer token from localStorage or provide default
+      const token = localStorage.getItem('authToken') || 'your-bearer-token-here';
+      
+      const response = await fetch('http://localhost:4000/api/recursos', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      
       console.log('API response status:', response.status);
       
       if (!response.ok) {
-        throw new Error('Error al cargar los recursos');
+        throw new Error(`Error al cargar los recursos: ${response.status}`);
       }
       
       const data = await response.json();
@@ -68,8 +79,14 @@ const Material = () => {
 
   const handleDelete = async (id: number) => {
     try {
+      const token = localStorage.getItem('authToken') || 'your-bearer-token-here';
+      
       const response = await fetch(`http://localhost:4000/api/recursos/${id}`, {
         method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
       });
 
       if (!response.ok) {
@@ -92,7 +109,11 @@ const Material = () => {
   };
 
   const handleViewDocument = (id: number) => {
-    window.open(`http://localhost:4000/api/recursos/${id}`, '_blank');
+    const token = localStorage.getItem('authToken') || 'your-bearer-token-here';
+    // For opening a document in a new tab with authentication, we need to create a temporary link
+    // or handle the authentication differently since we can't add headers to window.open
+    const url = `http://localhost:4000/api/recursos/${id}?token=${token}`;
+    window.open(url, '_blank');
   };
 
   // Fetch resources on component mount
@@ -122,12 +143,17 @@ const Material = () => {
     setIsLoading(true);
     
     try {
+      const token = localStorage.getItem('authToken') || 'your-bearer-token-here';
+      
       const formData = new FormData();
       formData.append('nombre', materialName);
       formData.append('archivo', selectedFile);
 
       const response = await fetch('http://localhost:4000/api/recursos/subir', {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
         body: formData,
       });
 
