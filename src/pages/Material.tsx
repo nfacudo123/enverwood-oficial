@@ -71,17 +71,13 @@ const Material = () => {
       
       const data = await response.json();
       console.log('API response data:', data);
-      console.log('Data type:', typeof data);
-      console.log('Is array:', Array.isArray(data));
       
-      if (Array.isArray(data)) {
-        console.log('Setting resources with data:', data);
-        setResources(data);
-      } else {
-        console.error('Expected array but got:', typeof data);
-        console.error('Data content:', data);
-        setResources([]);
-      }
+      // Extract the recursos array from the response object
+      const resourcesArray = data.recursos || [];
+      console.log('Resources array:', resourcesArray);
+      console.log('Is array:', Array.isArray(resourcesArray));
+      
+      setResources(resourcesArray);
     } catch (error) {
       console.error('Error fetching resources:', error);
       setResources([]); // Set empty array on error
