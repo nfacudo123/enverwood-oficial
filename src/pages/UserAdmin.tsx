@@ -44,9 +44,17 @@ const UserAdmin = () => {
       setLoading(true);
       console.log('Fetching users from API...');
       
-      const token = localStorage.getItem('authToken') || 'test-token-123';
-      console.log('Using token:', token);
+      const token = localStorage.getItem('authToken');
+      console.log('Token from localStorage:', token ? 'Token exists' : 'No token found');
+      
+      if (!token) {
+        console.error('No authentication token found');
+        setUsers([]);
+        setLoading(false);
+        return;
+      }
 
+      console.log('Making request to: http://localhost:4000/api/users');
       const response = await fetch('http://localhost:4000/api/users', {
         method: 'GET',
         headers: {
@@ -56,17 +64,28 @@ const UserAdmin = () => {
       });
 
       console.log('Response status:', response.status);
-      console.log('Response headers:', response.headers);
+      console.log('Response ok:', response.ok);
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        console.error('Response error:', errorText);
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
       }
       
       const data = await response.json();
-      console.log('API response data:', data);
+      console.log('Full API response:', data);
+      console.log('Response type:', typeof data);
+      console.log('Response keys:', Object.keys(data));
       
-      const usersArray = data.usuarios || [];
-      console.log('Users array:', usersArray);
+      // Handle the usuarios array from the response
+      if (!data.usuarios) {
+        console.error('Expected "usuarios" property in response but got:', data);
+        throw new Error('Invalid response format - missing "usuarios" array');
+      }
+      
+      const usersArray = data.usuarios;
+      console.log('Users array length:', usersArray.length);
+      console.log('First user sample:', usersArray[0]);
       
       setUsers(usersArray);
       
