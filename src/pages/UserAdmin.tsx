@@ -232,75 +232,114 @@ const UserAdmin = () => {
 
       {/* Edit User Modal */}
       <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-3xl">
           <DialogHeader>
             <DialogTitle>Editar Usuario</DialogTitle>
           </DialogHeader>
           {selectedUser && (
-            <div className="grid grid-cols-2 gap-4 py-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Nombre</Label>
-                <Input
-                  id="name"
-                  defaultValue={selectedUser.name}
-                  readOnly
-                />
+            <div className="space-y-4 py-4">
+              <div className="grid grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name">Nombre</Label>
+                  <Input
+                    id="name"
+                    defaultValue={selectedUser.name}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="apellidos">Apellidos</Label>
+                  <Input
+                    id="apellidos"
+                    defaultValue={selectedUser.apellidos}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="created_at">Creado en:</Label>
+                  <Input
+                    id="created_at"
+                    defaultValue={new Date(selectedUser.created_at).toLocaleDateString()}
+                    readOnly
+                  />
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="apellidos">Apellidos</Label>
-                <Input
-                  id="apellidos"
-                  defaultValue={selectedUser.apellidos}
-                  readOnly
-                />
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="username">Usuario</Label>
+                  <Input
+                    id="username"
+                    defaultValue={selectedUser.username}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    defaultValue={selectedUser.email}
+                  />
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="username">Usuario</Label>
-                <Input
-                  id="username"
-                  defaultValue={selectedUser.username}
-                  readOnly
-                />
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="nueva_password">Nueva Contraseña</Label>
+                  <Input
+                    id="nueva_password"
+                    type="password"
+                    placeholder="Ingrese nueva contraseña"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="confirmar_password">Confirmar Contraseña</Label>
+                  <Input
+                    id="confirmar_password"
+                    type="password"
+                    placeholder="Confirme la contraseña"
+                  />
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  defaultValue={selectedUser.email}
-                  readOnly
-                />
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="telefono">Teléfono</Label>
+                  <Input
+                    id="telefono"
+                    defaultValue={selectedUser.telefono}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="pais">País</Label>
+                  <select
+                    id="pais"
+                    defaultValue={selectedUser.pais_id.toString()}
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {paises.map((pais) => (
+                      <option key={pais.id} value={pais.id}>
+                        {pais.nombre}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="telefono">Teléfono</Label>
-                <Input
-                  id="telefono"
-                  defaultValue={selectedUser.telefono}
-                  readOnly
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="pais">País ID</Label>
-                <Input
-                  id="pais"
-                  defaultValue={selectedUser.pais_id.toString()}
-                  readOnly
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="ciudad">Ciudad</Label>
-                <Input
-                  id="ciudad"
-                  defaultValue={selectedUser.ciudad || 'No especificada'}
-                  readOnly
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="direccion">Dirección</Label>
-                <Input
-                  id="direccion"
-                  defaultValue={selectedUser.direccion || 'No especificada'}
-                  readOnly
-                />
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="ciudad">Ciudad</Label>
+                  <Input
+                    id="ciudad"
+                    defaultValue={selectedUser.ciudad || ''}
+                    placeholder="Ciudad"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="direccion">Dirección</Label>
+                  <Input
+                    id="direccion"
+                    defaultValue={selectedUser.direccion || ''}
+                    placeholder="Dirección"
+                  />
+                </div>
               </div>
             </div>
           )}
