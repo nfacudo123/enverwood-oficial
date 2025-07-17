@@ -51,7 +51,7 @@ export default function SponsorChange() {
       }
       
       const data = await response.json();
-      setUsers(Array.isArray(data) ? data : []);
+      setUsers(data?.response?.users || []);
     } catch (error) {
       console.error('Error:', error);
       toast({
