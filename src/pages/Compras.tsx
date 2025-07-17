@@ -109,7 +109,6 @@ export default function Compras() {
           <TableHead>Fecha</TableHead>
           <TableHead>Ver Comprobante</TableHead>
           <TableHead>Tipo</TableHead>
-          <TableHead>Descargar Comprobante</TableHead>
           {showAprobar && <TableHead>Aprobar Depósitos</TableHead>}
         </TableRow>
       </TableHeader>
@@ -141,23 +140,6 @@ export default function Compras() {
                 <Badge variant={inversion.activo ? "default" : "secondary"}>
                   {inversion.activo ? "Aprobada" : "Pendiente"}
                 </Badge>
-              </TableCell>
-              <TableCell>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => {
-                    if (inversion.comprobante) {
-                      const link = document.createElement('a');
-                      link.href = `http://localhost:4000/${inversion.comprobante}`;
-                      link.download = `comprobante_${inversion.id}.png`;
-                      link.click();
-                    }
-                  }}
-                  disabled={!inversion.comprobante}
-                >
-                  <Download className="h-4 w-4" />
-                </Button>
               </TableCell>
               {showAprobar && (
                 <TableCell>
