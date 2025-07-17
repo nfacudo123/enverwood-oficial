@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { OrganizationLayout } from "@/components/OrganizationLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -169,13 +170,13 @@ export default function Compras() {
   }
 
   return (
-    <div className="container mx-auto py-6 space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Comprobantes de Depósitos</h1>
-        <p className="text-muted-foreground mt-2">
-          Comprobantes de depósitos: Aquí puedes verificar los comprobantes de pagos y aprobar los depósitos.
-        </p>
-      </div>
+    <OrganizationLayout title="Comprobantes de Depósitos">
+      <div className="space-y-6">
+        <div>
+          <p className="text-muted-foreground">
+            Comprobantes de depósitos: Aquí puedes verificar los comprobantes de pagos y aprobar los depósitos.
+          </p>
+        </div>
 
       <Tabs defaultValue="pendientes" className="space-y-4">
         <TabsList className="grid w-full grid-cols-2">
@@ -214,7 +215,8 @@ export default function Compras() {
             </CardContent>
           </Card>
         </TabsContent>
-      </Tabs>
-    </div>
+        </Tabs>
+      </div>
+    </OrganizationLayout>
   );
 }
