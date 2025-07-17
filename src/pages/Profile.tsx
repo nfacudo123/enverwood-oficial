@@ -33,6 +33,7 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [updating, setUpdating] = useState(false);
+  const [paises, setPaises] = useState<Array<{ id: number; nombre: string }>>([]);
   const { toast } = useToast();
 
   // Estados para los formularios
@@ -58,6 +59,22 @@ const Profile = () => {
     newPassword: '',
     confirmPassword: ''
   });
+
+  useEffect(() => {
+    const fetchPaises = async () => {
+      try {
+        const response = await fetch('http://localhost:4000/api/paises');
+        if (response.ok) {
+          const data = await response.json();
+          setPaises(data.paises);
+        }
+      } catch (error) {
+        console.error('Error fetching countries:', error);
+      }
+    };
+    
+    fetchPaises();
+  }, []);
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -98,7 +115,7 @@ const Profile = () => {
             address: data.direccion || '',
             city: data.ciudad || '',
             state: data.estado || '',
-            country: data.pais_id === 57 ? 'colombia' : data.pais_id === 2 ? 'mexico' : 'argentina',
+            country: data.pais_id?.toString() || '',
             email: data.email || '',
             phone: data.telefono || ''
           });
@@ -194,7 +211,7 @@ const Profile = () => {
             address: updatedData.direccion || '',
             city: updatedData.ciudad || '',
             state: updatedData.estado || '',
-            country: updatedData.pais_id === 57 ? 'colombia' : updatedData.pais_id === 2 ? 'mexico' : 'argentina',
+            country: updatedData.pais_id?.toString() || '',
             email: updatedData.email || '',
             phone: updatedData.telefono || ''
           });
@@ -240,12 +257,10 @@ const Profile = () => {
 
   const handleContactSave = () => {
     console.log('Saving contact data:', contactData);
-    const paisId = contactData.country === 'colombia' ? 1 : 
-                   contactData.country === 'mexico' ? 2 : 3;
     
     updateProfile({
       email: contactData.email,
-      pais_id: paisId,
+      pais_id: parseInt(contactData.country),
       telefono: contactData.phone,
       direccion: contactData.address,
       ciudad: contactData.city,
@@ -478,9 +493,11 @@ const Profile = () => {
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="colombia">Colombia</SelectItem>
-                              <SelectItem value="mexico">México</SelectItem>
-                              <SelectItem value="argentina">Argentina</SelectItem>
+                              {paises.map((pais) => (
+                                <SelectItem key={pais.id} value={pais.id.toString()}>
+                                  {pais.nombre}
+                                </SelectItem>
+                              ))}
                             </SelectContent>
                           </Select>
                         </div>

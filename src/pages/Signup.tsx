@@ -13,6 +13,7 @@ const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [sponsorId, setSponsorId] = useState<number | null>(null);
+  const [paises, setPaises] = useState<Array<{ id: number; nombre: string }>>([]);
   const [formData, setFormData] = useState({
     name: '',
     apellidos: '',
@@ -24,6 +25,23 @@ const Signup = () => {
     confirmPassword: '',
     acceptTerms: false
   });
+
+  // Función para obtener países desde la API
+  useEffect(() => {
+    const fetchPaises = async () => {
+      try {
+        const response = await fetch('http://localhost:4000/api/paises');
+        if (response.ok) {
+          const data = await response.json();
+          setPaises(data.paises);
+        }
+      } catch (error) {
+        console.error('Error fetching countries:', error);
+      }
+    };
+    
+    fetchPaises();
+  }, []);
 
   // Función para obtener el sponsorId basado en el username
   useEffect(() => {
@@ -143,20 +161,6 @@ const Signup = () => {
       });
     }
   };
-
-  const paises = [
-    { id: 1, nombre: 'Albania' },
-    { id: 2, nombre: 'Afganistán' },
-    { id: 3, nombre: 'Argentina' },
-    { id: 4, nombre: 'Brasil' },
-    { id: 5, nombre: 'Colombia' },
-    { id: 6, nombre: 'España' },
-    { id: 7, nombre: 'Estados Unidos' },
-    { id: 8, nombre: 'Francia' },
-    { id: 9, nombre: 'México' },
-    { id: 10, nombre: 'Perú' },
-    { id: 57, nombre: 'Venezuela' }
-  ];
 
   const codigosPais = [
     { codigo: '+355', pais: 'Albania' },

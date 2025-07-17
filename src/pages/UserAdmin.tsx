@@ -38,6 +38,7 @@ const UserAdmin = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [activeUsers, setActiveUsers] = useState(0);
   const [inactiveUsers, setInactiveUsers] = useState(0);
+  const [paises, setPaises] = useState<Array<{ id: number; nombre: string }>>([]);
 
   const fetchUsers = async () => {
     try {
@@ -101,8 +102,21 @@ const UserAdmin = () => {
     }
   };
 
+  const fetchPaises = async () => {
+    try {
+      const response = await fetch('http://localhost:4000/api/paises');
+      if (response.ok) {
+        const data = await response.json();
+        setPaises(data.paises);
+      }
+    } catch (error) {
+      console.error('Error fetching countries:', error);
+    }
+  };
+
   useEffect(() => {
     fetchUsers();
+    fetchPaises();
   }, []);
 
   const handleEditUser = (user: User) => {
@@ -113,6 +127,11 @@ const UserAdmin = () => {
   const handleCloseModal = () => {
     setIsEditModalOpen(false);
     setSelectedUser(null);
+  };
+
+  const getPaisName = (paisId: number) => {
+    const pais = paises.find(p => p.id === paisId);
+    return pais ? pais.nombre : `País ${paisId}`;
   };
 
   return (
@@ -191,7 +210,7 @@ const UserAdmin = () => {
                         <TableCell>{user.email}</TableCell>
                         <TableCell>{user.telefono}</TableCell>
                         <TableCell>••••••••</TableCell>
-                        <TableCell>{user.pais_id}</TableCell>
+                        <TableCell>{getPaisName(user.pais_id)}</TableCell>
                         <TableCell className="text-right">
                           <Button
                             onClick={() => handleEditUser(user)}
