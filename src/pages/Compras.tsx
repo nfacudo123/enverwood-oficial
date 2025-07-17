@@ -128,7 +128,12 @@ export default function Compras() {
               <TableCell>{formatMonto(inversion.monto)}</TableCell>
               <TableCell>{formatDate(inversion.fecha_inicio)}</TableCell>
               <TableCell>
-                <Button variant="outline" size="sm">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => window.open(`http://localhost:4000/${inversion.comprobante}`, '_blank')}
+                  disabled={!inversion.comprobante}
+                >
                   <Eye className="h-4 w-4" />
                 </Button>
               </TableCell>
@@ -138,7 +143,19 @@ export default function Compras() {
                 </Badge>
               </TableCell>
               <TableCell>
-                <Button variant="outline" size="sm">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => {
+                    if (inversion.comprobante) {
+                      const link = document.createElement('a');
+                      link.href = `http://localhost:4000/${inversion.comprobante}`;
+                      link.download = `comprobante_${inversion.id}.png`;
+                      link.click();
+                    }
+                  }}
+                  disabled={!inversion.comprobante}
+                >
                   <Download className="h-4 w-4" />
                 </Button>
               </TableCell>
