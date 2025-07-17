@@ -32,18 +32,46 @@ export default function News() {
   const fetchNoticias = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch('http://localhost:4000/api/noticias');
-      if (response.ok) {
-        const data = await response.json();
-        setNoticias(data);
-      } else {
+      const token = localStorage.getItem('token');
+      if (!token) {
         toast({
           title: "Error",
-          description: "No se pudieron cargar las noticias",
-          variant: "destructive"
+          description: "No se encontró token de autenticación",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const response = await fetch('http://localhost:4000/api/noticias', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      // Ensure data is always an array
+      if (Array.isArray(data)) {
+        setNoticias(data);
+      } else if (data && Array.isArray(data.noticias)) {
+        setNoticias(data.noticias);
+      } else {
+        setNoticias([]);
+        toast({
+          title: "Advertencia",
+          description: "No se encontraron noticias",
+          variant: "default"
         });
       }
     } catch (error) {
+      console.error('Error fetching noticias:', error);
+      setNoticias([]);
       toast({
         title: "Error",
         description: "Error de conexión",
@@ -66,9 +94,20 @@ export default function News() {
     }
 
     try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast({
+          title: "Error",
+          description: "No se encontró token de autenticación",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const response = await fetch('http://localhost:4000/api/noticias', {
         method: 'POST',
         headers: {
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(newNoticia),
@@ -90,6 +129,7 @@ export default function News() {
         });
       }
     } catch (error) {
+      console.error('Error adding noticia:', error);
       toast({
         title: "Error",
         description: "Error de conexión",
@@ -101,8 +141,22 @@ export default function News() {
   // Eliminar noticia
   const handleDeleteNoticia = async (id: number) => {
     try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast({
+          title: "Error",
+          description: "No se encontró token de autenticación",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const response = await fetch(`http://localhost:4000/api/noticias/${id}`, {
         method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
       });
 
       if (response.ok) {
@@ -119,6 +173,7 @@ export default function News() {
         });
       }
     } catch (error) {
+      console.error('Error deleting noticia:', error);
       toast({
         title: "Error",
         description: "Error de conexión",
@@ -235,7 +290,7 @@ export default function News() {
                       </TableCell>
                     </TableRow>
                   ) : (
-                    noticias.map((noticia, index) => (
+                    Array.isArray(noticias) ? noticias.map((noticia, index) => (
                       <TableRow key={noticia.id}>
                         <TableCell>{index + 1}</TableCell>
                         <TableCell>{noticia.titulo}</TableCell>
@@ -250,7 +305,13 @@ export default function News() {
                           </Button>
                         </TableCell>
                       </TableRow>
-                    ))
+                    )) : (
+                      <TableRow>
+                        <TableCell colSpan={4} className="text-center py-8 text-red-600">
+                          Error: Los datos no tienen el formato esperado
+                        </TableCell>
+                      </TableRow>
+                    )
                   )}
                 </TableBody>
               </Table>
