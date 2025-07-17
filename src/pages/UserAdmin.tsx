@@ -105,9 +105,12 @@ const UserAdmin = () => {
       
       setUsers(usersArray);
       
-      // Calculate active/inactive users (assuming all fetched users are active for now)
-      setActiveUsers(usersArray.length);
-      setInactiveUsers(0); // This would come from your API logic
+      // Calculate active/inactive users based on estado field
+      const active = usersArray.filter((user: User) => user.estado === 1).length;
+      const inactive = usersArray.filter((user: User) => user.estado === null || user.estado === 0).length;
+      
+      setActiveUsers(active);
+      setInactiveUsers(inactive);
       
     } catch (error) {
       console.error('Error fetching users:', error);
