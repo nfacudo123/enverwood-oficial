@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 import {
   Sidebar,
   SidebarContent,
@@ -41,7 +42,7 @@ import {
   CheckCircle,
   Clock,
   GraduationCap,
-  Link,
+  Link as LinkIcon,
   Repeat
 } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -96,7 +97,7 @@ const adminItems = [
   { title: "Noticias", icon: Bell, url: "/news" },
   { title: "Pagos", icon: CreditCard },
   { title: "Cambio de Patrocinador", icon: Repeat, url: "/sponsor-change" },
-  { title: "Link de Conferencias", icon: Link, url: "/linkconf" },
+  { title: "Link de Conferencias", icon: LinkIcon, url: "/linkconf" },
 ];
 
 export function AppSidebar() {
@@ -141,10 +142,10 @@ export function AppSidebar() {
                           {item.items.map((subItem) => (
                             <SidebarMenuSubItem key={subItem.title}>
                               <SidebarMenuSubButton asChild>
-                                <a href={subItem.url || "#"}>
+                                <Link to={subItem.url || "#"}>
                                   <subItem.icon className="w-4 h-4 flex-shrink-0" />
                                   <span className="text-sm leading-tight break-words whitespace-normal">{subItem.title}</span>
-                                </a>
+                                </Link>
                               </SidebarMenuSubButton>
                             </SidebarMenuSubItem>
                           ))}
@@ -153,10 +154,10 @@ export function AppSidebar() {
                     </Collapsible>
                   ) : (
                     <SidebarMenuButton asChild>
-                      <a href={item.url}>
+                      <Link to={item.url}>
                         <item.icon className="w-4 h-4 flex-shrink-0" />
                         <span className="text-sm leading-tight break-words whitespace-normal">{item.title}</span>
-                      </a>
+                      </Link>
                     </SidebarMenuButton>
                   )}
                 </SidebarMenuItem>
@@ -197,10 +198,10 @@ export function AppSidebar() {
                     </Collapsible>
                   ) : (
                     <SidebarMenuButton asChild>
-                      <a href={item.url || "#"}>
+                      <Link to={item.url || "#"}>
                         <item.icon className="w-4 h-4 flex-shrink-0" />
                         <span className="text-sm leading-tight break-words whitespace-normal">{item.title}</span>
-                      </a>
+                      </Link>
                     </SidebarMenuButton>
                   )}
                 </SidebarMenuItem>
