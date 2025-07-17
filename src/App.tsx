@@ -18,6 +18,7 @@ import UserAdmin from "./pages/UserAdmin";
 import Compras from "./pages/Compras";
 import News from "./pages/News";
 import SponsorChange from "./pages/SponsorChange";
+import LinkConferencias from "./pages/LinkConferencias";
 import ProtectedRoute from "./components/ProtectedRoute";
 import NotFound from "./pages/NotFound";
 
@@ -149,6 +150,15 @@ const App = () => (
             element={
               <ProtectedRoute>
                 <SponsorChange />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/link-conferencias" 
+            element={
+              <ProtectedRoute>
+                <LinkConferencias />
               </ProtectedRoute>
             } 
           />

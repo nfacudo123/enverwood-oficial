@@ -17,7 +17,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Copy, User, Link, LogOut, TrendingUp } from "lucide-react";
+import { Copy, User, Link, LogOut, TrendingUp, Video } from "lucide-react";
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
@@ -36,6 +36,7 @@ interface UserNavbarProps {
 export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProps) => {
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
+  const [conferenceLink, setConferenceLink] = useState<string>("");
   const { logout } = useAuth();
   const navigate = useNavigate();
 
@@ -66,7 +67,29 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
       }
     };
 
+    const fetchConferenceLink = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        const response = await fetch('http://localhost:4000/api/link', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setConferenceLink(data.link || '');
+        }
+      } catch (error) {
+        console.error('Error fetching conference link:', error);
+      }
+    };
+
     fetchUserInfo();
+    fetchConferenceLink();
   }, []);
 
   const getInitials = () => {
@@ -114,6 +137,44 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
 
   const handleProfileClick = () => {
     navigate('/profile');
+  };
+
+  const handleCopyConferenceLink = async () => {
+    if (!conferenceLink) {
+      await Swal.fire({
+        icon: 'warning',
+        title: 'Sin link',
+        text: 'No hay un link de conferencias configurado',
+        confirmButtonText: 'Entendido',
+        confirmButtonColor: '#f59e0b',
+        background: '#fff',
+        color: '#333',
+      });
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(conferenceLink);
+      await Swal.fire({
+        icon: 'success',
+        title: '¡Copiado!',
+        text: 'El link de conferencias ha sido copiado al portapapeles',
+        timer: 2000,
+        showConfirmButton: false,
+        background: '#fff',
+        color: '#333',
+      });
+    } catch (error) {
+      await Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se pudo copiar el link de conferencias',
+        confirmButtonText: 'Entendido',
+        confirmButtonColor: '#ef4444',
+        background: '#fff',
+        color: '#333',
+      });
+    }
   };
 
   const handleWithdrawSubmit = () => {
@@ -167,6 +228,13 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
                   >
                     <Link className="w-4 h-4" />
                     <span>Link de Registro</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    className="flex items-center gap-2 cursor-pointer"
+                    onClick={handleCopyConferenceLink}
+                  >
+                    <Video className="w-4 h-4" />
+                    <span>Link de Conferencias</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem 
                     className="flex items-center gap-2 cursor-pointer"
