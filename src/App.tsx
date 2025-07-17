@@ -15,6 +15,7 @@ import Refes from "./pages/Refes";
 import Meminverso from "./pages/Meminverso";
 import Material from "./pages/Material";
 import UserAdmin from "./pages/UserAdmin";
+import Compras from "./pages/Compras";
 import ProtectedRoute from "./components/ProtectedRoute";
 import NotFound from "./pages/NotFound";
 
@@ -110,6 +111,15 @@ const App = () => (
             element={
               <ProtectedRoute>
                 <Material />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/compras" 
+            element={
+              <ProtectedRoute>
+                <Compras />
               </ProtectedRoute>
             } 
           />

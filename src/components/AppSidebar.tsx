@@ -90,7 +90,8 @@ const adminItems = [
   { title: "Usuarios", icon: Users, url: "/userad" },
   {
     title: "Compras",
-    icon: ShoppingCart
+    icon: ShoppingCart,
+    url: "/compras"
   },
   { title: "Noticias", icon: Bell },
   { title: "Pagos", icon: CreditCard },
@@ -172,7 +173,7 @@ export function AppSidebar() {
             <SidebarMenu>
               {adminItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  {item.items ? (
+                  {"items" in item && item.items ? (
                     <Collapsible className="group/collapsible">
                       <CollapsibleTrigger asChild>
                         <SidebarMenuButton className="w-full">
@@ -183,7 +184,7 @@ export function AppSidebar() {
                       </CollapsibleTrigger>
                       <CollapsibleContent>
                         <SidebarMenuSub>
-                          {item.items.map((subItem) => (
+                          {("items" in item && Array.isArray(item.items) ? item.items : []).map((subItem) => (
                             <SidebarMenuSubItem key={subItem.title}>
                               <SidebarMenuSubButton>
                                 <subItem.icon className="w-4 h-4 flex-shrink-0" />
