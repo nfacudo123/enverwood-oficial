@@ -27,7 +27,7 @@ interface User {
   wallet_usdt: string | null;
   direccion: string | null;
   ciudad: string | null;
-  estado: string | null;
+  estado: number | null;
   created_at: string;
 }
 
@@ -184,7 +184,7 @@ const UserAdmin = () => {
                   <TableHeader>
                     <TableRow>
                       <TableHead className="w-12">#</TableHead>
-                      <TableHead>Activar</TableHead>
+                      <TableHead>Estado</TableHead>
                       <TableHead>Nombre</TableHead>
                       <TableHead>Apellido</TableHead>
                       <TableHead>Usuario</TableHead>
@@ -199,11 +199,17 @@ const UserAdmin = () => {
                     {users.map((user, index) => (
                       <TableRow key={user.id}>
                         <TableCell className="font-medium">{index + 1}</TableCell>
-                        <TableCell>
-                          <Badge variant="secondary" className="bg-green-100 text-green-800">
-                            Activar
-                          </Badge>
-                        </TableCell>
+                         <TableCell>
+                           {user.estado === null || user.estado === 0 ? (
+                             <Badge variant="destructive" className="bg-red-100 text-red-800">
+                               Inactivo
+                             </Badge>
+                           ) : (
+                             <Badge variant="secondary" className="bg-green-100 text-green-800">
+                               Activo
+                             </Badge>
+                           )}
+                         </TableCell>
                         <TableCell>{user.name}</TableCell>
                         <TableCell>{user.apellidos}</TableCell>
                         <TableCell>{user.username}</TableCell>
@@ -234,12 +240,27 @@ const UserAdmin = () => {
       <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
         <DialogContent className="max-w-3xl">
           <DialogHeader>
-            <DialogTitle>
-              Editar Usuario {selectedUser?.name} {selectedUser?.apellidos}
-            </DialogTitle>
-            <p className="text-sm text-muted-foreground">
-              Creado en: {selectedUser && new Date(selectedUser.created_at).toLocaleDateString()}
-            </p>
+            <div className="flex items-center justify-between">
+              <div className="space-y-2">
+                <DialogTitle>
+                  Editar Usuario {selectedUser?.name} {selectedUser?.apellidos}
+                </DialogTitle>
+                <p className="text-sm text-muted-foreground">
+                  Creado en: {selectedUser && new Date(selectedUser.created_at).toLocaleDateString()}
+                </p>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="estado_modal">Estado:</Label>
+                <select
+                  id="estado_modal"
+                  defaultValue={selectedUser?.estado === null || selectedUser?.estado === 0 ? "0" : "1"}
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <option value="1">Activo</option>
+                  <option value="0">Inactivo</option>
+                </select>
+              </div>
+            </div>
           </DialogHeader>
           {selectedUser && (
             <div className="space-y-4 py-4">
