@@ -90,11 +90,7 @@ const adminItems = [
   { title: "Usuarios", icon: Users, url: "/userad" },
   {
     title: "Compras",
-    icon: ShoppingCart,
-    items: [
-      { title: "Compras Pendientes", icon: Clock },
-      { title: "Compras Aprobadas", icon: CheckCircle },
-    ]
+    icon: ShoppingCart
   },
   { title: "Noticias", icon: Bell },
   { title: "Pagos", icon: CreditCard },
