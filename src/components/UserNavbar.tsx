@@ -229,12 +229,19 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
                     <Link className="w-4 h-4" />
                     <span>Link de Registro</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem 
+                   <DropdownMenuItem 
                     className="flex items-center gap-2 cursor-pointer"
-                    onClick={handleCopyConferenceLink}
+                    onClick={() => navigate('/linkconf')}
                   >
                     <Video className="w-4 h-4" />
                     <span>Link de Conferencias</span>
+                  </DropdownMenuItem>
+                   <DropdownMenuItem 
+                    className="flex items-center gap-2 cursor-pointer"
+                    onClick={handleCopyConferenceLink}
+                  >
+                    <Copy className="w-4 h-4" />
+                    <span>Copiar Link de Conferencias</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem 
                     className="flex items-center gap-2 cursor-pointer"

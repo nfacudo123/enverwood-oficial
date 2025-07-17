@@ -155,7 +155,7 @@ const App = () => (
           />
 
           <Route 
-            path="/link-conferencias" 
+            path="/linkconf" 
             element={
               <ProtectedRoute>
                 <LinkConferencias />
