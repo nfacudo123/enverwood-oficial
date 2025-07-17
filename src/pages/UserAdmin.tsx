@@ -234,11 +234,16 @@ const UserAdmin = () => {
       <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
         <DialogContent className="max-w-3xl">
           <DialogHeader>
-            <DialogTitle>Editar Usuario</DialogTitle>
+            <DialogTitle>
+              Editar Usuario {selectedUser?.name} {selectedUser?.apellidos}
+            </DialogTitle>
+            <p className="text-sm text-muted-foreground">
+              Creado en: {selectedUser && new Date(selectedUser.created_at).toLocaleDateString()}
+            </p>
           </DialogHeader>
           {selectedUser && (
             <div className="space-y-4 py-4">
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="name">Nombre</Label>
                   <Input
@@ -251,14 +256,6 @@ const UserAdmin = () => {
                   <Input
                     id="apellidos"
                     defaultValue={selectedUser.apellidos}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="created_at">Creado en:</Label>
-                  <Input
-                    id="created_at"
-                    defaultValue={new Date(selectedUser.created_at).toLocaleDateString()}
-                    readOnly
                   />
                 </div>
               </div>
