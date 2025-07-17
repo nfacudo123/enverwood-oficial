@@ -30,11 +30,45 @@ export default function Compras() {
 
   const fetchInversiones = async () => {
     try {
-      const response = await fetch('http://localhost:4000/api/inversiones');
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast({
+          title: "Error",
+          description: "No se encontró token de autenticación",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const response = await fetch('http://localhost:4000/api/inversiones', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const data = await response.json();
-      setInversiones(data);
+      
+      // Ensure data is an array
+      if (Array.isArray(data)) {
+        setInversiones(data);
+      } else {
+        console.error('API response is not an array:', data);
+        setInversiones([]);
+        toast({
+          title: "Error",
+          description: "Formato de datos inválido",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
       console.error('Error fetching inversiones:', error);
+      setInversiones([]); // Set empty array on error
       toast({
         title: "Error",
         description: "No se pudieron cargar las inversiones",
