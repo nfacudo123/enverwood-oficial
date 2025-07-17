@@ -17,6 +17,7 @@ import Material from "./pages/Material";
 import UserAdmin from "./pages/UserAdmin";
 import Compras from "./pages/Compras";
 import News from "./pages/News";
+import SponsorChange from "./pages/SponsorChange";
 import ProtectedRoute from "./components/ProtectedRoute";
 import NotFound from "./pages/NotFound";
 
@@ -139,6 +140,15 @@ const App = () => (
             element={
               <ProtectedRoute>
                 <News />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/sponsor-change" 
+            element={
+              <ProtectedRoute>
+                <SponsorChange />
               </ProtectedRoute>
             } 
           />

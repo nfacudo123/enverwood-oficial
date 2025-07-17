@@ -95,7 +95,7 @@ const adminItems = [
   },
   { title: "Noticias", icon: Bell, url: "/news" },
   { title: "Pagos", icon: CreditCard },
-  { title: "Cambio de Patrocinador", icon: Repeat },
+  { title: "Cambio de Patrocinador", icon: Repeat, url: "/sponsor-change" },
   { title: "Link de Conferencias", icon: Link },
 ];
 
