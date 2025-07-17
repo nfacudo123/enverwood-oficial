@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { UserNavbar } from "@/components/UserNavbar";
+import { OrganizationLayout } from "@/components/OrganizationLayout";
 
 export default function LinkConferencias() {
   const [link, setLink] = useState("");
@@ -110,12 +110,9 @@ export default function LinkConferencias() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <UserNavbar title="Link de Conferencias" />
+    <OrganizationLayout title="Link de Conferencias">
       <div className="container mx-auto p-6">
         <div className="max-w-2xl mx-auto">
-          <h1 className="text-3xl font-bold mb-6">Link de Conferencias</h1>
-          
           <Card>
             <CardHeader>
               <CardTitle>Configurar Link de Conferencias</CardTitle>
@@ -145,6 +142,6 @@ export default function LinkConferencias() {
           </Card>
         </div>
       </div>
-    </div>
+    </OrganizationLayout>
   );
 }
