@@ -129,21 +129,7 @@ export default function SponsorChange() {
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="grid gap-6 md:grid-cols-2">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Ingrese el usuario patrocinador:</label>
-              <Select value={sponsorId} onValueChange={setSponsorId}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar Usuario" />
-                </SelectTrigger>
-                <SelectContent>
-                  {users.map((user) => (
-                    <SelectItem key={user.id} value={user.id.toString()}>
-                      {user.name || user.username}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+
 
             <div className="space-y-2">
               <label className="text-sm font-medium">Ingrese el usuario hijo:</label>
@@ -160,6 +146,24 @@ export default function SponsorChange() {
                 </SelectContent>
               </Select>
             </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Ingrese el usuario padre:</label>
+              <Select value={sponsorId} onValueChange={setSponsorId}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Seleccionar Usuario" />
+                </SelectTrigger>
+                <SelectContent>
+                  {users.map((user) => (
+                    <SelectItem key={user.id} value={user.id.toString()}>
+                      {user.name || user.username}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            
           </div>
 
           <Button 
