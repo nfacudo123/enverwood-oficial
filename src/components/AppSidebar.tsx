@@ -88,8 +88,6 @@ const menuItems = [
 
 const adminItems = [
   { title: "Usuarios", icon: Users, url: "/userad" },
-  { title: "Liquidaciones", icon: Gavel },
-  { title: "Liquidar Rendimientos", icon: Settings },
   {
     title: "Compras",
     icon: ShoppingCart,
@@ -98,7 +96,6 @@ const adminItems = [
       { title: "Compras Aprobadas", icon: CheckCircle },
     ]
   },
-  { title: "Configurar Cursos", icon: GraduationCap },
   { title: "Noticias", icon: Bell },
   { title: "Pagos", icon: CreditCard },
   { title: "Cambio de Patrocinador", icon: Repeat },
