@@ -14,6 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 interface User {
   id: number;
   username: string;
+  name?: string;
 }
 
 export default function SponsorChange() {
@@ -51,7 +52,8 @@ export default function SponsorChange() {
       }
       
       const data = await response.json();
-      setUsers(data?.response?.users || []);
+      console.log('API response:', data);
+      setUsers(data?.usuarios || []);
     } catch (error) {
       console.error('Error:', error);
       toast({
@@ -136,7 +138,7 @@ export default function SponsorChange() {
                 <SelectContent>
                   {users.map((user) => (
                     <SelectItem key={user.id} value={user.id.toString()}>
-                      {user.username}
+                      {user.name || user.username}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -152,7 +154,7 @@ export default function SponsorChange() {
                 <SelectContent>
                   {users.map((user) => (
                     <SelectItem key={user.id} value={user.id.toString()}>
-                      {user.username}
+                      {user.name || user.username}
                     </SelectItem>
                   ))}
                 </SelectContent>
