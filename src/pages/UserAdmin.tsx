@@ -105,9 +105,18 @@ const UserAdmin = () => {
       
       setUsers(usersArray);
       
+      // Debug: log user data to see what we're working with
+      console.log('All users:', usersArray);
+      console.log('Users with estado details:', usersArray.map(u => ({ id: u.id, name: u.name, estado: u.estado, estadoType: typeof u.estado })));
+      
       // Calculate active/inactive users based on estado field
       const active = usersArray.filter((user: User) => user.estado === 1).length;
       const inactive = usersArray.filter((user: User) => user.estado === null || user.estado === 0).length;
+      
+      console.log('Active users count:', active);
+      console.log('Inactive users count:', inactive);
+      console.log('Users with estado === 1:', usersArray.filter((user: User) => user.estado === 1));
+      console.log('Users with estado null or 0:', usersArray.filter((user: User) => user.estado === null || user.estado === 0));
       
       setActiveUsers(active);
       setInactiveUsers(inactive);
