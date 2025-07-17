@@ -93,7 +93,7 @@ const adminItems = [
     icon: ShoppingCart,
     url: "/compras"
   },
-  { title: "Noticias", icon: Bell },
+  { title: "Noticias", icon: Bell, url: "/news" },
   { title: "Pagos", icon: CreditCard },
   { title: "Cambio de Patrocinador", icon: Repeat },
   { title: "Link de Conferencias", icon: Link },

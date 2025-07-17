@@ -16,6 +16,7 @@ import Meminverso from "./pages/Meminverso";
 import Material from "./pages/Material";
 import UserAdmin from "./pages/UserAdmin";
 import Compras from "./pages/Compras";
+import News from "./pages/News";
 import ProtectedRoute from "./components/ProtectedRoute";
 import NotFound from "./pages/NotFound";
 
@@ -129,6 +130,15 @@ const App = () => (
             element={
               <ProtectedRoute>
                 <UserAdmin />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/news" 
+            element={
+              <ProtectedRoute>
+                <News />
               </ProtectedRoute>
             } 
           />
