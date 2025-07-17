@@ -114,6 +114,7 @@ export default function LinkConferencias() {
       <UserNavbar title="Link de Conferencias" />
       <div className="container mx-auto p-6">
         <div className="max-w-2xl mx-auto">
+          <h1 className="text-3xl font-bold mb-6">Link de Conferencias</h1>
           
           <Card>
             <CardHeader>
@@ -125,7 +126,7 @@ export default function LinkConferencias() {
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="link">Link de Conferencias</Label>
+                  <Label htmlFor="link">Ingresa el Link de conferencias:</Label>
                   <Input
                     id="link"
                     type="url"
@@ -136,7 +137,7 @@ export default function LinkConferencias() {
                   />
                 </div>
                 
-                <Button type="submit" disabled={loading} className="w-full">
+                <Button type="submit" disabled={loading} className="w-full bg-green-500 hover:bg-green-600 text-white">
                   {loading ? "Actualizando..." : "Actualizar"}
                 </Button>
               </form>
