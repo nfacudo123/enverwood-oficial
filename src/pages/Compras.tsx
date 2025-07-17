@@ -9,16 +9,25 @@ import { Eye, Download, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface Inversion {
-  inversion_id: number;
+  id: number;
   usuario_id: number;
-  name: string;
-  apellidos: string;
-  username: string;
-  email: string;
   monto: string;
+  fecha_inicio: string;
+  fecha_termino: string | null;
+  tasa_diaria: number | null;
   activo: boolean;
   creado_en: string;
-  comprobante?: string | null;
+  comprobante: string | null;
+  name: string;
+  email: string;
+  apellidos: string;
+  username: string;
+  telefono: string;
+  wallet_usdt: string | null;
+  direccion: string | null;
+  ciudad: string | null;
+  estado: string;
+  role: string;
 }
 
 export default function Compras() {
@@ -124,11 +133,11 @@ export default function Compras() {
           </TableRow>
         ) : (
           inversiones.map((inversion) => (
-            <TableRow key={inversion.inversion_id}>
-              <TableCell>{inversion.inversion_id}</TableCell>
+            <TableRow key={inversion.id}>
+              <TableCell>{inversion.id}</TableCell>
               <TableCell>{inversion.name} {inversion.apellidos}</TableCell>
               <TableCell>{formatMonto(inversion.monto)}</TableCell>
-              <TableCell>{formatDate(inversion.creado_en)}</TableCell>
+              <TableCell>{formatDate(inversion.fecha_inicio)}</TableCell>
               <TableCell>
                 <Button 
                   variant="outline" 
@@ -149,7 +158,7 @@ export default function Compras() {
                   <Button 
                     variant="default" 
                     size="sm"
-                    onClick={() => handleAprobar(inversion.inversion_id)}
+                    onClick={() => handleAprobar(inversion.id)}
                   >
                     <CheckCircle className="h-4 w-4 mr-1" />
                     Aprobar
