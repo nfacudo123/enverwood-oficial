@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Users, UserCheck } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface User {
   id: number;
@@ -39,6 +40,20 @@ const UserAdmin = () => {
   const [activeUsers, setActiveUsers] = useState(0);
   const [inactiveUsers, setInactiveUsers] = useState(0);
   const [paises, setPaises] = useState<Array<{ id: number; nombre: string }>>([]);
+  const [editFormData, setEditFormData] = useState({
+    name: '',
+    email: '',
+    username: '',
+    apellidos: '',
+    pais_id: 0,
+    telefono: '',
+    ciudad: '',
+    direccion: '',
+    estado: 1,
+    password: '',
+    confirmPassword: ''
+  });
+  const [updating, setUpdating] = useState(false);
 
   const fetchUsers = async () => {
     try {
@@ -121,12 +136,108 @@ const UserAdmin = () => {
 
   const handleEditUser = (user: User) => {
     setSelectedUser(user);
+    setEditFormData({
+      name: user.name,
+      email: user.email,
+      username: user.username,
+      apellidos: user.apellidos,
+      pais_id: user.pais_id,
+      telefono: user.telefono,
+      ciudad: user.ciudad || '',
+      direccion: user.direccion || '',
+      estado: user.estado === null || user.estado === 0 ? 0 : 1,
+      password: '',
+      confirmPassword: ''
+    });
     setIsEditModalOpen(true);
   };
 
   const handleCloseModal = () => {
     setIsEditModalOpen(false);
     setSelectedUser(null);
+    setEditFormData({
+      name: '',
+      email: '',
+      username: '',
+      apellidos: '',
+      pais_id: 0,
+      telefono: '',
+      ciudad: '',
+      direccion: '',
+      estado: 1,
+      password: '',
+      confirmPassword: ''
+    });
+  };
+
+  const handleInputChange = (field: string, value: string | number) => {
+    setEditFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleUpdateUser = async () => {
+    if (!selectedUser) return;
+
+    // Validar contraseñas si se ingresaron
+    if (editFormData.password && editFormData.password !== editFormData.confirmPassword) {
+      toast.error('Las contraseñas no coinciden');
+      return;
+    }
+
+    try {
+      setUpdating(true);
+      
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast.error('No hay token de autenticación');
+        return;
+      }
+
+      // Preparar datos para enviar
+      const updateData: any = {
+        name: editFormData.name,
+        email: editFormData.email,
+        username: editFormData.username,
+        apellidos: editFormData.apellidos,
+        pais_id: Number(editFormData.pais_id),
+        telefono: editFormData.telefono,
+        wallet_usdt: null,
+        direccion: editFormData.direccion || null,
+        ciudad: editFormData.ciudad || null,
+        estado: Number(editFormData.estado)
+      };
+
+      // Solo incluir password si se ingresó una nueva
+      if (editFormData.password) {
+        updateData.password = editFormData.password;
+      }
+
+      const response = await fetch(`http://localhost:4000/api/usuarios/${selectedUser.id}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updateData)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.text();
+        throw new Error(`Error ${response.status}: ${errorData}`);
+      }
+
+      toast.success('Usuario actualizado exitosamente');
+      handleCloseModal();
+      fetchUsers(); // Recargar la lista de usuarios
+      
+    } catch (error) {
+      console.error('Error updating user:', error);
+      toast.error('Error al actualizar el usuario');
+    } finally {
+      setUpdating(false);
+    }
   };
 
   const getPaisName = (paisId: number) => {
@@ -253,7 +364,8 @@ const UserAdmin = () => {
                 <Label htmlFor="estado_modal">Estado:</Label>
                 <select
                   id="estado_modal"
-                  defaultValue={selectedUser?.estado === null || selectedUser?.estado === 0 ? "0" : "1"}
+                  value={editFormData.estado}
+                  onChange={(e) => handleInputChange('estado', Number(e.target.value))}
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <option value="1">Activo</option>
@@ -269,14 +381,16 @@ const UserAdmin = () => {
                   <Label htmlFor="name">Nombre</Label>
                   <Input
                     id="name"
-                    defaultValue={selectedUser.name}
+                    value={editFormData.name}
+                    onChange={(e) => handleInputChange('name', e.target.value)}
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="apellidos">Apellidos</Label>
                   <Input
                     id="apellidos"
-                    defaultValue={selectedUser.apellidos}
+                    value={editFormData.apellidos}
+                    onChange={(e) => handleInputChange('apellidos', e.target.value)}
                   />
                 </div>
               </div>
@@ -286,14 +400,16 @@ const UserAdmin = () => {
                   <Label htmlFor="username">Usuario</Label>
                   <Input
                     id="username"
-                    defaultValue={selectedUser.username}
+                    value={editFormData.username}
+                    onChange={(e) => handleInputChange('username', e.target.value)}
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
                   <Input
                     id="email"
-                    defaultValue={selectedUser.email}
+                    value={editFormData.email}
+                    onChange={(e) => handleInputChange('email', e.target.value)}
                   />
                 </div>
               </div>
@@ -304,6 +420,8 @@ const UserAdmin = () => {
                   <Input
                     id="nueva_password"
                     type="password"
+                    value={editFormData.password}
+                    onChange={(e) => handleInputChange('password', e.target.value)}
                     placeholder="Ingrese nueva contraseña"
                   />
                 </div>
@@ -312,6 +430,8 @@ const UserAdmin = () => {
                   <Input
                     id="confirmar_password"
                     type="password"
+                    value={editFormData.confirmPassword}
+                    onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
                     placeholder="Confirme la contraseña"
                   />
                 </div>
@@ -322,14 +442,16 @@ const UserAdmin = () => {
                   <Label htmlFor="telefono">Teléfono</Label>
                   <Input
                     id="telefono"
-                    defaultValue={selectedUser.telefono}
+                    value={editFormData.telefono}
+                    onChange={(e) => handleInputChange('telefono', e.target.value)}
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="pais">País</Label>
                   <select
                     id="pais"
-                    defaultValue={selectedUser.pais_id.toString()}
+                    value={editFormData.pais_id}
+                    onChange={(e) => handleInputChange('pais_id', Number(e.target.value))}
                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {paises.map((pais) => (
@@ -346,7 +468,8 @@ const UserAdmin = () => {
                   <Label htmlFor="ciudad">Ciudad</Label>
                   <Input
                     id="ciudad"
-                    defaultValue={selectedUser.ciudad || ''}
+                    value={editFormData.ciudad}
+                    onChange={(e) => handleInputChange('ciudad', e.target.value)}
                     placeholder="Ciudad"
                   />
                 </div>
@@ -354,7 +477,8 @@ const UserAdmin = () => {
                   <Label htmlFor="direccion">Dirección</Label>
                   <Input
                     id="direccion"
-                    defaultValue={selectedUser.direccion || ''}
+                    value={editFormData.direccion}
+                    onChange={(e) => handleInputChange('direccion', e.target.value)}
                     placeholder="Dirección"
                   />
                 </div>
@@ -365,8 +489,8 @@ const UserAdmin = () => {
             <Button variant="outline" onClick={handleCloseModal}>
               Cerrar
             </Button>
-            <Button onClick={handleCloseModal}>
-              Guardar Cambios
+            <Button onClick={handleUpdateUser} disabled={updating}>
+              {updating ? 'Guardando...' : 'Guardar Cambios'}
             </Button>
           </div>
         </DialogContent>
