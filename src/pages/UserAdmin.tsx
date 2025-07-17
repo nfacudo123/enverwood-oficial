@@ -28,7 +28,7 @@ interface User {
   wallet_usdt: string | null;
   direccion: string | null;
   ciudad: string | null;
-  estado: number | null;
+  estado: number | string | null;
   created_at: string;
 }
 
@@ -105,18 +105,9 @@ const UserAdmin = () => {
       
       setUsers(usersArray);
       
-      // Debug: log user data to see what we're working with
-      console.log('All users:', usersArray);
-      console.log('Users with estado details:', usersArray.map(u => ({ id: u.id, name: u.name, estado: u.estado, estadoType: typeof u.estado })));
-      
-      // Calculate active/inactive users based on estado field
-      const active = usersArray.filter((user: User) => user.estado === 1).length;
-      const inactive = usersArray.filter((user: User) => user.estado === null || user.estado === 0).length;
-      
-      console.log('Active users count:', active);
-      console.log('Inactive users count:', inactive);
-      console.log('Users with estado === 1:', usersArray.filter((user: User) => user.estado === 1));
-      console.log('Users with estado null or 0:', usersArray.filter((user: User) => user.estado === null || user.estado === 0));
+      // Calculate active/inactive users based on estado field (handle both string and number)
+      const active = usersArray.filter((user: User) => user.estado === 1 || user.estado === '1').length;
+      const inactive = usersArray.filter((user: User) => user.estado === null || user.estado === 0 || user.estado === '0').length;
       
       setActiveUsers(active);
       setInactiveUsers(inactive);
@@ -157,7 +148,7 @@ const UserAdmin = () => {
       telefono: user.telefono,
       ciudad: user.ciudad || '',
       direccion: user.direccion || '',
-      estado: user.estado === null || user.estado === 0 ? 0 : 1,
+      estado: user.estado === null || user.estado === 0 || user.estado === '0' ? 0 : 1,
       password: '',
       confirmPassword: ''
     });
@@ -323,15 +314,15 @@ const UserAdmin = () => {
                       <TableRow key={user.id}>
                         <TableCell className="font-medium">{index + 1}</TableCell>
                          <TableCell>
-                           {user.estado === null || user.estado === 0 ? (
-                             <Badge variant="destructive" className="bg-red-100 text-red-800">
-                               Inactivo
-                             </Badge>
-                           ) : (
-                             <Badge variant="secondary" className="bg-green-100 text-green-800">
-                               Activo
-                             </Badge>
-                           )}
+                            {user.estado === null || user.estado === 0 || user.estado === '0' ? (
+                              <Badge variant="destructive" className="bg-red-100 text-red-800">
+                                Inactivo
+                              </Badge>
+                            ) : (
+                              <Badge variant="secondary" className="bg-green-100 text-green-800">
+                                Activo
+                              </Badge>
+                            )}
                          </TableCell>
                         <TableCell>{user.name}</TableCell>
                         <TableCell>{user.apellidos}</TableCell>
