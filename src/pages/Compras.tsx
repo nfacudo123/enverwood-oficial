@@ -9,15 +9,16 @@ import { Eye, Download, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface Inversion {
-  id: number;
+  inversion_id: number;
   usuario_id: number;
+  name: string;
+  apellidos: string;
+  username: string;
+  email: string;
   monto: string;
-  fecha_inicio: string;
-  fecha_termino: string | null;
-  tasa_diaria: number | null;
   activo: boolean;
   creado_en: string;
-  comprobante: string | null;
+  comprobante?: string | null;
 }
 
 export default function Compras() {
@@ -55,11 +56,13 @@ export default function Compras() {
 
       const data = await response.json();
       
-      // Ensure data is an array
-      if (Array.isArray(data)) {
+      // Handle new JSON structure with inversiones array
+      if (data && data.inversiones && Array.isArray(data.inversiones)) {
+        setInversiones(data.inversiones);
+      } else if (Array.isArray(data)) {
         setInversiones(data);
       } else {
-        console.error('API response is not an array:', data);
+        console.error('API response format not recognized:', data);
         setInversiones([]);
         toast({
           title: "Error",
@@ -121,11 +124,11 @@ export default function Compras() {
           </TableRow>
         ) : (
           inversiones.map((inversion) => (
-            <TableRow key={inversion.id}>
-              <TableCell>{inversion.id}</TableCell>
-              <TableCell>Usuario {inversion.usuario_id}</TableCell>
+            <TableRow key={inversion.inversion_id}>
+              <TableCell>{inversion.inversion_id}</TableCell>
+              <TableCell>{inversion.name} {inversion.apellidos}</TableCell>
               <TableCell>{formatMonto(inversion.monto)}</TableCell>
-              <TableCell>{formatDate(inversion.fecha_inicio)}</TableCell>
+              <TableCell>{formatDate(inversion.creado_en)}</TableCell>
               <TableCell>
                 <Button 
                   variant="outline" 
@@ -146,7 +149,7 @@ export default function Compras() {
                   <Button 
                     variant="default" 
                     size="sm"
-                    onClick={() => handleAprobar(inversion.id)}
+                    onClick={() => handleAprobar(inversion.inversion_id)}
                   >
                     <CheckCircle className="h-4 w-4 mr-1" />
                     Aprobar
