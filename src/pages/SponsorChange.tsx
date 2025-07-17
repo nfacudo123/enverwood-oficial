@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { OrganizationLayout } from "@/components/OrganizationLayout";
 import {
   Select,
   SelectContent,
@@ -118,8 +119,9 @@ export default function SponsorChange() {
   };
 
   return (
-    <div className="container mx-auto p-6">
-      <Card>
+    <OrganizationLayout title="Cambio de Patrocinador">
+      <div className="container mx-auto p-6">
+        <Card>
         <CardHeader>
           <CardTitle>Cambiar de Patrocinador</CardTitle>
         </CardHeader>
@@ -167,6 +169,7 @@ export default function SponsorChange() {
           </Button>
         </CardContent>
       </Card>
-    </div>
+      </div>
+    </OrganizationLayout>
   );
 }
