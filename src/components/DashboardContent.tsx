@@ -15,8 +15,13 @@ export function DashboardContent() {
     const fetchUserInfo = async () => {
       try {
         const token = localStorage.getItem('token');
-        if (!token) return;
+        console.log('Token encontrado:', token ? 'Sí' : 'No');
+        if (!token) {
+          console.log('No hay token, no se puede obtener perfil');
+          return;
+        }
 
+        console.log('Haciendo fetch a /api/perfil...');
         const response = await fetch('http://localhost:4000/api/perfil', {
           method: 'GET',
           headers: {
@@ -25,9 +30,13 @@ export function DashboardContent() {
           },
         });
 
+        console.log('Respuesta del perfil:', response.status, response.ok);
         if (response.ok) {
           const data = await response.json();
+          console.log('Datos del perfil obtenidos:', data);
           setUserInfo(data);
+        } else {
+          console.log('Error en respuesta del perfil:', await response.text());
         }
       } catch (error) {
         console.error('Error fetching user info:', error);
