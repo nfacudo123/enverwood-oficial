@@ -278,55 +278,6 @@ export function DashboardContent() {
         </Card>
       </div>
 
-      {/* Afiliados Recientes */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Afiliados Recientes (Última Semana)</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {loading ? (
-            <div className="text-center py-4">
-              <p>Cargando referidos...</p>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b">
-                    <th className="text-left py-2">Nombre</th>
-                    <th className="text-left py-2">Usuario</th>
-                    <th className="text-left py-2">Email</th>
-                    <th className="text-left py-2">Fecha</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {referidos.length > 0 ? (
-                    referidos.map((referido) => (
-                      <tr key={referido.id} className="border-b">
-                        <td className="py-2">{referido.name} {referido.apellidos}</td>
-                        <td className="py-2">{referido.username}</td>
-                        <td className="py-2">{referido.email}</td>
-                        <td className="py-2">
-                          {referido.created_at 
-                            ? new Date(referido.created_at).toLocaleDateString('es-ES') 
-                            : 'N/A'
-                          }
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan={4} className="py-4 text-center text-gray-500">
-                        No hay referidos recientes de la última semana
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </CardContent>
-      </Card>
     </div>
   );
 }
