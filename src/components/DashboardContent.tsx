@@ -57,17 +57,31 @@ export function DashboardContent() {
         // Obtener ID del usuario actual
         const currentUserId = userInfo?.id;
         
-        // Filtrar referidos (excluir usuario actual y última semana)
+        console.log('Todos los referidos:', data);
+        console.log('Usuario actual ID:', currentUserId);
+        
+        // Filtrar referidos (excluir usuario actual y semana actual)
+        const today = new Date();
         const oneWeekAgo = new Date();
-        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+        oneWeekAgo.setDate(today.getDate() - 7);
+        
+        console.log('Fecha límite (una semana atrás):', oneWeekAgo);
         
         const filteredReferidos = data.filter((referido: any) => {
           // Excluir al usuario actual
-          if (referido.usuario_id === currentUserId) return false;
+          if (referido.usuario_id === currentUserId) {
+            console.log('Excluyendo usuario actual:', referido);
+            return false;
+          }
           
-          // Filtrar por fecha (última semana)
+          // Filtrar por fecha (semana actual)
           const referidoDate = new Date(referido.created_at);
-          return referidoDate >= oneWeekAgo;
+          console.log('Fecha del referido:', referidoDate, 'vs límite:', oneWeekAgo);
+          
+          const isWithinWeek = referidoDate >= oneWeekAgo;
+          console.log('¿Está dentro de la semana?', isWithinWeek, 'para:', referido.name);
+          
+          return isWithinWeek;
         }).map((referido: any) => ({
           id: referido.usuario_id,
           name: referido.name,
@@ -76,6 +90,8 @@ export function DashboardContent() {
           email: referido.correo,
           created_at: referido.created_at,
         }));
+        
+        console.log('Referidos filtrados:', filteredReferidos);
 
         setReferidos(filteredReferidos);
       }
