@@ -148,27 +148,6 @@ export function DashboardContent() {
 
   const stats = [
     {
-      title: "Capital en Gestión",
-      value: "$0",
-      icon: Building,
-      color: "text-yellow-600",
-      bgColor: "bg-yellow-50"
-    },
-    {
-      title: "Mis Rendimientos",
-      value: "$0",
-      icon: TrendingUp,
-      color: "text-red-600",
-      bgColor: "bg-red-50"
-    },
-    {
-      title: "XXXX",
-      value: "$0",
-      icon: DollarSign,
-      color: "text-green-600",
-      bgColor: "bg-green-50"
-    },
-    {
       title: "Comisiones Nivel 1",
       value: "$0",
       icon: Users,
