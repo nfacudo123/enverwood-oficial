@@ -57,47 +57,26 @@ export function DashboardContent() {
         // Obtener ID del usuario actual
         const currentUserId = userInfo?.id;
         
-        // Función para aplanar la estructura de árbol
-        const flattenReferidos = (nodes: any[], currentUserId?: number) => {
-          const result: any[] = [];
+        // Filtrar referidos (excluir usuario actual y última semana)
+        const oneWeekAgo = new Date();
+        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+        
+        const filteredReferidos = data.filter((referido: any) => {
+          // Excluir al usuario actual
+          if (referido.usuario_id === currentUserId) return false;
           
-          const traverse = (node: any) => {
-            // Excluir al usuario actual
-            if (node.id !== currentUserId) {
-              // Filtrar por fecha (última semana)
-              const oneWeekAgo = new Date();
-              oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-              
-              const nodeDate = new Date(node.created_at || node.fecha_registro || new Date());
-              
-              if (nodeDate >= oneWeekAgo) {
-                result.push({
-                  id: node.id,
-                  name: node.name || node.nombre,
-                  username: node.username,
-                  email: node.email,
-                  country: node.country || node.pais || 'N/A',
-                  created_at: node.created_at || node.fecha_registro,
-                });
-              }
-            }
-            
-            // Continuar con los hijos
-            if (node.children && Array.isArray(node.children)) {
-              node.children.forEach(traverse);
-            }
-          };
-          
-          if (Array.isArray(nodes)) {
-            nodes.forEach(traverse);
-          } else if (nodes) {
-            traverse(nodes);
-          }
-          
-          return result;
-        };
+          // Filtrar por fecha (última semana)
+          const referidoDate = new Date(referido.created_at);
+          return referidoDate >= oneWeekAgo;
+        }).map((referido: any) => ({
+          id: referido.usuario_id,
+          name: referido.name,
+          apellidos: referido.apellidos,
+          username: referido.username,
+          email: referido.correo,
+          created_at: referido.created_at,
+        }));
 
-        const filteredReferidos = flattenReferidos(data, currentUserId);
         setReferidos(filteredReferidos);
       }
     } catch (error) {
@@ -306,8 +285,9 @@ export function DashboardContent() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b">
+                    <th className="text-left py-2">Nombre</th>
                     <th className="text-left py-2">Usuario</th>
-                    <th className="text-left py-2">País</th>
+                    <th className="text-left py-2">Email</th>
                     <th className="text-left py-2">Fecha</th>
                   </tr>
                 </thead>
@@ -315,8 +295,9 @@ export function DashboardContent() {
                   {referidos.length > 0 ? (
                     referidos.map((referido) => (
                       <tr key={referido.id} className="border-b">
-                        <td className="py-2">{referido.username || referido.name}</td>
-                        <td className="py-2">{referido.country}</td>
+                        <td className="py-2">{referido.name} {referido.apellidos}</td>
+                        <td className="py-2">{referido.username}</td>
+                        <td className="py-2">{referido.email}</td>
                         <td className="py-2">
                           {referido.created_at 
                             ? new Date(referido.created_at).toLocaleDateString('es-ES') 
@@ -327,7 +308,7 @@ export function DashboardContent() {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={3} className="py-4 text-center text-gray-500">
+                      <td colSpan={4} className="py-4 text-center text-gray-500">
                         No hay referidos recientes de la última semana
                       </td>
                     </tr>
