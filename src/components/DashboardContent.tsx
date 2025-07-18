@@ -103,8 +103,12 @@ export function DashboardContent() {
   };
 
   useEffect(() => {
+    console.log('useEffect disparado - userInfo:', userInfo);
     if (userInfo?.id) {
+      console.log('Llamando fetchReferidos...');
       fetchReferidos();
+    } else {
+      console.log('No hay userInfo.id, no se llama fetchReferidos');
     }
   }, [userInfo]);
 
