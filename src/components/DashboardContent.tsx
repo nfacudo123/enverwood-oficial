@@ -6,6 +6,8 @@ import Swal from 'sweetalert2';
 
 export function DashboardContent() {
   const [userInfo, setUserInfo] = useState<any>(null);
+  const [referidos, setReferidos] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
   const currentUrl = window.location.origin;
   const personalRegistrationLink = `${currentUrl}/signup/${userInfo?.username || 'username'}`;
 
@@ -34,6 +36,82 @@ export function DashboardContent() {
 
     fetchUserInfo();
   }, []);
+
+  const fetchReferidos = async () => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      const response = await fetch('http://localhost:4000/api/mis-referidos', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        
+        // Obtener ID del usuario actual
+        const currentUserId = userInfo?.id;
+        
+        // Función para aplanar la estructura de árbol
+        const flattenReferidos = (nodes: any[], currentUserId?: number) => {
+          const result: any[] = [];
+          
+          const traverse = (node: any) => {
+            // Excluir al usuario actual
+            if (node.id !== currentUserId) {
+              // Filtrar por fecha (última semana)
+              const oneWeekAgo = new Date();
+              oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+              
+              const nodeDate = new Date(node.created_at || node.fecha_registro || new Date());
+              
+              if (nodeDate >= oneWeekAgo) {
+                result.push({
+                  id: node.id,
+                  name: node.name || node.nombre,
+                  username: node.username,
+                  email: node.email,
+                  country: node.country || node.pais || 'N/A',
+                  created_at: node.created_at || node.fecha_registro,
+                });
+              }
+            }
+            
+            // Continuar con los hijos
+            if (node.children && Array.isArray(node.children)) {
+              node.children.forEach(traverse);
+            }
+          };
+          
+          if (Array.isArray(nodes)) {
+            nodes.forEach(traverse);
+          } else if (nodes) {
+            traverse(nodes);
+          }
+          
+          return result;
+        };
+
+        const filteredReferidos = flattenReferidos(data, currentUserId);
+        setReferidos(filteredReferidos);
+      }
+    } catch (error) {
+      console.error('Error fetching referidos:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (userInfo?.id) {
+      fetchReferidos();
+    }
+  }, [userInfo]);
 
   const handleCopyLink = async () => {
     try {
@@ -216,27 +294,48 @@ export function DashboardContent() {
       {/* Afiliados Recientes */}
       <Card>
         <CardHeader>
-          <CardTitle>Afiliados Recientes</CardTitle>
+          <CardTitle>Afiliados Recientes (Última Semana)</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b">
-                  <th className="text-left py-2">Usuario</th>
-                  <th className="text-left py-2">País</th>
-                  <th className="text-left py-2">Fecha</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr className="border-b">
-                  <td className="py-2">gcol</td>
-                  <td className="py-2">Colombia</td>
-                  <td className="py-2">2024-07-08</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+          {loading ? (
+            <div className="text-center py-4">
+              <p>Cargando referidos...</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b">
+                    <th className="text-left py-2">Usuario</th>
+                    <th className="text-left py-2">País</th>
+                    <th className="text-left py-2">Fecha</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {referidos.length > 0 ? (
+                    referidos.map((referido) => (
+                      <tr key={referido.id} className="border-b">
+                        <td className="py-2">{referido.username || referido.name}</td>
+                        <td className="py-2">{referido.country}</td>
+                        <td className="py-2">
+                          {referido.created_at 
+                            ? new Date(referido.created_at).toLocaleDateString('es-ES') 
+                            : 'N/A'
+                          }
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={3} className="py-4 text-center text-gray-500">
+                        No hay referidos recientes de la última semana
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
