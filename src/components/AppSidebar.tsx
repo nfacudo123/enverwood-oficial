@@ -43,7 +43,8 @@ import {
   Clock,
   GraduationCap,
   Link as LinkIcon,
-  Repeat
+  Repeat,
+  Percent
 } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
@@ -96,6 +97,7 @@ const adminItems = [
   },
   { title: "Noticias", icon: Bell, url: "/news" },
   { title: "Pagos", icon: CreditCard },
+  { title: "Tipo de Comisión", icon: Percent, url: "/comtipo" },
   { title: "Cambio de Patrocinador", icon: Repeat, url: "/sponsor-change" },
   { title: "Link de Conferencias", icon: LinkIcon, url: "/linkconf" },
 ];

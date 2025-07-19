@@ -19,6 +19,7 @@ import Compras from "./pages/Compras";
 import News from "./pages/News";
 import SponsorChange from "./pages/SponsorChange";
 import LinkConferencias from "./pages/LinkConferencias";
+import ComTipo from "./pages/ComTipo";
 import ProtectedRoute from "./components/ProtectedRoute";
 import NotFound from "./pages/NotFound";
 
@@ -159,6 +160,15 @@ const App = () => (
             element={
               <ProtectedRoute>
                 <LinkConferencias />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/comtipo" 
+            element={
+              <ProtectedRoute>
+                <ComTipo />
               </ProtectedRoute>
             } 
           />
