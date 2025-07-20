@@ -191,14 +191,13 @@ export default function Compras() {
                   <Button 
                     variant="default" 
                     size="sm"
-                    data-id={inversion.id}
                     onClick={() => handleAprobar(inversion.id)}
                   >
                     <CheckCircle className="h-4 w-4 mr-1" />
                     Aprobar
                   </Button>
                 </TableCell>
-              )}
+               )}
             </TableRow>
           ))
         )}
