@@ -186,11 +186,12 @@ export default function Compras() {
                   {inversion.activo ? "Aprobada" : "Pendiente"}
                 </Badge>
               </TableCell>
-              {showAprobar && (
+               {showAprobar && (
                 <TableCell>
                   <Button 
                     variant="default" 
                     size="sm"
+                    data-id={inversion.id}
                     onClick={() => handleAprobar(inversion.id)}
                   >
                     <CheckCircle className="h-4 w-4 mr-1" />
