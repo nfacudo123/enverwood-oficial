@@ -103,12 +103,45 @@ export default function Compras() {
     return `$${parseFloat(monto).toLocaleString('es-ES', { minimumFractionDigits: 2 })}`;
   };
 
-  const handleAprobar = (id: number) => {
-    // TODO: Implementar la funcionalidad de aprobar cuando se proporcione la URL
-    toast({
-      title: "Funcionalidad pendiente",
-      description: "La URL para aprobar será proporcionada más tarde",
-    });
+  const handleAprobar = async (id: number) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast({
+          title: "Error",
+          description: "No se encontró token de autenticación",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const response = await fetch(`http://localhost:4000/api/inversiones/validar/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      toast({
+        title: "Éxito",
+        description: "Inversión validada y comisiones distribuidas correctamente",
+      });
+
+      // Recargar los datos para actualizar la tabla
+      fetchInversiones();
+    } catch (error) {
+      console.error('Error aprobando inversión:', error);
+      toast({
+        title: "Error",
+        description: "No se pudo aprobar la inversión",
+        variant: "destructive",
+      });
+    }
   };
 
   const InversionTable = ({ inversiones, showAprobar = false }: { inversiones: Inversion[], showAprobar?: boolean }) => (
