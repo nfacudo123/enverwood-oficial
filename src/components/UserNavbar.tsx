@@ -26,6 +26,7 @@ interface UserInfo {
   username: string;
   firstName: string;
   lastName: string;
+  wallet_usdt?: string;
 }
 
 interface UserNavbarProps {
@@ -59,7 +60,8 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
           setUserInfo({
             username: data.username || '',
             firstName: data.firstName || data.name || '',
-            lastName: data.lastName || data.apellidos || ''
+            lastName: data.lastName || data.apellidos || '',
+            wallet_usdt: data.wallet_usdt || ''
           });
         }
       } catch (error) {
@@ -278,7 +280,8 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
               <Input
                 id="payment-method"
                 defaultValue="USDT TRC20"
-                className="mt-1"
+                readOnly
+                className="mt-1 bg-gray-50"
               />
             </div>
 
@@ -286,8 +289,9 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
               <Label htmlFor="destination-account">Cuenta de Destino</Label>
               <Input
                 id="destination-account"
-                defaultValue="4444"
-                className="mt-1"
+                value={userInfo?.wallet_usdt || ''}
+                readOnly
+                className="mt-1 bg-gray-50"
               />
             </div>
 
@@ -299,21 +303,6 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
                 className="mt-1"
               />
             </div>
-
-            <div>
-              <Label htmlFor="auth-code">Código de Autentificación</Label>
-              <Input
-                id="auth-code"
-                className="mt-1"
-              />
-            </div>
-
-            <Button 
-              onClick={handleWithdrawSubmit}
-              className="w-full bg-green-500 hover:bg-green-600 text-white"
-            >
-              Solicitar Token de retiro
-            </Button>
           </div>
 
           <div className="flex justify-end pt-4">
