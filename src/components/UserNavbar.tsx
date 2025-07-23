@@ -38,6 +38,7 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
   const [conferenceLink, setConferenceLink] = useState<string>("");
+  const [withdrawAmount, setWithdrawAmount] = useState<string>("");
   const { logout } = useAuth();
   const navigate = useNavigate();
 
@@ -179,15 +180,79 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
     }
   };
 
-  const handleWithdrawSubmit = () => {
-    setIsWithdrawModalOpen(false);
-    Swal.fire({
-      icon: 'success',
-      title: 'Solicitud enviada',
-      text: 'Tu solicitud de retiro ha sido enviada correctamente',
-      confirmButtonText: 'Entendido',
-      confirmButtonColor: '#22c55e',
-    });
+  const handleWithdrawSubmit = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const idUser = localStorage.getItem('idUser');
+      
+      if (!token || !idUser) {
+        await Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No se encontró información de autenticación',
+          confirmButtonText: 'Entendido',
+          confirmButtonColor: '#ef4444',
+        });
+        return;
+      }
+
+      if (!withdrawAmount || parseFloat(withdrawAmount) <= 0) {
+        await Swal.fire({
+          icon: 'warning',
+          title: 'Monto inválido',
+          text: 'Por favor ingresa un monto válido',
+          confirmButtonText: 'Entendido',
+          confirmButtonColor: '#f59e0b',
+        });
+        return;
+      }
+
+      const withdrawData = {
+        usuario_id: parseInt(idUser),
+        monto: parseFloat(withdrawAmount),
+        wallet_usdt: userInfo?.wallet_usdt || '',
+        metodo_pago: 'USDT TRC20'
+      };
+
+      const response = await fetch('http://localhost:4000/api/retiros', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(withdrawData),
+      });
+
+      if (response.ok) {
+        setIsWithdrawModalOpen(false);
+        setWithdrawAmount('');
+        await Swal.fire({
+          icon: 'success',
+          title: 'Solicitud enviada',
+          text: 'Tu solicitud de retiro ha sido enviada correctamente',
+          confirmButtonText: 'Entendido',
+          confirmButtonColor: '#22c55e',
+        });
+      } else {
+        const errorData = await response.json().catch(() => ({ message: 'Error del servidor' }));
+        await Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: errorData.message || 'No se pudo procesar la solicitud de retiro',
+          confirmButtonText: 'Entendido',
+          confirmButtonColor: '#ef4444',
+        });
+      }
+    } catch (error) {
+      console.error('Error al enviar solicitud de retiro:', error);
+      await Swal.fire({
+        icon: 'error',
+        title: 'Error de conexión',
+        text: 'No se pudo conectar al servidor',
+        confirmButtonText: 'Entendido',
+        confirmButtonColor: '#ef4444',
+      });
+    }
   };
 
   return (
@@ -300,6 +365,11 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
               <Input
                 id="withdrawal-amount"
                 placeholder="Monto Disponible"
+                value={withdrawAmount}
+                onChange={(e) => setWithdrawAmount(e.target.value)}
+                type="number"
+                min="0"
+                step="0.01"
                 className="mt-1"
               />
             </div>
