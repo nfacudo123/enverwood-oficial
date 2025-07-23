@@ -39,6 +39,7 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
   const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
   const [conferenceLink, setConferenceLink] = useState<string>("");
   const [withdrawAmount, setWithdrawAmount] = useState<string>("");
+  const [availableBalance, setAvailableBalance] = useState<number>(0);
   const { logout } = useAuth();
   const navigate = useNavigate();
 
@@ -91,8 +92,38 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
       }
     };
 
+    const fetchWithdrawals = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const idUser = localStorage.getItem('idUser');
+        if (!token || !idUser) return;
+
+        const response = await fetch(`http://localhost:4000/api/retiros/${idUser}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (response.ok) {
+          const withdrawals = await response.json();
+          const pendingTotal = withdrawals
+            .filter((w: any) => w.estado === 0)
+            .reduce((sum: number, w: any) => sum + parseFloat(w.monto), 0);
+          const completedTotal = withdrawals
+            .filter((w: any) => w.estado === 1)
+            .reduce((sum: number, w: any) => sum + parseFloat(w.monto), 0);
+          
+          setAvailableBalance(pendingTotal - completedTotal);
+        }
+      } catch (error) {
+        console.error('Error fetching withdrawals:', error);
+      }
+    };
+
     fetchUserInfo();
     fetchConferenceLink();
+    fetchWithdrawals();
   }, []);
 
   const getInitials = () => {
@@ -203,6 +234,17 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
           text: 'Por favor ingresa un monto válido',
           confirmButtonText: 'Entendido',
           confirmButtonColor: '#f59e0b',
+        });
+        return;
+      }
+
+      if (parseFloat(withdrawAmount) > availableBalance) {
+        await Swal.fire({
+          icon: 'error',
+          title: 'Monto insuficiente',
+          text: `El monto a retirar (${withdrawAmount}) excede tu saldo disponible (${availableBalance.toFixed(2)})`,
+          confirmButtonText: 'Entendido',
+          confirmButtonColor: '#ef4444',
         });
         return;
       }
@@ -336,6 +378,12 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
             <p className="text-sm text-teal-700">
               <span className="font-medium">Alerta:</span> Puedes realizar la solicitud de tu retiro del 1 al 5 de cada mes.
               Recuerda que el valor se verá reflejado en tu Wallet el día 10 de cada mes.
+            </p>
+          </div>
+
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+            <p className="text-sm text-blue-700">
+              <span className="font-medium">Total Disponible:</span> ${availableBalance.toFixed(2)}
             </p>
           </div>
 
