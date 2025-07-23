@@ -40,6 +40,7 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
   const [conferenceLink, setConferenceLink] = useState<string>("");
   const [withdrawAmount, setWithdrawAmount] = useState<string>("");
   const [availableBalance, setAvailableBalance] = useState<number>(0);
+  const [alertMessage, setAlertMessage] = useState<string>("");
   const { logout } = useAuth();
   const navigate = useNavigate();
 
@@ -125,6 +126,13 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
     fetchConferenceLink();
     fetchWithdrawals();
   }, []);
+
+  const showAlert = (message: string) => {
+    setAlertMessage(message);
+    setTimeout(() => {
+      setAlertMessage("");
+    }, 3000);
+  };
 
   const getInitials = () => {
     if (userInfo?.firstName && userInfo?.lastName) {
@@ -228,32 +236,12 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
       }
 
       if (!withdrawAmount || parseFloat(withdrawAmount) <= 0) {
-        await Swal.fire({
-          icon: 'warning',
-          title: 'Monto inválido',
-          text: 'Por favor ingresa un monto válido',
-          confirmButtonText: 'Entendido',
-          confirmButtonColor: '#f59e0b',
-        });
+        showAlert('Por favor ingresa un monto válido');
         return;
       }
 
       if (parseFloat(withdrawAmount) > availableBalance) {
-        await Swal.fire({
-          icon: 'error',
-          title: 'Monto insuficiente',
-          text: 'El monto solicitado excede a tu saldo disponible',
-          confirmButtonText: 'Entendido',
-          confirmButtonColor: '#ef4444',
-          allowOutsideClick: true,
-          allowEscapeKey: true,
-          focusConfirm: true,
-          backdrop: true,
-          heightAuto: false,
-          customClass: {
-            container: 'swal-high-z-index'
-          }
-        });
+        showAlert('El monto solicitado excede a tu saldo disponible');
         return;
       }
 
@@ -394,6 +382,14 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
               <span className="font-medium">Total Disponible:</span> ${availableBalance.toFixed(2)}
             </p>
           </div>
+
+          {alertMessage && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4 animate-pulse">
+              <p className="text-sm text-red-700 font-medium">
+                {alertMessage}
+              </p>
+            </div>
+          )}
 
           <div className="space-y-4">
             <div>
