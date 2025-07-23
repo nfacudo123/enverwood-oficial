@@ -3,6 +3,15 @@
 @tailwind components;
 @tailwind utilities;
 
+/* SweetAlert2 z-index fix para modales */
+.swal-high-z-index {
+  z-index: 10000 !important;
+}
+
+.swal-high-z-index .swal2-container {
+  z-index: 10000 !important;
+}
+
 /* Definition of the design system. All colors, gradients, fonts, etc should be defined here. */
 
 @layer base {

@@ -245,9 +245,14 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
           text: 'El monto solicitado excede a tu saldo disponible',
           confirmButtonText: 'Entendido',
           confirmButtonColor: '#ef4444',
-          allowOutsideClick: false,
+          allowOutsideClick: true,
           allowEscapeKey: true,
-          focusConfirm: true
+          focusConfirm: true,
+          backdrop: true,
+          heightAuto: false,
+          customClass: {
+            container: 'swal-high-z-index'
+          }
         });
         return;
       }
