@@ -242,9 +242,12 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
         await Swal.fire({
           icon: 'error',
           title: 'Monto insuficiente',
-          text: `El monto a retirar (${withdrawAmount}) excede tu saldo disponible (${availableBalance.toFixed(2)})`,
+          text: 'El monto solicitado excede a tu saldo disponible',
           confirmButtonText: 'Entendido',
           confirmButtonColor: '#ef4444',
+          allowOutsideClick: false,
+          allowEscapeKey: true,
+          focusConfirm: true
         });
         return;
       }
