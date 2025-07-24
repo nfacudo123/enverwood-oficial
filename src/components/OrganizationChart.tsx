@@ -8,8 +8,11 @@ interface ReferidoData {
   apellidos: string;
   username: string;
   email: string;
-  nivel: number;
-  parent_id: number | null;
+  nivel: string | number;
+  usuario_id: number;
+  sponsor_id: number | null;
+  numero_directos?: number;
+  numero_subordinados?: number;
   children: ReferidoData[];
 }
 
@@ -23,14 +26,26 @@ interface TreeNodeProps {
 }
 
 const TreeNode: React.FC<TreeNodeProps> = ({ node, isRoot = false }) => {
-  const getLevelColor = (nivel: number) => {
-    switch (nivel) {
-      case 0: return 'bg-blue-500 text-white'; // Usuario actual
-      case 1: return 'bg-green-500 text-white'; // Nivel 1
-      case 2: return 'bg-yellow-500 text-white'; // Nivel 2
-      case 3: return 'bg-orange-500 text-white'; // Nivel 3
-      case 4: return 'bg-red-500 text-white'; // Nivel 4
-      case 5: return 'bg-purple-500 text-white'; // Nivel 5
+  // Función para convertir nivel de letra a número para colores
+  const getLevelNumber = (nivel: string | number): number => {
+    if (typeof nivel === 'number') return nivel;
+    
+    const levelMap: { [key: string]: number } = {
+      'A': 0, 'B': 1, 'C': 2, 'D': 3, 'E': 4, 'F': 5
+    };
+    
+    return levelMap[nivel] || 0;
+  };
+
+  const getLevelColor = (nivel: string | number) => {
+    const levelNum = getLevelNumber(nivel);
+    switch (levelNum) {
+      case 0: return 'bg-blue-500 text-white'; // Usuario actual (Nivel A)
+      case 1: return 'bg-green-500 text-white'; // Nivel B
+      case 2: return 'bg-yellow-500 text-white'; // Nivel C
+      case 3: return 'bg-orange-500 text-white'; // Nivel D
+      case 4: return 'bg-red-500 text-white'; // Nivel E
+      case 5: return 'bg-purple-500 text-white'; // Nivel F
       default: return 'bg-gray-500 text-white';
     }
   };
@@ -115,27 +130,27 @@ export const OrganizationChart: React.FC<OrganizationChartProps> = ({ data }) =>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 text-sm">
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 bg-blue-500 rounded border-2 border-white"></div>
-            <span>Usuario Actual</span>
+            <span>Nivel A</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 bg-green-500 rounded border-2 border-white"></div>
-            <span>Nivel 1</span>
+            <span>Nivel B</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 bg-yellow-500 rounded border-2 border-white"></div>
-            <span>Nivel 2</span>
+            <span>Nivel C</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 bg-orange-500 rounded border-2 border-white"></div>
-            <span>Nivel 3</span>
+            <span>Nivel D</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 bg-red-500 rounded border-2 border-white"></div>
-            <span>Nivel 4</span>
+            <span>Nivel E</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 bg-purple-500 rounded border-2 border-white"></div>
-            <span>Nivel 5</span>
+            <span>Nivel F</span>
           </div>
         </div>
       </div>

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 
 interface ReferidoData {
@@ -7,10 +6,11 @@ interface ReferidoData {
   apellidos: string;
   username: string;
   email: string;
-  nivel: number;
-  parent_id: number | null;
-  usuario_id?: number;
-  sponsor_id?: number;
+  nivel: string | number;
+  usuario_id: number;
+  sponsor_id: number | null;
+  numero_directos?: number;
+  numero_subordinados?: number;
   children: ReferidoData[];
 }
 
@@ -21,109 +21,70 @@ export const useReferidos = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Función para crear datos de ejemplo cuando no hay datos del servidor
-  const createSampleData = (): ReferidoData => {
-    return {
-      id: 1,
-      name: "Usuario",
-      apellidos: "Actual",
-      username: "usuario_actual",
-      email: "usuario@example.com",
-      nivel: 0,
-      parent_id: null,
-      children: [
-        {
-          id: 2,
-          name: "Referido",
-          apellidos: "Uno",
-          username: "referido1",
-          email: "referido1@example.com",
-          nivel: 1,
-          parent_id: 1,
-          children: [
-            {
-              id: 3,
-              name: "Sub",
-              apellidos: "Referido",
-              username: "subreferido1",
-              email: "sub1@example.com",
-              nivel: 2,
-              parent_id: 2,
-              children: []
-            }
-          ]
-        },
-        {
-          id: 4,
-          name: "Referido",
-          apellidos: "Dos",
-          username: "referido2",
-          email: "referido2@example.com",
-          nivel: 1,
-          parent_id: 1,
-          children: []
-        }
-      ]
-    };
+  // Función para obtener el usuario actual del localStorage
+  const getCurrentUser = () => {
+    try {
+      const userInfo = localStorage.getItem('userInfo');
+      return userInfo ? JSON.parse(userInfo) : null;
+    } catch {
+      return null;
+    }
   };
 
-  // Función para normalizar un nodo
+  // Función para normalizar un nodo del API
   const normalizeNode = (node: any): ReferidoData => {
     return {
-      id: node.id || node.usuario_id || Math.random(),
-      name: node.name || node.nombre || 'Usuario',
-      apellidos: node.apellidos || node.apellido || node.last_name || '',
-      username: node.username || node.usuario || node.email?.split('@')[0] || 'usuario',
-      email: node.email || '',
+      id: node.usuario_id || node.id,
+      name: node.name || '',
+      apellidos: node.apellidos || '',
+      username: node.username || '',
+      email: node.correo || node.email || '',
       nivel: node.nivel || 0,
-      parent_id: node.parent_id || node.sponsor_id || null,
-      usuario_id: node.usuario_id,
+      usuario_id: node.usuario_id || node.id,
       sponsor_id: node.sponsor_id,
+      numero_directos: node.numero_directos || 0,
+      numero_subordinados: node.numero_subordinados || 0,
       children: []
     };
   };
 
-  // Función para construir el árbol desde una lista plana usando sponsor_id
-  const buildTreeFromList = (nodes: any[], currentUser: any): ReferidoData => {
+  // Función para construir el árbol jerárquico
+  const buildTreeFromList = (nodes: any[]): ReferidoData | null => {
     console.log('Construyendo árbol desde lista:', nodes);
-    console.log('Usuario actual:', currentUser);
     
+    if (!nodes || nodes.length === 0) {
+      return null;
+    }
+
     // Normalizar todos los nodos
     const normalizedNodes = nodes.map(node => normalizeNode(node));
     
-    // Crear el nodo raíz (usuario actual)
-    const rootNode: ReferidoData = currentUser ? normalizeNode(currentUser) : {
-      id: 1,
-      name: "Usuario",
-      apellidos: "Actual",
-      username: "usuario_actual",
-      email: "usuario@example.com",
-      nivel: 0,
-      parent_id: null,
-      children: []
-    };
+    // Encontrar el usuario raíz (sponsor_id === null)
+    const rootNode = normalizedNodes.find(node => node.sponsor_id === null);
+    
+    if (!rootNode) {
+      console.error('No se encontró usuario raíz (sponsor_id === null)');
+      return null;
+    }
 
     // Función recursiva para construir hijos
-    const buildChildren = (parentId: number, nivel: number = 1): ReferidoData[] => {
+    const buildChildren = (parentId: number): ReferidoData[] => {
       return normalizedNodes
-        .filter(node => {
-          // Buscar nodos que tengan como sponsor_id o parent_id al padre actual
-          const isChild = node.sponsor_id === parentId || node.parent_id === parentId;
-          console.log(`Nodo ${node.id} (${node.name}) - sponsor_id: ${node.sponsor_id}, parent_id: ${node.parent_id}, es hijo de ${parentId}:`, isChild);
-          return isChild;
-        })
+        .filter(node => node.sponsor_id === parentId)
         .map(node => ({
           ...node,
-          nivel,
-          children: buildChildren(node.id, nivel + 1)
+          children: buildChildren(node.usuario_id)
         }));
     };
 
-    // Construir los hijos del usuario actual
-    rootNode.children = buildChildren(rootNode.id);
-    console.log('Árbol construido:', rootNode);
-    
-    return rootNode;
+    // Construir los hijos del usuario raíz
+    const treeWithChildren = {
+      ...rootNode,
+      children: buildChildren(rootNode.usuario_id)
+    };
+
+    console.log('Árbol construido:', treeWithChildren);
+    return treeWithChildren;
   };
 
   // Función para calcular totales recursivamente
@@ -145,12 +106,7 @@ export const useReferidos = () => {
       try {
         const token = localStorage.getItem('token');
         if (!token) {
-          console.log('No hay token, usando datos de ejemplo');
-          const sampleData = createSampleData();
-          const totals = calculateTotals(sampleData);
-          setReferidosData(sampleData);
-          setTotalEquipo(totals.total);
-          setDirectos(totals.directos);
+          setError('No hay token de autenticación');
           setIsLoading(false);
           return;
         }
@@ -169,14 +125,7 @@ export const useReferidos = () => {
         if (!response.ok) {
           const errorText = await response.text();
           console.error('Error HTTP:', response.status, errorText);
-          
-          // Si hay error del servidor, usar datos de ejemplo
-          const sampleData = createSampleData();
-          const totals = calculateTotals(sampleData);
-          setReferidosData(sampleData);
-          setTotalEquipo(totals.total);
-          setDirectos(totals.directos);
-          setError(`Error del servidor (${response.status}), mostrando datos de ejemplo`);
+          setError(`Error del servidor (${response.status}): ${errorText}`);
           setIsLoading(false);
           return;
         }
@@ -184,84 +133,28 @@ export const useReferidos = () => {
         const data = await response.json();
         console.log('Respuesta completa del servidor:', JSON.stringify(data, null, 2));
         
-        let processedData: ReferidoData | null = null;
-        let calculatedTotals = { total: 0, directos: 0 };
-
-        // Procesar diferentes estructuras de respuesta
-        if (data && typeof data === 'object') {
-          let referidosList: any[] = [];
-          let currentUser: any = null;
+        // El API devuelve un array directo según el ejemplo proporcionado
+        if (Array.isArray(data) && data.length > 0) {
+          console.log('Procesando array directo de referidos');
           
-          // Caso 1: { success: true, data: { usuario: {...}, referidos: [...] } }
-          if (data.success && data.data) {
-            console.log('Procesando estructura success.data');
-            currentUser = data.data.usuario || data.data.user;
-            referidosList = data.data.referidos || data.data.referrals || [];
-          }
-          // Caso 2: { usuario: {...}, referidos: [...] }
-          else if (data.usuario || data.user) {
-            console.log('Procesando estructura con usuario/referidos');
-            currentUser = data.usuario || data.user;
-            referidosList = data.referidos || data.referrals || [];
-          }
-          // Caso 3: Array directo de referidos
-          else if (Array.isArray(data)) {
-            console.log('Procesando array directo');
-            referidosList = data;
-          }
-          // Caso 4: Buscar arrays en propiedades
-          else {
-            console.log('Buscando arrays en propiedades');
-            const keys = Object.keys(data);
-            for (const key of keys) {
-              if (Array.isArray(data[key])) {
-                console.log(`Encontrado array en: ${key}`);
-                referidosList = data[key];
-                break;
-              }
-            }
-          }
-
-          console.log('Usuario actual encontrado:', currentUser);
-          console.log('Lista de referidos:', referidosList);
-
-          if (referidosList.length > 0 || currentUser) {
-            // Construir el árbol desde la lista
-            processedData = buildTreeFromList(referidosList, currentUser);
-            calculatedTotals = calculateTotals(processedData);
-            
-            // Usar totales del servidor si están disponibles
-            setTotalEquipo(data.totalEquipo || data.total_equipo || calculatedTotals.total);
-            setDirectos(data.directos || data.directos_count || calculatedTotals.directos);
-            setError(null);
-          } else {
-            console.log('No se encontraron referidos, usando datos de ejemplo');
-            processedData = createSampleData();
-            calculatedTotals = calculateTotals(processedData);
+          const processedData = buildTreeFromList(data);
+          
+          if (processedData) {
+            const calculatedTotals = calculateTotals(processedData);
+            setReferidosData(processedData);
             setTotalEquipo(calculatedTotals.total);
             setDirectos(calculatedTotals.directos);
-            setError('No se encontraron referidos en la respuesta del servidor');
+            setError(null);
+          } else {
+            setError('No se pudo construir la jerarquía de referidos');
           }
         } else {
-          console.log('Estructura de datos no reconocida, usando datos de ejemplo');
-          processedData = createSampleData();
-          calculatedTotals = calculateTotals(processedData);
-          setTotalEquipo(calculatedTotals.total);
-          setDirectos(calculatedTotals.directos);
-          setError('Estructura de datos no reconocida del servidor');
+          console.log('No se encontraron referidos en la respuesta');
+          setError('No se encontraron referidos');
         }
-
-        setReferidosData(processedData);
 
       } catch (error) {
         console.error('Error al obtener referidos:', error);
-        
-        // En caso de error, usar datos de ejemplo
-        const sampleData = createSampleData();
-        const totals = calculateTotals(sampleData);
-        setReferidosData(sampleData);
-        setTotalEquipo(totals.total);
-        setDirectos(totals.directos);
         setError(`Error de conexión: ${error instanceof Error ? error.message : 'Error desconocido'}`);
       } finally {
         setIsLoading(false);
