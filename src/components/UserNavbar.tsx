@@ -230,7 +230,8 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
     }
   };
 
-  const handleWithdrawSubmit = async () => {
+  const handleWithdrawSubmit = async (e?: React.FormEvent) => {
+    e?.preventDefault();
     try {
       const token = localStorage.getItem('token');
       const idUser = localStorage.getItem('idUser');
@@ -402,7 +403,7 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
             </div>
           )}
 
-          <div className="space-y-4">
+          <form onSubmit={handleWithdrawSubmit} className="space-y-4">
             <div>
               <Label htmlFor="payment-method">Medio de pago</Label>
               <Input
@@ -436,16 +437,16 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
                 className="mt-1"
               />
             </div>
-          </div>
 
-          <div className="flex justify-end pt-4">
-            <Button 
-              onClick={handleWithdrawSubmit}
-              className="bg-green-500 hover:bg-green-600 text-white"
-            >
-              Solicitar
-            </Button>
-          </div>
+            <div className="flex justify-end pt-4">
+              <Button 
+                type="submit"
+                className="bg-green-500 hover:bg-green-600 text-white"
+              >
+                Solicitar
+              </Button>
+            </div>
+          </form>
         </DialogContent>
       </Dialog>
     </>
