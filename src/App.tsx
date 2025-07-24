@@ -22,6 +22,7 @@ import LinkConferencias from "./pages/LinkConferencias";
 import ComTipo from "./pages/ComTipo";
 import Pagos from "./pages/Pagos";
 import ProtectedRoute from "./components/ProtectedRoute";
+import AdminRoute from "./components/AdminRoute";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -120,66 +121,67 @@ const App = () => (
             } 
           />
 
+          {/* Rutas administrativas - solo para admin (id = 1) */}
           <Route 
             path="/compras" 
             element={
-              <ProtectedRoute>
+              <AdminRoute>
                 <Compras />
-              </ProtectedRoute>
+              </AdminRoute>
             } 
           />
 
           <Route 
             path="/userad" 
             element={
-              <ProtectedRoute>
+              <AdminRoute>
                 <UserAdmin />
-              </ProtectedRoute>
+              </AdminRoute>
             } 
           />
 
           <Route 
             path="/news" 
             element={
-              <ProtectedRoute>
+              <AdminRoute>
                 <News />
-              </ProtectedRoute>
+              </AdminRoute>
             } 
           />
 
           <Route 
             path="/sponsor-change" 
             element={
-              <ProtectedRoute>
+              <AdminRoute>
                 <SponsorChange />
-              </ProtectedRoute>
+              </AdminRoute>
             } 
           />
 
           <Route 
             path="/linkconf" 
             element={
-              <ProtectedRoute>
+              <AdminRoute>
                 <LinkConferencias />
-              </ProtectedRoute>
+              </AdminRoute>
             } 
           />
 
           <Route 
             path="/comtipo" 
             element={
-              <ProtectedRoute>
+              <AdminRoute>
                 <ComTipo />
-              </ProtectedRoute>
+              </AdminRoute>
             } 
           />
 
           <Route 
             path="/pagos" 
             element={
-              <ProtectedRoute>
+              <AdminRoute>
                 <Pagos />
-              </ProtectedRoute>
+              </AdminRoute>
             } 
           />
           
