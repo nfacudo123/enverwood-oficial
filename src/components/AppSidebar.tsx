@@ -96,7 +96,7 @@ const adminItems = [
     url: "/compras"
   },
   { title: "Noticias", icon: Bell, url: "/news" },
-  { title: "Pagos", icon: CreditCard },
+  { title: "Pagos", icon: CreditCard, url: "/pagos" },
   { title: "Tipo de Comisión", icon: Percent, url: "/comtipo" },
   { title: "Cambio de Patrocinador", icon: Repeat, url: "/sponsor-change" },
   { title: "Link de Conferencias", icon: LinkIcon, url: "/linkconf" },
