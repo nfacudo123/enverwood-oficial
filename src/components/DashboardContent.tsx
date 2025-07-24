@@ -302,23 +302,25 @@ export function DashboardContent() {
       ) : (
         // Vista para usuario normal (ID distinto a 1) - solo muestra Comisiones Inversión
         <div className="space-y-6">
-          <div className="mb-6">
-            <Card className="hover:shadow-lg transition-shadow">
-              <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle className="text-lg">Comisiones Inversión</CardTitle>
-                <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm">
+          {/* Comisiones Inversión - Card principal centrada */}
+          <div className="flex justify-center">
+            <Card className="w-full max-w-4xl hover:shadow-lg transition-shadow border-2 border-red-200">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+                <CardTitle className="text-2xl font-bold text-red-600">Comisiones Inversión</CardTitle>
+                <button className="bg-white border-2 border-red-500 text-red-600 hover:bg-red-50 px-6 py-2 rounded-lg font-medium transition-colors">
                   Retirar Ganancias
                 </button>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold">
+                <div className="text-4xl font-bold text-red-600">
                   {getComisionValue("Inversor")}
                 </div>
               </CardContent>
             </Card>
           </div>
           
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {/* Grid de comisiones por niveles - 3 columnas, 2 filas */}
+          <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-3">
             {commonStats.map((stat, index) => (
               <Card key={index} className="hover:shadow-lg transition-shadow">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
