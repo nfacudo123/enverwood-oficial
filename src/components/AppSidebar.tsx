@@ -129,7 +129,7 @@ export function AppSidebar() {
       </SidebarHeader>
       
       <SidebarContent className="p-2">
-        {/* Solo mostrar menú principal si NO es admin */}
+        {/* Mostrar menú principal solo si NO es admin O si es admin (admin ve todo) */}
         {!isAdmin && (
           <SidebarGroup>
             <SidebarGroupLabel className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">
@@ -178,51 +178,101 @@ export function AppSidebar() {
           </SidebarGroup>
         )}
 
-        {/* Solo mostrar administración si es admin */}
+        {/* Solo mostrar administración si es admin (ID = 1) */}
         {isAdmin && (
-          <SidebarGroup>
-            <SidebarGroupLabel className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">
-              Administración
-            </SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {adminItems.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    {"items" in item && item.items ? (
-                      <Collapsible className="group/collapsible">
-                        <CollapsibleTrigger asChild>
-                          <SidebarMenuButton className="w-full">
+          <>
+            {/* Menú Principal para admin */}
+            <SidebarGroup>
+              <SidebarGroupLabel className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">
+                Menú Principal
+              </SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {menuItems.map((item) => (
+                    <SidebarMenuItem key={item.title}>
+                      {item.items ? (
+                        <Collapsible className="group/collapsible">
+                          <CollapsibleTrigger asChild>
+                            <SidebarMenuButton className="w-full">
+                              <item.icon className="w-4 h-4 flex-shrink-0" />
+                              <span className="text-sm leading-tight break-words whitespace-normal">{item.title}</span>
+                              <ChevronDown className="ml-auto h-4 w-4 flex-shrink-0 transition-transform group-data-[state=open]/collapsible:rotate-180" />
+                            </SidebarMenuButton>
+                          </CollapsibleTrigger>
+                          <CollapsibleContent>
+                            <SidebarMenuSub>
+                              {item.items.map((subItem) => (
+                                <SidebarMenuSubItem key={subItem.title}>
+                                  <SidebarMenuSubButton asChild>
+                                    <Link to={subItem.url || "#"}>
+                                      <subItem.icon className="w-4 h-4 flex-shrink-0" />
+                                      <span className="text-sm leading-tight break-words whitespace-normal">{subItem.title}</span>
+                                    </Link>
+                                  </SidebarMenuSubButton>
+                                </SidebarMenuSubItem>
+                              ))}
+                            </SidebarMenuSub>
+                          </CollapsibleContent>
+                        </Collapsible>
+                      ) : (
+                        <SidebarMenuButton asChild>
+                          <Link to={item.url}>
                             <item.icon className="w-4 h-4 flex-shrink-0" />
                             <span className="text-sm leading-tight break-words whitespace-normal">{item.title}</span>
-                            <ChevronDown className="ml-auto h-4 w-4 flex-shrink-0 transition-transform group-data-[state=open]/collapsible:rotate-180" />
-                          </SidebarMenuButton>
-                        </CollapsibleTrigger>
-                        <CollapsibleContent>
-                          <SidebarMenuSub>
-                            {("items" in item && Array.isArray(item.items) ? item.items : []).map((subItem) => (
-                              <SidebarMenuSubItem key={subItem.title}>
-                                <SidebarMenuSubButton>
-                                  <subItem.icon className="w-4 h-4 flex-shrink-0" />
-                                  <span className="text-sm leading-tight break-words whitespace-normal">{subItem.title}</span>
-                                </SidebarMenuSubButton>
-                              </SidebarMenuSubItem>
-                            ))}
-                          </SidebarMenuSub>
-                        </CollapsibleContent>
-                      </Collapsible>
-                    ) : (
-                      <SidebarMenuButton asChild>
-                        <Link to={item.url || "#"}>
-                          <item.icon className="w-4 h-4 flex-shrink-0" />
-                          <span className="text-sm leading-tight break-words whitespace-normal">{item.title}</span>
-                        </Link>
-                      </SidebarMenuButton>
-                    )}
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
+                          </Link>
+                        </SidebarMenuButton>
+                      )}
+                    </SidebarMenuItem>
+                  ))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+
+            {/* Administración solo para admin */}
+            <SidebarGroup>
+              <SidebarGroupLabel className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">
+                Administración
+              </SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {adminItems.map((item) => (
+                    <SidebarMenuItem key={item.title}>
+                      {"items" in item && item.items ? (
+                        <Collapsible className="group/collapsible">
+                          <CollapsibleTrigger asChild>
+                            <SidebarMenuButton className="w-full">
+                              <item.icon className="w-4 h-4 flex-shrink-0" />
+                              <span className="text-sm leading-tight break-words whitespace-normal">{item.title}</span>
+                              <ChevronDown className="ml-auto h-4 w-4 flex-shrink-0 transition-transform group-data-[state=open]/collapsible:rotate-180" />
+                            </SidebarMenuButton>
+                          </CollapsibleTrigger>
+                          <CollapsibleContent>
+                            <SidebarMenuSub>
+                              {("items" in item && Array.isArray(item.items) ? item.items : []).map((subItem) => (
+                                <SidebarMenuSubItem key={subItem.title}>
+                                  <SidebarMenuSubButton>
+                                    <subItem.icon className="w-4 h-4 flex-shrink-0" />
+                                    <span className="text-sm leading-tight break-words whitespace-normal">{subItem.title}</span>
+                                  </SidebarMenuSubButton>
+                                </SidebarMenuSubItem>
+                              ))}
+                            </SidebarMenuSub>
+                          </CollapsibleContent>
+                        </Collapsible>
+                      ) : (
+                        <SidebarMenuButton asChild>
+                          <Link to={item.url || "#"}>
+                            <item.icon className="w-4 h-4 flex-shrink-0" />
+                            <span className="text-sm leading-tight break-words whitespace-normal">{item.title}</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      )}
+                    </SidebarMenuItem>
+                  ))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          </>
         )}
       </SidebarContent>
 
