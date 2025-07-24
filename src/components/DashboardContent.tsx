@@ -7,6 +7,7 @@ import Swal from 'sweetalert2';
 export function DashboardContent() {
   const [userInfo, setUserInfo] = useState<any>(null);
   const [referidos, setReferidos] = useState<any[]>([]);
+  const [comisiones, setComisiones] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const currentUrl = window.location.origin;
   const personalRegistrationLink = `${currentUrl}/signup/${userInfo?.username || 'username'}`;
@@ -43,7 +44,31 @@ export function DashboardContent() {
       }
     };
 
+    const fetchComisiones = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const idUser = localStorage.getItem('idUser');
+        if (!token || !idUser) return;
+
+        const response = await fetch(`http://localhost:4000/api/comisiones/sumatorias/${idUser}`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setComisiones(data);
+        }
+      } catch (error) {
+        console.error('Error fetching comisiones:', error);
+      }
+    };
+
     fetchUserInfo();
+    fetchComisiones();
   }, []);
 
   const fetchReferidos = async () => {
@@ -146,45 +171,51 @@ export function DashboardContent() {
     }
   };
 
+  const getComisionValue = (descripcion: string) => {
+    if (!comisiones?.sumatorias) return "$0";
+    const comision = comisiones.sumatorias.find((c: any) => c.descripcion === descripcion);
+    return comision ? `$${parseFloat(comision.total).toFixed(2)}` : "$0";
+  };
+
   const stats = [
     {
       title: "Comisiones Nivel 1",
-      value: "$0",
+      value: getComisionValue("Nivel 1"),
       icon: Users,
       color: "text-purple-600",
       bgColor: "bg-purple-50"
     },
     {
       title: "Comisiones Nivel 2",
-      value: "$0",
+      value: getComisionValue("Nivel 2"),
       icon: Users,
       color: "text-blue-600",
       bgColor: "bg-blue-50"
     },
     {
       title: "Comisiones Nivel 3",
-      value: "$0",
+      value: getComisionValue("Nivel 3"),
       icon: Users,
       color: "text-orange-600",
       bgColor: "bg-orange-50"
     },
     {
       title: "Comisiones Nivel 4",
-      value: "$0",
+      value: getComisionValue("Nivel 4"),
       icon: Users,
       color: "text-orange-600",
       bgColor: "bg-orange-50"
     },
     {
       title: "Comisiones Nivel 5",
-      value: "$0",
+      value: getComisionValue("Nivel 5"),
       icon: Users,
       color: "text-orange-600",
       bgColor: "bg-orange-50"
     },
     {
       title: "Disponible para retiro",
-      value: "$0",
+      value: comisiones?.total_disponible ? `$${parseFloat(comisiones.total_disponible).toFixed(2)}` : "$0",
       icon: DollarSign,
       color: "text-green-600",
       bgColor: "bg-green-50"

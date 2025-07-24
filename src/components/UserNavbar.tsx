@@ -27,6 +27,7 @@ interface UserInfo {
   firstName: string;
   lastName: string;
   wallet_usdt?: string;
+  estado?: string;
 }
 
 interface UserNavbarProps {
@@ -64,7 +65,8 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
             username: data.username || '',
             firstName: data.firstName || data.name || '',
             lastName: data.lastName || data.apellidos || '',
-            wallet_usdt: data.wallet_usdt || ''
+            wallet_usdt: data.wallet_usdt || '',
+            estado: data.estado || '0'
           });
         }
       } catch (error) {
@@ -334,9 +336,9 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
                     <User className="w-4 h-4" />
                     <span>Perfil</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="flex items-center gap-2 text-red-600">
+                  <DropdownMenuItem className={`flex items-center gap-2 ${userInfo?.estado === '1' ? 'text-green-600' : 'text-red-600'}`}>
                     <User className="w-4 h-4" />
-                    <span>Usuario Inactivo</span>
+                    <span>{userInfo?.estado === '1' ? 'Usuario Activo' : 'Usuario Inactivo'}</span>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem 
