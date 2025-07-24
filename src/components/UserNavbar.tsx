@@ -93,34 +93,45 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
       }
     };
 
-    const fetchWithdrawals = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const idUser = localStorage.getItem('idUser');
-        if (!token || !idUser) return;
+  const fetchWithdrawals = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const idUser = localStorage.getItem('idUser');
+      if (!token || !idUser) return;
 
-        const response = await fetch(`http://localhost:4000/api/retiros/${idUser}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
+      // Obtener total de retiros (sin filtrar)
+      const retirosResponse = await fetch(`http://localhost:4000/api/retiros/${idUser}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
 
-        if (response.ok) {
-          const withdrawals = await response.json();
-          const pendingTotal = withdrawals
-            .filter((w: any) => w.estado === 0)
-            .reduce((sum: number, w: any) => sum + parseFloat(w.monto), 0);
-          const completedTotal = withdrawals
-            .filter((w: any) => w.estado === 1)
-            .reduce((sum: number, w: any) => sum + parseFloat(w.monto), 0);
-          
-          setAvailableBalance(pendingTotal - completedTotal);
-        }
-      } catch (error) {
-        console.error('Error fetching withdrawals:', error);
+      // Obtener total disponible de comisiones
+      const comisionesResponse = await fetch(`http://localhost:4000/api/comisiones/sumatorias/${idUser}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (retirosResponse.ok && comisionesResponse.ok) {
+        const withdrawals = await retirosResponse.json();
+        const comisiones = await comisionesResponse.json();
+        
+        // Sumar todos los retiros sin filtrar
+        const totalRetiros = withdrawals.reduce((sum: number, w: any) => sum + parseFloat(w.monto), 0);
+        
+        // Obtener total disponible de comisiones
+        const totalDisponible = parseFloat(comisiones.total_disponible || 0);
+        
+        // Calcular saldo disponible: total_disponible - total_retiros
+        setAvailableBalance(totalDisponible - totalRetiros);
       }
-    };
+    } catch (error) {
+      console.error('Error fetching withdrawals:', error);
+    }
+  };
 
     fetchUserInfo();
     fetchConferenceLink();
