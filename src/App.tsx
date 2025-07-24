@@ -20,6 +20,7 @@ import News from "./pages/News";
 import SponsorChange from "./pages/SponsorChange";
 import LinkConferencias from "./pages/LinkConferencias";
 import ComTipo from "./pages/ComTipo";
+import Pagos from "./pages/Pagos";
 import ProtectedRoute from "./components/ProtectedRoute";
 import NotFound from "./pages/NotFound";
 
@@ -169,6 +170,15 @@ const App = () => (
             element={
               <ProtectedRoute>
                 <ComTipo />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/pagos" 
+            element={
+              <ProtectedRoute>
+                <Pagos />
               </ProtectedRoute>
             } 
           />
