@@ -61,8 +61,12 @@ const Requests: React.FC = () => {
         const data = await response.json();
         // Filtrar solo los retiros del usuario actual
         const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+        console.log('userInfo:', userInfo);
         const currentUserId = parseInt(userInfo.id || '0');
+        console.log('currentUserId:', currentUserId);
+        console.log('all retiros:', data);
         const filteredData = data.filter((retiro: Retiro) => retiro.usuario_id === currentUserId);
+        console.log('filtered retiros:', filteredData);
         setRetiros(filteredData);
       } else {
         toast({
