@@ -34,6 +34,9 @@ const Material = () => {
   const [isLoadingResources, setIsLoadingResources] = useState(false);
   const { toast } = useToast();
 
+  // Check if current user is admin
+  const isAdmin = localStorage.getItem('idUser') === '1';
+
   const fetchResources = async () => {
     setIsLoadingResources(true);
     try {
@@ -194,12 +197,13 @@ const Material = () => {
       <div className="p-6">
         <div className="mb-6 flex justify-between items-center">
           <h1 className="text-2xl font-bold text-gray-900">Recursos y ayudas</h1>
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="bg-green-600 hover:bg-green-700 text-white">
-                + Agregar Recurso
-              </Button>
-            </DialogTrigger>
+          {isAdmin && (
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger asChild>
+                <Button className="bg-green-600 hover:bg-green-700 text-white">
+                  + Agregar Recurso
+                </Button>
+              </DialogTrigger>
             <DialogContent className="sm:max-w-md">
               <DialogHeader>
                 <DialogTitle className="text-lg font-semibold">Agregar Recurso</DialogTitle>
@@ -262,6 +266,7 @@ const Material = () => {
               </DialogFooter>
             </DialogContent>
           </Dialog>
+          )}
         </div>
         
         <div className="bg-white rounded-lg border border-gray-200 p-6">
@@ -312,21 +317,23 @@ const Material = () => {
                   <TableHead className="font-medium text-gray-900 cursor-pointer">
                     Ver <span className="text-gray-400">↕</span>
                   </TableHead>
-                  <TableHead className="font-medium text-gray-900 cursor-pointer">
-                    Eliminar <span className="text-gray-400">↕</span>
-                  </TableHead>
+                  {isAdmin && (
+                    <TableHead className="font-medium text-gray-900 cursor-pointer">
+                      Eliminar <span className="text-gray-400">↕</span>
+                    </TableHead>
+                  )}
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {isLoadingResources ? (
                   <TableRow>
-                    <TableCell colSpan={4} className="text-center py-8 text-gray-500">
+                    <TableCell colSpan={isAdmin ? 4 : 3} className="text-center py-8 text-gray-500">
                       Cargando recursos...
                     </TableCell>
                   </TableRow>
                 ) : resources.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={4} className="text-center py-8 text-gray-500">
+                    <TableCell colSpan={isAdmin ? 4 : 3} className="text-center py-8 text-gray-500">
                       No data available in table
                     </TableCell>
                   </TableRow>
@@ -350,16 +357,18 @@ const Material = () => {
                             Ver
                           </Button>
                         </TableCell>
-                        <TableCell>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleDelete(resource.id)}
-                            className="bg-red-600 text-white hover:bg-red-700"
-                          >
-                            Eliminar
-                          </Button>
-                        </TableCell>
+                        {isAdmin && (
+                          <TableCell>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleDelete(resource.id)}
+                              className="bg-red-600 text-white hover:bg-red-700"
+                            >
+                              Eliminar
+                            </Button>
+                          </TableCell>
+                        )}
                       </TableRow>
                     ))
                 )}
