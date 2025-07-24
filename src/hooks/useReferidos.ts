@@ -50,31 +50,55 @@ export const useReferidos = () => {
 
   // Función para construir el árbol jerárquico
   const buildTreeFromList = (nodes: any[]): ReferidoData | null => {
-    console.log('Construyendo árbol desde lista:', nodes);
+    console.log('=== DEBUGGEO CONSTRUCCIÓN ÁRBOL ===');
+    console.log('Nodes recibidos:', nodes);
     
     if (!nodes || nodes.length === 0) {
+      console.log('No hay nodos para procesar');
       return null;
     }
 
     // Normalizar todos los nodos
     const normalizedNodes = nodes.map(node => normalizeNode(node));
+    console.log('Nodos normalizados:', normalizedNodes);
     
-    // Encontrar el usuario raíz (sponsor_id === null)
-    const rootNode = normalizedNodes.find(node => node.sponsor_id === null);
+    // Obtener el usuario actual del localStorage
+    const currentUser = getCurrentUser();
+    console.log('Usuario actual del localStorage:', currentUser);
     
+    // Buscar el usuario actual en la lista de nodos
+    let rootNode = normalizedNodes.find(node => 
+      currentUser && (
+        node.usuario_id === currentUser.id || 
+        node.username === currentUser.username ||
+        node.email === currentUser.email
+      )
+    );
+    
+    // Si no encontramos el usuario actual, usar el primer nodo como raíz
     if (!rootNode) {
-      console.error('No se encontró usuario raíz (sponsor_id === null)');
+      console.log('Usuario actual no encontrado en nodos, usando primer nodo como raíz');
+      rootNode = normalizedNodes[0];
+    }
+    
+    console.log('Nodo raíz seleccionado:', rootNode);
+
+    if (!rootNode) {
+      console.error('No se pudo determinar el nodo raíz');
       return null;
     }
 
     // Función recursiva para construir hijos
     const buildChildren = (parentId: number): ReferidoData[] => {
-      return normalizedNodes
+      const children = normalizedNodes
         .filter(node => node.sponsor_id === parentId)
         .map(node => ({
           ...node,
           children: buildChildren(node.usuario_id)
         }));
+      
+      console.log(`Hijos de ${parentId}:`, children);
+      return children;
     };
 
     // Construir los hijos del usuario raíz
@@ -83,7 +107,7 @@ export const useReferidos = () => {
       children: buildChildren(rootNode.usuario_id)
     };
 
-    console.log('Árbol construido:', treeWithChildren);
+    console.log('Árbol final construido:', treeWithChildren);
     return treeWithChildren;
   };
 
@@ -105,6 +129,12 @@ export const useReferidos = () => {
     const fetchReferidos = async () => {
       try {
         const token = localStorage.getItem('token');
+        const userInfo = localStorage.getItem('userInfo');
+        
+        console.log('=== INICIO FETCH REFERIDOS ===');
+        console.log('Token disponible:', !!token);
+        console.log('UserInfo disponible:', userInfo);
+        
         if (!token) {
           setError('No hay token de autenticación');
           setIsLoading(false);
