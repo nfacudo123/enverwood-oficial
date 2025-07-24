@@ -177,7 +177,11 @@ export function DashboardContent() {
     return comision ? `$${parseFloat(comision.total).toFixed(2)}` : "$0";
   };
 
-  const stats = [
+  const idUser = localStorage.getItem('idUser');
+  const isAdmin = idUser === '1';
+
+  // Stats comunes para ambos tipos de usuario
+  const commonStats = [
     {
       title: "Comisiones Nivel 1",
       value: getComisionValue("Nivel 1"),
@@ -250,24 +254,100 @@ export function DashboardContent() {
         </div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {stats.map((stat, index) => (
-          <Card key={index} className="hover:shadow-lg transition-shadow">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">
-                {stat.title}
-              </CardTitle>
-              <div className={`p-2 rounded-lg ${stat.bgColor}`}>
-                <stat.icon className={`h-4 w-4 ${stat.color}`} />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      {/* Secciones condicionales según tipo de usuario */}
+      {isAdmin ? (
+        // Vista para administrador (ID = 1)
+        <div className="space-y-6">
+          {/* Comisiones Empresa */}
+          <div className="border-2 border-red-300 rounded-lg p-4">
+            <p className="text-sm text-red-600 mb-4">Si el iduser es 1 (ya que por defecto es el administrador)</p>
+            <div className="grid gap-4 md:grid-cols-2 mb-6">
+              <Card className="border-red-300">
+                <CardHeader>
+                  <CardTitle className="text-lg text-red-600">Comisiones Empresa</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold text-red-600">
+                    {getComisionValue("Empresa")}
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className="border-red-300">
+                <CardHeader>
+                  <CardTitle className="text-lg text-red-600">Comisiones Inversión</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold text-red-600">
+                    {getComisionValue("Inversor")}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+            
+            {/* Grid de comisiones por niveles */}
+            <div className="grid gap-4 md:grid-cols-3">
+              {commonStats.map((stat, index) => (
+                <Card key={index} className="hover:shadow-lg transition-shadow">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium text-gray-600">
+                      {stat.title}
+                    </CardTitle>
+                    <div className={`p-2 rounded-lg ${stat.bgColor}`}>
+                      <stat.icon className={`h-4 w-4 ${stat.color}`} />
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{stat.value}</div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </div>
+      ) : (
+        // Vista para usuario normal (ID distinto a 1)
+        <div className="space-y-6">
+          <div className="border-2 border-red-300 rounded-lg p-4">
+            <p className="text-sm text-red-600 mb-4">Si el iduser es distinto a 1</p>
+            
+            {/* Solo Comisiones Inversión */}
+            <div className="mb-6">
+              <Card className="border-red-300">
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <CardTitle className="text-lg text-red-600">Comisiones Inversión</CardTitle>
+                  <button className="border border-red-300 text-red-600 px-3 py-1 rounded text-sm">
+                    Retirar Ganancias
+                  </button>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold text-red-600">
+                    {getComisionValue("Inversor")}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+            
+            {/* Grid de comisiones por niveles */}
+            <div className="grid gap-4 md:grid-cols-3">
+              {commonStats.map((stat, index) => (
+                <Card key={index} className="hover:shadow-lg transition-shadow">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium text-gray-600">
+                      {stat.title}
+                    </CardTitle>
+                    <div className={`p-2 rounded-lg ${stat.bgColor}`}>
+                      <stat.icon className={`h-4 w-4 ${stat.color}`} />
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{stat.value}</div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* Progreso de pack actual */}
