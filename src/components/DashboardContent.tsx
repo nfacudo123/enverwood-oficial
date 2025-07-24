@@ -312,13 +312,6 @@ export function DashboardContent() {
             <Card className="w-full max-w-4xl hover:shadow-lg transition-shadow">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
                 <CardTitle className="text-2xl font-bold">Comisiones Inversión</CardTitle>
-                <Button 
-                  onClick={() => setIsWithdrawModalOpen(true)}
-                  variant="outline" 
-                  className="px-6 py-2 font-medium"
-                >
-                  Retirar Ganancias
-                </Button>
               </CardHeader>
               <CardContent>
                 <div className="text-4xl font-bold">
@@ -348,48 +341,6 @@ export function DashboardContent() {
           </div>
         </div>
       )}
-
-      {/* Modal de Retiro */}
-      <Dialog open={isWithdrawModalOpen} onOpenChange={setIsWithdrawModalOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Solicitar Retiro</DialogTitle>
-          </DialogHeader>
-          
-          <div className="bg-teal-50 border border-teal-200 rounded-lg p-3 mb-4">
-            <p className="text-sm text-teal-700">
-              <span className="font-medium">Alerta:</span> Puedes realizar la solicitud de tu retiro del 1 al 5 de cada mes.
-              Recuerda que el valor se verá reflejado en tu Wallet el día 10 de cada mes.
-            </p>
-          </div>
-
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="amount" className="text-sm font-medium">
-                Monto a retirar
-              </Label>
-              <Input
-                id="amount"
-                type="number"
-                placeholder="Ingrese el monto"
-                className="mt-1"
-              />
-            </div>
-
-            <div className="flex justify-end space-x-2">
-              <Button
-                variant="outline"
-                onClick={() => setIsWithdrawModalOpen(false)}
-              >
-                Cancelar
-              </Button>
-              <Button>
-                Confirmar Retiro
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* Progreso de pack actual */}
