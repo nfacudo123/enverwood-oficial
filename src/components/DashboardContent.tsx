@@ -1,6 +1,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Building, TrendingUp, Users, DollarSign, Copy } from "lucide-react";
 import Swal from 'sweetalert2';
 
@@ -9,6 +13,7 @@ export function DashboardContent() {
   const [referidos, setReferidos] = useState<any[]>([]);
   const [comisiones, setComisiones] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
   const currentUrl = window.location.origin;
   const personalRegistrationLink = `${currentUrl}/signup/${userInfo?.username || 'username'}`;
 
@@ -304,15 +309,19 @@ export function DashboardContent() {
         <div className="space-y-6">
           {/* Comisiones Inversión - Card principal centrada */}
           <div className="flex justify-center">
-            <Card className="w-full max-w-4xl hover:shadow-lg transition-shadow border-2 border-red-200">
+            <Card className="w-full max-w-4xl hover:shadow-lg transition-shadow">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-                <CardTitle className="text-2xl font-bold text-red-600">Comisiones Inversión</CardTitle>
-                <button className="bg-white border-2 border-red-500 text-red-600 hover:bg-red-50 px-6 py-2 rounded-lg font-medium transition-colors">
+                <CardTitle className="text-2xl font-bold">Comisiones Inversión</CardTitle>
+                <Button 
+                  onClick={() => setIsWithdrawModalOpen(true)}
+                  variant="outline" 
+                  className="px-6 py-2 font-medium"
+                >
                   Retirar Ganancias
-                </button>
+                </Button>
               </CardHeader>
               <CardContent>
-                <div className="text-4xl font-bold text-red-600">
+                <div className="text-4xl font-bold">
                   {getComisionValue("Inversor")}
                 </div>
               </CardContent>
@@ -339,6 +348,48 @@ export function DashboardContent() {
           </div>
         </div>
       )}
+
+      {/* Modal de Retiro */}
+      <Dialog open={isWithdrawModalOpen} onOpenChange={setIsWithdrawModalOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Solicitar Retiro</DialogTitle>
+          </DialogHeader>
+          
+          <div className="bg-teal-50 border border-teal-200 rounded-lg p-3 mb-4">
+            <p className="text-sm text-teal-700">
+              <span className="font-medium">Alerta:</span> Puedes realizar la solicitud de tu retiro del 1 al 5 de cada mes.
+              Recuerda que el valor se verá reflejado en tu Wallet el día 10 de cada mes.
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="amount" className="text-sm font-medium">
+                Monto a retirar
+              </Label>
+              <Input
+                id="amount"
+                type="number"
+                placeholder="Ingrese el monto"
+                className="mt-1"
+              />
+            </div>
+
+            <div className="flex justify-end space-x-2">
+              <Button
+                variant="outline"
+                onClick={() => setIsWithdrawModalOpen(false)}
+              >
+                Cancelar
+              </Button>
+              <Button>
+                Confirmar Retiro
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* Progreso de pack actual */}
