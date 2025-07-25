@@ -191,241 +191,52 @@ export function DashboardContent() {
       title: "Comisiones Nivel 1",
       value: getComisionValue("Nivel 1"),
       icon: Users,
-      color: "text-purple-600",
-      bgColor: "bg-purple-50"
+      className: "green-card-1"
     },
     {
-      title: "Comisiones Nivel 2",
+      title: "Comisiones Nivel 2", 
       value: getComisionValue("Nivel 2"),
       icon: Users,
-      color: "text-blue-600",
-      bgColor: "bg-blue-50"
+      className: "green-card-2"
     },
     {
       title: "Comisiones Nivel 3",
       value: getComisionValue("Nivel 3"),
       icon: Users,
-      color: "text-orange-600",
-      bgColor: "bg-orange-50"
+      className: "green-card-3"
     },
     {
       title: "Comisiones Nivel 4",
       value: getComisionValue("Nivel 4"),
       icon: Users,
-      color: "text-orange-600",
-      bgColor: "bg-orange-50"
+      className: "green-card-4"
     },
     {
       title: "Comisiones Nivel 5",
       value: getComisionValue("Nivel 5"),
       icon: Users,
-      color: "text-orange-600",
-      bgColor: "bg-orange-50"
+      className: "green-card-1"
     },
     {
       title: "Disponible para retiro",
       value: comisiones?.total_disponible ? `$${parseFloat(comisiones.total_disponible).toFixed(2)}` : "$0",
       icon: DollarSign,
-      color: "text-green-600",
-      bgColor: "bg-green-50"
+      className: "green-card-2"
     }
   ];
 
   return (
     <div className="flex-1 space-y-6 p-6 bg-background">
-      {/* Main Stats Cards - Green cards like template */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="green-card-1 text-white border-0 shadow-card">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-white/80 text-sm font-medium">Total Sales</p>
-                <p className="text-3xl font-bold text-white">{getComisionValue("Inversor").replace('$', '')}</p>
-              </div>
-              <div className="h-12 w-12 bg-white/20 rounded-lg flex items-center justify-center">
-                <ShoppingCart className="h-6 w-6 text-white" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="green-card-2 text-white border-0 shadow-card">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-white/80 text-sm font-medium">New Orders</p>
-                <p className="text-3xl font-bold text-white">{referidos.length}</p>
-              </div>
-              <div className="h-12 w-12 bg-white/20 rounded-lg flex items-center justify-center">
-                <DollarSign className="h-6 w-6 text-white" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="green-card-3 text-white border-0 shadow-card">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-white/80 text-sm font-medium">New Users</p>
-                <p className="text-3xl font-bold text-white">{referidos.length}</p>
-              </div>
-              <div className="h-12 w-12 bg-white/20 rounded-lg flex items-center justify-center">
-                <UserCheck className="h-6 w-6 text-white" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="green-card-4 text-white border-0 shadow-card">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-white/80 text-sm font-medium">Unique Visitors</p>
-                <p className="text-3xl font-bold text-white">{comisiones?.total_disponible ? parseFloat(comisiones.total_disponible).toFixed(0) : '0'}</p>
-              </div>
-              <div className="h-12 w-12 bg-white/20 rounded-lg flex items-center justify-center">
-                <Bitcoin className="h-6 w-6 text-white" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Secondary Stats Grid */}
-      <div className="grid gap-6 md:grid-cols-3">
-        {/* Email Sent Card */}
-        <Card className="bg-card border border-border shadow-card">
-          <CardHeader>
-            <CardTitle className="text-lg font-semibold text-card-foreground">Email Sent</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex justify-between">
-              <div>
-                <p className="text-2xl font-bold text-card-foreground">{getComisionValue("Nivel 1").replace('$', '')}</p>
-                <p className="text-sm text-muted-foreground">Marketplace</p>
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-card-foreground">{referidos.length}</p>
-                <p className="text-sm text-muted-foreground">Last week</p>
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-card-foreground">{getComisionValue("Nivel 2").replace('$', '')}</p>
-                <p className="text-sm text-muted-foreground">Last Month</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Revenue Card */}
-        <Card className="bg-card border border-border shadow-card">
-          <CardHeader>
-            <CardTitle className="text-lg font-semibold text-card-foreground">Revenue</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex justify-between">
-              <div>
-                <p className="text-2xl font-bold text-card-foreground">{getComisionValue("Nivel 3").replace('$', '')}</p>
-                <p className="text-sm text-muted-foreground">Marketplace</p>
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-card-foreground">{getComisionValue("Nivel 4").replace('$', '')}</p>
-                <p className="text-sm text-muted-foreground">Last week</p>
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-card-foreground">{getComisionValue("Nivel 5").replace('$', '')}</p>
-                <p className="text-sm text-muted-foreground">Last Month</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Monthly Earnings Card */}
-        <Card className="bg-card border border-border shadow-card">
-          <CardHeader>
-            <CardTitle className="text-lg font-semibold text-card-foreground">Monthly Earnings</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex justify-between">
-              <div>
-                <p className="text-2xl font-bold text-card-foreground">{comisiones?.total_disponible ? `$${parseFloat(comisiones.total_disponible).toFixed(0)}` : '$0'}</p>
-                <p className="text-sm text-muted-foreground">Marketplace</p>
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-card-foreground">{referidos.length}</p>
-                <p className="text-sm text-muted-foreground">Last week</p>
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-card-foreground">{getComisionValue("Empresa").replace('$', '')}</p>
-                <p className="text-sm text-muted-foreground">Last Month</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Recent Candidates Table */}
-      <Card className="bg-card border border-border shadow-card">
-        <CardHeader>
-          <CardTitle className="text-xl font-semibold text-card-foreground">Recent Candidates</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-border">
-                  <th className="text-left py-3 px-4 font-semibold text-sm text-muted-foreground">Name</th>
-                  <th className="text-left py-3 px-4 font-semibold text-sm text-muted-foreground">Position</th>
-                  <th className="text-left py-3 px-4 font-semibold text-sm text-muted-foreground">Status</th>
-                  <th className="text-left py-3 px-4 font-semibold text-sm text-muted-foreground">Age</th>
-                  <th className="text-left py-3 px-4 font-semibold text-sm text-muted-foreground">Start date</th>
-                  <th className="text-left py-3 px-4 font-semibold text-sm text-muted-foreground">Salary</th>
-                </tr>
-              </thead>
-              <tbody>
-                {referidos.slice(0, 5).map((referido, index) => (
-                  <tr key={referido.id} className="border-b border-border hover:bg-accent/50">
-                    <td className="py-3 px-4 text-sm text-card-foreground font-medium">
-                      {referido.name} {referido.apellidos}
-                    </td>
-                    <td className="py-3 px-4 text-sm text-muted-foreground">
-                      System Architect
-                    </td>
-                    <td className="py-3 px-4">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success/10 text-success">
-                        Active
-                      </span>
-                    </td>
-                    <td className="py-3 px-4 text-sm text-muted-foreground">25</td>
-                    <td className="py-3 px-4 text-sm text-muted-foreground">
-                      {new Date(referido.created_at).toLocaleDateString()}
-                    </td>
-                    <td className="py-3 px-4 text-sm text-muted-foreground">$320,800</td>
-                  </tr>
-                ))}
-                {referidos.length === 0 && (
-                  <tr>
-                    <td colSpan={6} className="py-8 text-center text-muted-foreground">
-                      No hay referidos recientes
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Copy Link Section */}
+      {/* Welcome Header */}
       <Card className="bg-accent border border-border shadow-card">
         <CardContent className="p-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <h3 className="text-lg font-semibold text-accent-foreground mb-2">
-                Comparte tu enlace de registro
+                Bienvenido a Enverwood {userInfo?.name || ''} {userInfo?.apellidos || ''}
               </h3>
               <p className="text-sm text-accent-foreground/80">
-                Invita a nuevos usuarios con tu enlace personal de registro
+                Gestiona tu negocio y monitorea tus ganancias
               </p>
             </div>
             <div className="flex items-center gap-3">
@@ -437,9 +248,184 @@ export function DashboardContent() {
                 className="bg-primary hover:bg-primary/90 text-primary-foreground"
               >
                 <Copy className="w-4 h-4 mr-2" />
-                Copiar
+                Copiar Link
               </Button>
             </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Stats Cards */}
+      {isAdmin ? (
+        // Vista para administrador (ID = 1) - muestra Comisiones Empresa y Comisiones Inversión
+        <div className="space-y-6">
+          <div className="grid gap-6 md:grid-cols-2 mb-6">
+            <Card className="green-card-1 text-white border-0 shadow-card">
+              <CardHeader>
+                <CardTitle className="text-xl text-white">Comisiones Empresa</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-4xl font-bold text-white">
+                  {getComisionValue("Empresa")}
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="green-card-2 text-white border-0 shadow-card">
+              <CardHeader>
+                <CardTitle className="text-xl text-white">Comisiones Inversión</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-4xl font-bold text-white">
+                  {getComisionValue("Inversor")}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+          
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {commonStats.map((stat, index) => (
+              <Card key={index} className={`${stat.className} text-white border-0 shadow-card`}>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium text-white/90">
+                    {stat.title}
+                  </CardTitle>
+                  <div className="h-10 w-10 bg-white/20 rounded-lg flex items-center justify-center">
+                    <stat.icon className="h-5 w-5 text-white" />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-white">{stat.value}</div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      ) : (
+        // Vista para usuario normal (ID distinto a 1) - solo muestra Comisiones Inversión
+        <div className="space-y-6">
+          {/* Comisiones Inversión - Card principal centrada */}
+          <div className="flex justify-center">
+            <Card className="w-full max-w-4xl green-card-1 text-white border-0 shadow-card">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+                <CardTitle className="text-3xl font-bold text-white">Comisiones Inversión</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-5xl font-bold text-white">
+                  {getComisionValue("Inversor")}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+          
+          {/* Grid de comisiones por niveles - 3 columnas, 2 filas */}
+          <div className="grid gap-6 md:grid-cols-3 lg:grid-cols-3">
+            {commonStats.map((stat, index) => (
+              <Card key={index} className={`${stat.className} text-white border-0 shadow-card`}>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium text-white/90">
+                    {stat.title}
+                  </CardTitle>
+                  <div className="h-10 w-10 bg-white/20 rounded-lg flex items-center justify-center">
+                    <stat.icon className="h-5 w-5 text-white" />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-white">{stat.value}</div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="grid gap-6 md:grid-cols-2">
+        {/* Progreso de pack actual */}
+        <Card className="bg-card border border-border shadow-card">
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold text-card-foreground">Progreso de pack actual</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="bg-destructive/10 text-destructive text-center py-8 rounded-lg border border-destructive/20">
+              <p className="font-medium">Sin Pack</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Resumen de tu negocio */}
+        <Card className="bg-card border border-border shadow-card">
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold text-card-foreground">Resumen de tu negocio</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground mb-2">Patrocinador: N/A</p>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-accent p-4 rounded-lg border border-border">
+                <p className="text-sm text-accent-foreground/80">Estado:</p>
+                <p className="font-medium text-accent-foreground">Inactivo</p>
+                <p className="text-sm text-accent-foreground/80 mt-2">Volumen Equipo:</p>
+                <p className="font-medium text-accent-foreground">Sin Rango</p>
+              </div>
+              <div className="bg-accent p-4 rounded-lg border border-border">
+                <p className="text-sm text-accent-foreground/80">Totales en equipo:</p>
+                <p className="font-medium text-accent-foreground">0</p>
+                <p className="text-sm text-accent-foreground/80 mt-2">Mis Directos:</p>
+                <p className="font-medium text-accent-foreground">{referidos.length}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Recent Candidates Table */}
+      <Card className="bg-card border border-border shadow-card">
+        <CardHeader>
+          <CardTitle className="text-xl font-semibold text-card-foreground">Referidos Recientes</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-border">
+                  <th className="text-left py-3 px-4 font-semibold text-sm text-muted-foreground">Nombre</th>
+                  <th className="text-left py-3 px-4 font-semibold text-sm text-muted-foreground">Username</th>
+                  <th className="text-left py-3 px-4 font-semibold text-sm text-muted-foreground">Email</th>
+                  <th className="text-left py-3 px-4 font-semibold text-sm text-muted-foreground">Estado</th>
+                  <th className="text-left py-3 px-4 font-semibold text-sm text-muted-foreground">Fecha Registro</th>
+                </tr>
+              </thead>
+              <tbody>
+                {referidos.slice(0, 5).map((referido, index) => (
+                  <tr key={referido.id} className="border-b border-border hover:bg-accent/50">
+                    <td className="py-3 px-4 text-sm text-card-foreground font-medium">
+                      {referido.name} {referido.apellidos}
+                    </td>
+                    <td className="py-3 px-4 text-sm text-muted-foreground">
+                      {referido.username}
+                    </td>
+                    <td className="py-3 px-4 text-sm text-muted-foreground">
+                      {referido.email}
+                    </td>
+                    <td className="py-3 px-4">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success/10 text-success border border-success/20">
+                        Activo
+                      </span>
+                    </td>
+                    <td className="py-3 px-4 text-sm text-muted-foreground">
+                      {new Date(referido.created_at).toLocaleDateString()}
+                    </td>
+                  </tr>
+                ))}
+                {referidos.length === 0 && (
+                  <tr>
+                    <td colSpan={5} className="py-8 text-center text-muted-foreground">
+                      No hay referidos recientes
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </div>
         </CardContent>
       </Card>
