@@ -17,7 +17,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Copy, User, Link, LogOut, TrendingUp, Video } from "lucide-react";
+import { Copy, User, Link, LogOut, TrendingUp, Video, Bell } from "lucide-react";
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
@@ -28,6 +28,7 @@ interface UserInfo {
   lastName: string;
   wallet_usdt?: string;
   estado?: string;
+  email?: string;
 }
 
 interface UserNavbarProps {
@@ -309,66 +310,81 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
 
   return (
     <>
-      <div className="flex h-16 shrink-0 items-center gap-2 border-b px-4 bg-white">
+      <div className="flex h-16 shrink-0 items-center gap-4 border-b border-border px-6 bg-background shadow-sm">
         {showSidebarTrigger && <SidebarTrigger className="-ml-1" />}
         <div className="flex-1">
           <div className="flex items-center justify-between">
-            <h1 className="text-xl font-semibold text-gray-900">
+            <h1 className="text-2xl font-semibold text-foreground">
               {title}
             </h1>
-            <div className="flex items-center gap-3">
-              <span className="text-sm text-gray-700">
-                Bienvenido, {userInfo?.username || 'Usuario'}
-              </span>
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <Button variant="ghost" size="icon" className="relative h-9 w-9 hover:bg-accent">
+                  <Bell className="h-5 w-5 text-muted-foreground" />
+                  <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-[10px] font-medium text-primary-foreground flex items-center justify-center">
+                    3
+                  </span>
+                </Button>
+              </div>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Avatar className="h-10 w-10 cursor-pointer">
-                    <AvatarFallback className="bg-orange-500 text-white text-sm font-medium">
-                      {getInitials()}
-                    </AvatarFallback>
-                  </Avatar>
+                  <div className="flex items-center gap-3 cursor-pointer hover:bg-accent rounded-lg p-2 transition-colors">
+                    <div className="text-right">
+                      <p className="text-sm font-medium text-foreground">{userInfo?.username || 'Usuario'}</p>
+                      <p className="text-xs text-muted-foreground">{userInfo?.estado === '1' ? 'En línea' : 'Inactivo'}</p>
+                    </div>
+                    <Avatar className="h-9 w-9">
+                      <AvatarFallback className="bg-primary text-primary-foreground text-sm font-medium">
+                        {getInitials()}
+                      </AvatarFallback>
+                    </Avatar>
+                  </div>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56 bg-white">
+                <DropdownMenuContent align="end" className="w-64 bg-card shadow-lg border border-border">
+                  <div className="px-3 py-2 border-b border-border">
+                    <p className="text-sm font-medium text-card-foreground">{userInfo?.username || 'Usuario'}</p>
+                    <p className="text-xs text-muted-foreground">{userInfo?.email || `${userInfo?.username}@enverwoood.com`}</p>
+                  </div>
                   <DropdownMenuItem 
-                    className="flex items-center gap-2 cursor-pointer"
+                    className="flex items-center gap-3 px-3 py-2 cursor-pointer hover:bg-accent"
                     onClick={handleProfileClick}
                   >
-                    <User className="w-4 h-4" />
-                    <span>Perfil</span>
+                    <User className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-sm">Mi Perfil</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem className={`flex items-center gap-2 ${userInfo?.estado === '1' ? 'text-green-600' : 'text-red-600'}`}>
-                    <User className="w-4 h-4" />
-                    <span>{userInfo?.estado === '1' ? 'Usuario Activo' : 'Usuario Inactivo'}</span>
+                  <DropdownMenuItem className={`flex items-center gap-3 px-3 py-2 ${userInfo?.estado === '1' ? 'text-success' : 'text-destructive'}`}>
+                    <div className={`w-2 h-2 rounded-full ${userInfo?.estado === '1' ? 'bg-success' : 'bg-destructive'}`} />
+                    <span className="text-sm">{userInfo?.estado === '1' ? 'Estado: Activo' : 'Estado: Inactivo'}</span>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem 
-                    className="flex items-center gap-2 cursor-pointer"
+                    className="flex items-center gap-3 px-3 py-2 cursor-pointer hover:bg-accent"
                     onClick={handleCopyLink}
                   >
-                    <Link className="w-4 h-4" />
-                    <span>Link de Registro</span>
+                    <Link className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-sm">Link de Registro</span>
                   </DropdownMenuItem>
                    <DropdownMenuItem 
-                    className="flex items-center gap-2 cursor-pointer"
+                    className="flex items-center gap-3 px-3 py-2 cursor-pointer hover:bg-accent"
                     onClick={handleCopyConferenceLink}
                   >
-                    <Copy className="w-4 h-4" />
-                    <span>Copiar Link de Conferencias</span>
+                    <Copy className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-sm">Link de Conferencias</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem 
-                    className="flex items-center gap-2 cursor-pointer"
+                    className="flex items-center gap-3 px-3 py-2 cursor-pointer hover:bg-accent"
                     onClick={() => setIsWithdrawModalOpen(true)}
                   >
-                    <TrendingUp className="w-4 h-4" />
-                    <span>Retirar Ganancias</span>
+                    <TrendingUp className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-sm">Retirar Ganancias</span>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem 
-                    className="flex items-center gap-2 text-red-600 cursor-pointer"
+                    className="flex items-center gap-3 px-3 py-2 text-destructive cursor-pointer hover:bg-destructive/10"
                     onClick={handleLogout}
                   >
                     <LogOut className="w-4 h-4" />
-                    <span>Cerrar Sesión</span>
+                    <span className="text-sm">Cerrar Sesión</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -384,15 +400,15 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
             <DialogTitle>Solicitar Retiro</DialogTitle>
           </DialogHeader>
           
-          <div className="bg-teal-50 border border-teal-200 rounded-lg p-3 mb-4">
-            <p className="text-sm text-teal-700">
+          <div className="bg-accent border border-border rounded-lg p-4 mb-4">
+            <p className="text-sm text-accent-foreground">
               <span className="font-medium">Alerta:</span> Puedes realizar la solicitud de tu retiro del 1 al 5 de cada mes.
               Recuerda que el valor se verá reflejado en tu Wallet el día 10 de cada mes.
             </p>
           </div>
 
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-            <p className="text-sm text-blue-700">
+          <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 mb-4">
+            <p className="text-sm text-primary">
               <span className="font-medium">Total Disponible:</span> ${availableBalance.toFixed(2)}
             </p>
           </div>
@@ -443,7 +459,7 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
             <div className="flex justify-end pt-4">
               <Button 
                 type="submit"
-                className="bg-green-500 hover:bg-green-600 text-white"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground"
               >
                 Solicitar
               </Button>

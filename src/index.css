@@ -16,51 +16,70 @@
 
 @layer base {
   :root {
-    --background: 210 20% 98%;
-    --foreground: 160 30% 15%;
+    /* Background colors - Light gray like the template */
+    --background: 0 0% 97%;
+    --foreground: 0 0% 25%;
 
+    /* Card colors */
     --card: 0 0% 100%;
-    --card-foreground: 160 30% 15%;
+    --card-foreground: 0 0% 25%;
 
+    /* Popover colors */
     --popover: 0 0% 100%;
-    --popover-foreground: 160 30% 15%;
+    --popover-foreground: 0 0% 25%;
 
-    --primary: 160 100% 25%;
+    /* Primary colors - Green theme matching template */
+    --primary: 162 73% 46%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 160 30% 96%;
-    --secondary-foreground: 160 30% 15%;
+    /* Secondary colors */
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 25%;
 
-    --muted: 160 10% 95%;
-    --muted-foreground: 160 15% 45%;
+    /* Muted colors */
+    --muted: 0 0% 94%;
+    --muted-foreground: 0 0% 45%;
 
-    --accent: 160 50% 90%;
-    --accent-foreground: 160 30% 15%;
+    /* Accent colors */
+    --accent: 162 73% 96%;
+    --accent-foreground: 0 0% 25%;
 
+    /* Destructive colors */
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 160 20% 90%;
-    --input: 160 20% 96%;
-    --ring: 160 100% 25%;
+    /* Border and input colors */
+    --border: 0 0% 90%;
+    --input: 0 0% 100%;
+    --ring: 162 73% 46%;
 
-    --radius: 0.75rem;
+    /* Border radius */
+    --radius: 0.5rem;
 
-    --sidebar-background: 160 30% 15%;
-    --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 160 50% 35%;
+    /* Sidebar colors - Dark theme like template */
+    --sidebar-background: 210 25% 12%;
+    --sidebar-foreground: 0 0% 85%;
+    --sidebar-primary: 162 73% 46%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 160 20% 25%;
-    --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 160 20% 20%;
-    --sidebar-ring: 160 100% 50%;
+    --sidebar-accent: 210 25% 16%;
+    --sidebar-accent-foreground: 0 0% 85%;
+    --sidebar-border: 210 25% 20%;
+    --sidebar-ring: 162 73% 46%;
 
-    --success: 142 76% 36%;
+    /* Additional status colors */
+    --success: 162 73% 46%;
     --success-foreground: 0 0% 100%;
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 100%;
     --info: 199 89% 48%;
     --info-foreground: 0 0% 100%;
+
+    /* Green gradient for cards */
+    --green-gradient: linear-gradient(135deg, #4fd1c7 0%, #4ade80 100%);
+    --green-card-1: 162 73% 56%;
+    --green-card-2: 162 73% 52%;
+    --green-card-3: 162 73% 48%;
+    --green-card-4: 162 73% 44%;
   }
 
 }
@@ -77,15 +96,32 @@
 }
 
 @layer utilities {
-  .gradient-bg {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  /* Green gradient cards like template */
+  .green-card-1 {
+    background: linear-gradient(135deg, hsl(162, 73%, 56%) 0%, hsl(162, 73%, 52%) 100%);
   }
   
-  .gradient-primary {
-    background: linear-gradient(135deg, #5b73e8 0%, #4c63d2 100%);
+  .green-card-2 {
+    background: linear-gradient(135deg, hsl(162, 73%, 52%) 0%, hsl(162, 73%, 48%) 100%);
   }
   
-  .shadow-elegant {
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  .green-card-3 {
+    background: linear-gradient(135deg, hsl(162, 73%, 48%) 0%, hsl(162, 73%, 44%) 100%);
+  }
+  
+  .green-card-4 {
+    background: linear-gradient(135deg, hsl(162, 73%, 44%) 0%, hsl(162, 73%, 40%) 100%);
+  }
+  
+  .sidebar-gradient {
+    background: linear-gradient(180deg, hsl(210, 25%, 12%) 0%, hsl(210, 25%, 10%) 100%);
+  }
+  
+  .shadow-card {
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  }
+  
+  .shadow-green {
+    box-shadow: 0 4px 6px -1px rgba(79, 209, 199, 0.1), 0 2px 4px -1px rgba(79, 209, 199, 0.06);
   }
 }

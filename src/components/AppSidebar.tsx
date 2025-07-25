@@ -118,59 +118,59 @@ export function AppSidebar() {
   };
 
   return (
-    <Sidebar className="border-r border-gray-200">
-      <SidebarHeader className="p-4 border-b border-gray-200">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-            <TrendingUp className="w-4 h-4 text-white" />
+    <Sidebar className="sidebar-gradient border-r-0">
+      <SidebarHeader className="p-6 border-b border-sidebar-border">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center shadow-lg">
+            <TrendingUp className="w-5 h-5 text-white" />
           </div>
-          <span className="font-bold text-lg text-gray-900">ENVERWOOOD</span>
+          <span className="font-bold text-xl text-sidebar-foreground tracking-wide">Admiry</span>
         </div>
       </SidebarHeader>
       
-      <SidebarContent className="p-2">
+      <SidebarContent className="p-4 space-y-1">
         {/* Mostrar menú principal solo si NO es admin O si es admin (admin ve todo) */}
         {!isAdmin && (
           <SidebarGroup>
-            <SidebarGroupLabel className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">
-              Menú Principal
+            <SidebarGroupLabel className="text-xs font-semibold text-sidebar-foreground/60 uppercase tracking-wider mb-3 px-3">
+              MENÚ PRINCIPAL
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 {menuItems.map((item) => (
                   <SidebarMenuItem key={item.title}>
-                    {item.items ? (
-                      <Collapsible className="group/collapsible">
-                        <CollapsibleTrigger asChild>
-                          <SidebarMenuButton className="w-full">
-                            <item.icon className="w-4 h-4 flex-shrink-0" />
-                            <span className="text-sm leading-tight break-words whitespace-normal">{item.title}</span>
-                            <ChevronDown className="ml-auto h-4 w-4 flex-shrink-0 transition-transform group-data-[state=open]/collapsible:rotate-180" />
-                          </SidebarMenuButton>
-                        </CollapsibleTrigger>
-                        <CollapsibleContent>
-                          <SidebarMenuSub>
-                            {item.items.map((subItem) => (
-                              <SidebarMenuSubItem key={subItem.title}>
-                                <SidebarMenuSubButton asChild>
-                                  <Link to={subItem.url || "#"}>
-                                    <subItem.icon className="w-4 h-4 flex-shrink-0" />
-                                    <span className="text-sm leading-tight break-words whitespace-normal">{subItem.title}</span>
-                                  </Link>
-                                </SidebarMenuSubButton>
-                              </SidebarMenuSubItem>
-                            ))}
-                          </SidebarMenuSub>
-                        </CollapsibleContent>
-                      </Collapsible>
-                    ) : (
-                      <SidebarMenuButton asChild>
-                        <Link to={item.url}>
-                          <item.icon className="w-4 h-4 flex-shrink-0" />
-                          <span className="text-sm leading-tight break-words whitespace-normal">{item.title}</span>
-                        </Link>
-                      </SidebarMenuButton>
-                    )}
+                      {item.items ? (
+                        <Collapsible className="group/collapsible">
+                          <CollapsibleTrigger asChild>
+                            <SidebarMenuButton className="w-full px-3 py-2.5 hover:bg-sidebar-accent rounded-lg text-sidebar-foreground hover:text-sidebar-primary transition-colors">
+                              <item.icon className="w-5 h-5 flex-shrink-0" />
+                              <span className="text-sm font-medium leading-tight break-words whitespace-normal">{item.title}</span>
+                              <ChevronDown className="ml-auto h-4 w-4 flex-shrink-0 transition-transform group-data-[state=open]/collapsible:rotate-180" />
+                            </SidebarMenuButton>
+                          </CollapsibleTrigger>
+                          <CollapsibleContent>
+                            <SidebarMenuSub className="ml-6 mt-1 space-y-1">
+                              {item.items.map((subItem) => (
+                                <SidebarMenuSubItem key={subItem.title}>
+                                  <SidebarMenuSubButton asChild>
+                                    <Link to={subItem.url || "#"} className="px-3 py-2 rounded-lg hover:bg-sidebar-accent text-sidebar-foreground/80 hover:text-sidebar-primary transition-colors">
+                                      <subItem.icon className="w-4 h-4 flex-shrink-0" />
+                                      <span className="text-sm leading-tight break-words whitespace-normal">{subItem.title}</span>
+                                    </Link>
+                                  </SidebarMenuSubButton>
+                                </SidebarMenuSubItem>
+                              ))}
+                            </SidebarMenuSub>
+                          </CollapsibleContent>
+                        </Collapsible>
+                      ) : (
+                        <SidebarMenuButton asChild>
+                          <Link to={item.url} className="px-3 py-2.5 hover:bg-sidebar-accent rounded-lg text-sidebar-foreground hover:text-sidebar-primary transition-colors flex items-center gap-3">
+                            <item.icon className="w-5 h-5 flex-shrink-0" />
+                            <span className="text-sm font-medium leading-tight break-words whitespace-normal">{item.title}</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      )}
                   </SidebarMenuItem>
                 ))}
               </SidebarMenu>
@@ -183,8 +183,8 @@ export function AppSidebar() {
           <>
             {/* Menú Principal para admin */}
             <SidebarGroup>
-              <SidebarGroupLabel className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">
-                Menú Principal
+              <SidebarGroupLabel className="text-xs font-semibold text-sidebar-foreground/60 uppercase tracking-wider mb-3 px-3">
+                MENÚ PRINCIPAL
               </SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
@@ -230,8 +230,8 @@ export function AppSidebar() {
 
             {/* Administración solo para admin */}
             <SidebarGroup>
-              <SidebarGroupLabel className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">
-                Administración
+              <SidebarGroupLabel className="text-xs font-semibold text-sidebar-foreground/60 uppercase tracking-wider mb-3 px-3 mt-6">
+                ADMINISTRACIÓN
               </SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
@@ -276,12 +276,12 @@ export function AppSidebar() {
         )}
       </SidebarContent>
 
-      <SidebarFooter className="p-4 border-t border-gray-200">
+      <SidebarFooter className="p-4 border-t border-sidebar-border">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton onClick={handleLogout} className="w-full text-red-600 hover:text-red-700 hover:bg-red-50">
-              <LogOut className="w-4 h-4" />
-              <span>Cerrar Sesión</span>
+            <SidebarMenuButton onClick={handleLogout} className="w-full px-3 py-2.5 hover:bg-sidebar-accent rounded-lg text-red-400 hover:text-red-300 transition-colors">
+              <LogOut className="w-5 h-5" />
+              <span className="text-sm font-medium">Cerrar Sesión</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
