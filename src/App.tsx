@@ -10,6 +10,7 @@ import Profile from "./pages/Profile";
 import Signup from "./pages/Signup";
 import VaucherPago from "./pages/VaucherPago";
 import Requests from "./pages/Requests";
+import Comision from "./pages/Comision";
 import Organizacion from "./pages/Organizacion";
 import Refes from "./pages/Refes";
 import Meminverso from "./pages/Meminverso";
@@ -81,6 +82,15 @@ const App = () => (
             element={
               <ProtectedRoute>
                 <Requests />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/comision" 
+            element={
+              <ProtectedRoute>
+                <Comision />
               </ProtectedRoute>
             } 
           />

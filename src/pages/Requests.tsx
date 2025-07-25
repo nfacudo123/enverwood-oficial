@@ -60,9 +60,9 @@ const Requests: React.FC = () => {
       if (response.ok) {
         const data = await response.json();
         // Filtrar solo los retiros del usuario actual
-        const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+        const userInfo = JSON.parse(localStorage.getItem('idUser') || '{}');
         console.log('userInfo:', userInfo);
-        const currentUserId = parseInt(userInfo.id || '0');
+        const currentUserId = parseInt(userInfo || '0');
         console.log('currentUserId:', currentUserId);
         console.log('all retiros:', data);
         const filteredData = data.filter((retiro: Retiro) => retiro.usuario_id === currentUserId);

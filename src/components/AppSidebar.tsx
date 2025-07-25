@@ -76,7 +76,7 @@ const menuItems = [
     icon: BarChart3,
     items: [
       { title: "Mis rendimientos", icon: TrendingUp, url: "#" },
-      { title: "Comisiones", icon: Target, url: "#" },
+      { title: "Comisiones", icon: Target, url: "/comision" },
     ]
   },
   {
