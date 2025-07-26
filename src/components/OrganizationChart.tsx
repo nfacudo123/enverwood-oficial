@@ -40,13 +40,13 @@ const TreeNode: React.FC<TreeNodeProps> = ({ node, isRoot = false }) => {
   const getLevelColor = (nivel: string | number) => {
     const levelNum = getLevelNumber(nivel);
     switch (levelNum) {
-      case 0: return 'bg-primary text-white shadow-lg'; // Usuario actual (Nivel A)
-      case 1: return 'bg-success text-white shadow-lg'; // Nivel B
-      case 2: return 'bg-warning text-gray-900 shadow-lg'; // Nivel C
-      case 3: return 'bg-info text-white shadow-lg'; // Nivel D
-      case 4: return 'bg-danger text-white shadow-lg'; // Nivel E
-      case 5: return 'bg-purple-600 text-white shadow-lg'; // Nivel F
-      default: return 'bg-gray-600 text-white shadow-lg';
+      case 0: return 'bg-primary text-white shadow-xl shadow-primary/30'; // Usuario actual (Nivel A)
+      case 1: return 'bg-success text-white shadow-xl shadow-success/30'; // Nivel B
+      case 2: return 'bg-emerald-500 text-white shadow-xl shadow-emerald-500/30'; // Nivel C
+      case 3: return 'bg-green-600 text-white shadow-xl shadow-green-600/30'; // Nivel D
+      case 4: return 'bg-teal-600 text-white shadow-xl shadow-teal-600/30'; // Nivel E
+      case 5: return 'bg-green-700 text-white shadow-xl shadow-green-700/30'; // Nivel F
+      default: return 'bg-green-800 text-white shadow-xl shadow-green-800/30';
     }
   };
 
@@ -72,7 +72,7 @@ const TreeNode: React.FC<TreeNodeProps> = ({ node, isRoot = false }) => {
           <div className="text-sm font-bold truncate mb-1">
             {node.name} {node.apellidos}
           </div>
-          <div className="text-xs opacity-90 truncate bg-black/20 rounded-full px-2 py-1">
+          <div className="text-xs opacity-90 truncate bg-black/30 rounded-full px-2 py-1">
             @{node.username}
           </div>
         </div>
@@ -123,37 +123,6 @@ export const OrganizationChart: React.FC<OrganizationChartProps> = ({ data }) =>
     <div className="w-full overflow-auto p-6">
       <div className="min-w-full">
         <TreeNode node={data} isRoot={true} />
-      </div>
-      
-      {/* Leyenda */}
-      <div className="mt-8 p-6 bg-card rounded-xl border border-border shadow-lg">
-        <h4 className="font-bold text-lg mb-4 text-foreground">Leyenda de Niveles:</h4>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 text-sm">
-          <div className="flex items-center gap-3 p-2 rounded-lg bg-background/50">
-            <div className="w-5 h-5 bg-primary rounded-full shadow-md"></div>
-            <span className="font-medium">Nivel A</span>
-          </div>
-          <div className="flex items-center gap-3 p-2 rounded-lg bg-background/50">
-            <div className="w-5 h-5 bg-success rounded-full shadow-md"></div>
-            <span className="font-medium">Nivel B</span>
-          </div>
-          <div className="flex items-center gap-3 p-2 rounded-lg bg-background/50">
-            <div className="w-5 h-5 bg-warning rounded-full shadow-md"></div>
-            <span className="font-medium">Nivel C</span>
-          </div>
-          <div className="flex items-center gap-3 p-2 rounded-lg bg-background/50">
-            <div className="w-5 h-5 bg-info rounded-full shadow-md"></div>
-            <span className="font-medium">Nivel D</span>
-          </div>
-          <div className="flex items-center gap-3 p-2 rounded-lg bg-background/50">
-            <div className="w-5 h-5 bg-danger rounded-full shadow-md"></div>
-            <span className="font-medium">Nivel E</span>
-          </div>
-          <div className="flex items-center gap-3 p-2 rounded-lg bg-background/50">
-            <div className="w-5 h-5 bg-purple-600 rounded-full shadow-md"></div>
-            <span className="font-medium">Nivel F</span>
-          </div>
-        </div>
       </div>
     </div>
   );
