@@ -17,9 +17,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Copy, User, Link, LogOut, TrendingUp, Video, Bell } from "lucide-react";
+import { Copy, User, Link, LogOut, TrendingUp, Video } from "lucide-react";
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import Swal from 'sweetalert2';
 
 interface UserInfo {
@@ -318,14 +319,7 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
               {title}
             </h1>
             <div className="flex items-center gap-4">
-              <div className="relative">
-                <Button variant="ghost" size="icon" className="relative h-9 w-9 hover:bg-accent">
-                  <Bell className="h-5 w-5 text-muted-foreground" />
-                  <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-[10px] font-medium text-primary-foreground flex items-center justify-center">
-                    3
-                  </span>
-                </Button>
-              </div>
+              <ThemeToggle />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <div className="flex items-center gap-3 cursor-pointer hover:bg-accent rounded-lg p-2 transition-colors">
