@@ -32,7 +32,7 @@ const Organizacion = () => {
             </div>
             <button 
               onClick={() => window.location.reload()} 
-              className="bg-gradient-to-r from-primary to-primary-glow text-white px-6 py-3 rounded-lg hover:shadow-lg hover:shadow-primary/25 transition-all duration-200 font-medium"
+              className="bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary/90 transition-all duration-200 font-medium"
             >
               Reintentar
             </button>
@@ -49,10 +49,10 @@ const Organizacion = () => {
         <OrganizationStats totalEquipo={totalEquipo} directos={directos} />
 
         {/* Gráfico de Organización */}
-        <Card className="bg-gradient-to-br from-card to-card-variant border-border shadow-xl">
-          <CardHeader className="bg-gradient-to-r from-primary/5 to-primary-glow/5 border-b border-border">
+        <Card className="bg-card border-border shadow-xl">
+          <CardHeader className="bg-primary/5 border-b border-border">
             <CardTitle className="flex items-center gap-3 text-foreground">
-              <div className="p-2 bg-gradient-to-br from-primary to-primary-glow rounded-lg shadow-lg">
+              <div className="p-2 bg-primary rounded-lg shadow-lg">
                 <Users className="w-5 h-5 text-white" />
               </div>
               <span className="text-xl font-bold">Gráfico de Organización</span>

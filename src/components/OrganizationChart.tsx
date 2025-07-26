@@ -40,13 +40,13 @@ const TreeNode: React.FC<TreeNodeProps> = ({ node, isRoot = false }) => {
   const getLevelColor = (nivel: string | number) => {
     const levelNum = getLevelNumber(nivel);
     switch (levelNum) {
-      case 0: return 'bg-gradient-to-br from-primary to-primary-glow text-white shadow-lg shadow-primary/25'; // Usuario actual (Nivel A)
-      case 1: return 'bg-gradient-to-br from-success to-success-glow text-white shadow-lg shadow-success/25'; // Nivel B
-      case 2: return 'bg-gradient-to-br from-warning to-warning-glow text-white shadow-lg shadow-warning/25'; // Nivel C
-      case 3: return 'bg-gradient-to-br from-info to-info-glow text-white shadow-lg shadow-info/25'; // Nivel D
-      case 4: return 'bg-gradient-to-br from-danger to-danger-glow text-white shadow-lg shadow-danger/25'; // Nivel E
-      case 5: return 'bg-gradient-to-br from-purple-500 to-purple-600 text-white shadow-lg shadow-purple-500/25'; // Nivel F
-      default: return 'bg-gradient-to-br from-gray-500 to-gray-600 text-white shadow-lg shadow-gray-500/25';
+      case 0: return 'bg-primary text-white shadow-lg'; // Usuario actual (Nivel A)
+      case 1: return 'bg-success text-white shadow-lg'; // Nivel B
+      case 2: return 'bg-warning text-gray-900 shadow-lg'; // Nivel C
+      case 3: return 'bg-info text-white shadow-lg'; // Nivel D
+      case 4: return 'bg-danger text-white shadow-lg'; // Nivel E
+      case 5: return 'bg-purple-600 text-white shadow-lg'; // Nivel F
+      default: return 'bg-gray-600 text-white shadow-lg';
     }
   };
 
@@ -72,7 +72,7 @@ const TreeNode: React.FC<TreeNodeProps> = ({ node, isRoot = false }) => {
           <div className="text-sm font-bold truncate mb-1">
             {node.name} {node.apellidos}
           </div>
-          <div className="text-xs opacity-80 truncate bg-white/10 rounded-full px-2 py-1">
+          <div className="text-xs opacity-90 truncate bg-black/20 rounded-full px-2 py-1">
             @{node.username}
           </div>
         </div>
@@ -80,7 +80,7 @@ const TreeNode: React.FC<TreeNodeProps> = ({ node, isRoot = false }) => {
         {/* Línea conectora hacia abajo */}
         {hasChildren && (
           <div className="absolute top-full left-1/2 transform -translate-x-1/2">
-            <div className="w-0.5 h-6 bg-gradient-to-b from-primary to-primary-glow"></div>
+            <div className="w-0.5 h-6 bg-primary"></div>
             <ChevronDown className="w-4 h-4 text-primary -mt-2 ml-2" />
           </div>
         )}
@@ -92,11 +92,11 @@ const TreeNode: React.FC<TreeNodeProps> = ({ node, isRoot = false }) => {
           {/* Línea horizontal conectora */}
           {node.children.length > 1 && (
             <div className="relative mb-6">
-              <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary via-primary-glow to-primary transform translate-y-[-12px]"></div>
+              <div className="absolute top-0 left-0 right-0 h-0.5 bg-primary transform translate-y-[-12px]"></div>
               {node.children.map((_, index) => (
                 <div
                   key={index}
-                  className="absolute w-0.5 h-3 bg-gradient-to-b from-primary to-primary-glow transform translate-y-[-12px]"
+                  className="absolute w-0.5 h-3 bg-primary transform translate-y-[-12px]"
                   style={{
                     left: `${(index / (node.children.length - 1)) * 100}%`,
                     marginLeft: '-1px'
@@ -126,31 +126,31 @@ export const OrganizationChart: React.FC<OrganizationChartProps> = ({ data }) =>
       </div>
       
       {/* Leyenda */}
-      <div className="mt-8 p-6 bg-gradient-to-r from-card to-card-variant rounded-xl border border-border shadow-lg">
+      <div className="mt-8 p-6 bg-card rounded-xl border border-border shadow-lg">
         <h4 className="font-bold text-lg mb-4 text-foreground">Leyenda de Niveles:</h4>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 text-sm">
           <div className="flex items-center gap-3 p-2 rounded-lg bg-background/50">
-            <div className="w-5 h-5 bg-gradient-to-br from-primary to-primary-glow rounded-full shadow-md"></div>
+            <div className="w-5 h-5 bg-primary rounded-full shadow-md"></div>
             <span className="font-medium">Nivel A</span>
           </div>
           <div className="flex items-center gap-3 p-2 rounded-lg bg-background/50">
-            <div className="w-5 h-5 bg-gradient-to-br from-success to-success-glow rounded-full shadow-md"></div>
+            <div className="w-5 h-5 bg-success rounded-full shadow-md"></div>
             <span className="font-medium">Nivel B</span>
           </div>
           <div className="flex items-center gap-3 p-2 rounded-lg bg-background/50">
-            <div className="w-5 h-5 bg-gradient-to-br from-warning to-warning-glow rounded-full shadow-md"></div>
+            <div className="w-5 h-5 bg-warning rounded-full shadow-md"></div>
             <span className="font-medium">Nivel C</span>
           </div>
           <div className="flex items-center gap-3 p-2 rounded-lg bg-background/50">
-            <div className="w-5 h-5 bg-gradient-to-br from-info to-info-glow rounded-full shadow-md"></div>
+            <div className="w-5 h-5 bg-info rounded-full shadow-md"></div>
             <span className="font-medium">Nivel D</span>
           </div>
           <div className="flex items-center gap-3 p-2 rounded-lg bg-background/50">
-            <div className="w-5 h-5 bg-gradient-to-br from-danger to-danger-glow rounded-full shadow-md"></div>
+            <div className="w-5 h-5 bg-danger rounded-full shadow-md"></div>
             <span className="font-medium">Nivel E</span>
           </div>
           <div className="flex items-center gap-3 p-2 rounded-lg bg-background/50">
-            <div className="w-5 h-5 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full shadow-md"></div>
+            <div className="w-5 h-5 bg-purple-600 rounded-full shadow-md"></div>
             <span className="font-medium">Nivel F</span>
           </div>
         </div>
