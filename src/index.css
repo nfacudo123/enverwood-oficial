@@ -82,6 +82,69 @@
     --green-card-4: 162 73% 44%;
   }
 
+  .dark {
+    /* Dark mode background - Dark green tones */
+    --background: 162 25% 8%;
+    --foreground: 162 10% 90%;
+
+    /* Card colors - Dark green */
+    --card: 162 25% 10%;
+    --card-foreground: 162 10% 90%;
+
+    /* Popover colors */
+    --popover: 162 25% 10%;
+    --popover-foreground: 162 10% 90%;
+
+    /* Primary colors - Bright green for contrast */
+    --primary: 162 73% 56%;
+    --primary-foreground: 162 25% 8%;
+
+    /* Secondary colors - Dark green */
+    --secondary: 162 25% 15%;
+    --secondary-foreground: 162 10% 85%;
+
+    /* Muted colors */
+    --muted: 162 25% 12%;
+    --muted-foreground: 162 10% 65%;
+
+    /* Accent colors */
+    --accent: 162 25% 15%;
+    --accent-foreground: 162 10% 85%;
+
+    /* Destructive colors */
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Border and input colors */
+    --border: 162 25% 20%;
+    --input: 162 25% 12%;
+    --ring: 162 73% 56%;
+
+    /* Sidebar colors - Even darker green */
+    --sidebar-background: 162 30% 6%;
+    --sidebar-foreground: 162 10% 85%;
+    --sidebar-primary: 162 73% 56%;
+    --sidebar-primary-foreground: 162 25% 8%;
+    --sidebar-accent: 162 25% 10%;
+    --sidebar-accent-foreground: 162 10% 85%;
+    --sidebar-border: 162 25% 15%;
+    --sidebar-ring: 162 73% 56%;
+
+    /* Additional status colors */
+    --success: 162 73% 56%;
+    --success-foreground: 162 25% 8%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+    --info: 199 89% 48%;
+    --info-foreground: 0 0% 100%;
+
+    /* Dark mode green cards */
+    --green-card-1: 162 25% 15%;
+    --green-card-2: 162 25% 12%;
+    --green-card-3: 162 25% 10%;
+    --green-card-4: 162 25% 8%;
+  }
+
 }
 
 @layer base {
