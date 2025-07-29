@@ -333,7 +333,6 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
                           ? `${userInfo.firstName} ${userInfo.lastName}` 
                           : userInfo?.username || 'Usuario'}
                       </p>
-                      <p className="text-xs text-muted-foreground">En línea</p>
                       <div className={`flex items-center gap-1 ${userInfo?.estado === '1' ? 'text-success' : 'text-destructive'}`}>
                         <div className={`w-2 h-2 rounded-full ${userInfo?.estado === '1' ? 'bg-success' : 'bg-destructive'}`} />
                         <span className="text-xs">{userInfo?.estado === '1' ? 'Usuario Activo' : 'Usuario Inactivo'}</span>
@@ -354,7 +353,7 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-64 bg-card shadow-lg border border-border">
                   <div className="px-3 py-2 border-b border-border">
-                    <p className="text-sm font-medium text-card-foreground">{userInfo?.username || 'Usuario'}</p>
+                    <p className="text-sm font-medium text-card-foreground">{userInfo?.firstName + ' '+ userInfo?.lastName  || 'Usuario'}</p>
                     <p className="text-xs text-muted-foreground">{userInfo?.email || `${userInfo?.username}@enverwoood.com`}</p>
                   </div>
                   <DropdownMenuItem 
