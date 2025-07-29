@@ -452,7 +452,7 @@ const Profile = () => {
                       
                       {/* Campo para foto de perfil */}
                       <div>
-                        <Label htmlFor="profile-photo">Foto de Perfil</Label>
+                        <Label htmlFor="foto">Foto de Perfil</Label>
                         <div className="mt-1 flex items-center gap-4">
                           <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
                             {profileData.foto ? (
@@ -466,7 +466,7 @@ const Profile = () => {
                             )}
                           </div>
                           <Input
-                            id="profile-photo"
+                            id="foto"
                             type="file"
                             accept="image/*"
                             onChange={handlePhotoChange}
