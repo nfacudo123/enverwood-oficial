@@ -321,13 +321,7 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
             <h1 className="text-2xl font-semibold text-foreground">
               {title}
             </h1>
-            <div className="flex items-center gap-6">
-              {/* Estado Activo - ahora en navbar principal */}
-              <div className={`flex items-center gap-2 ${userInfo?.estado === '1' ? 'text-success' : 'text-destructive'}`}>
-                <div className={`w-2 h-2 rounded-full ${userInfo?.estado === '1' ? 'bg-success' : 'bg-destructive'}`} />
-                <span className="text-sm font-medium">{userInfo?.estado === '1' ? 'Activo' : 'Inactivo'}</span>
-              </div>
-              
+            <div className="flex items-center gap-4">
               <ThemeToggle />
               
               <DropdownMenu>
@@ -340,6 +334,10 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
                           : userInfo?.username || 'Usuario'}
                       </p>
                       <p className="text-xs text-muted-foreground">En línea</p>
+                      <div className={`flex items-center gap-1 ${userInfo?.estado === '1' ? 'text-success' : 'text-destructive'}`}>
+                        <div className={`w-2 h-2 rounded-full ${userInfo?.estado === '1' ? 'bg-success' : 'bg-destructive'}`} />
+                        <span className="text-xs">{userInfo?.estado === '1' ? 'Usuario Activo' : 'Usuario Inactivo'}</span>
+                      </div>
                     </div>
                     <Avatar className="h-9 w-9">
                       {userInfo?.foto ? (
