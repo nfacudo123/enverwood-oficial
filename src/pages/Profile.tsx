@@ -339,12 +339,15 @@ const Profile = () => {
     });
   };
 
-  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       // Validar que sea una imagen
       if (file.type.startsWith('image/')) {
         setProfileData({...profileData, foto: file});
+        
+        // Subir automáticamente la foto cuando se selecciona
+        await uploadPhotoFile(file);
       } else {
         toast({
           variant: "destructive",
@@ -352,6 +355,77 @@ const Profile = () => {
           description: "Por favor selecciona un archivo de imagen válido",
         });
       }
+    }
+  };
+
+  const uploadPhotoFile = async (file: File) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "No se encontró token de autenticación",
+        });
+        return;
+      }
+
+      const userId = userProfile?.id;
+      if (!userId) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "No se pudo obtener el ID del usuario",
+        });
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        try {
+          const base64String = reader.result as string;
+          const photoData = base64String.split(',')[1];
+          
+          const response = await fetch(`http://localhost:4000/api/perfil/foto/${userId}`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ foto: photoData }),
+          });
+
+          if (response.ok) {
+            toast({
+              title: "Éxito",
+              description: "Foto de perfil subida automáticamente",
+            });
+          } else {
+            const errorData = await response.json();
+            toast({
+              variant: "destructive",
+              title: "Error",
+              description: errorData.message || "Error al subir la foto",
+            });
+          }
+        } catch (error) {
+          console.error('Error uploading photo:', error);
+          toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Error al subir la foto",
+          });
+        }
+      };
+      
+      reader.readAsDataURL(file);
+    } catch (error) {
+      console.error('Error uploading photo:', error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Error al procesar la imagen",
+      });
     }
   };
 
