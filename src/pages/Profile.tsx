@@ -386,6 +386,8 @@ const Profile = () => {
           const base64String = reader.result as string;
           const photoData = base64String.split(',')[1];
           
+          console.log('Enviando foto al servidor:', { foto: photoData.substring(0, 50) + '...' });
+          
           const response = await fetch(`http://localhost:4000/api/perfil/foto/${userId}`, {
             method: 'POST',
             headers: {
@@ -395,13 +397,22 @@ const Profile = () => {
             body: JSON.stringify({ foto: photoData }),
           });
 
+          console.log('Response status:', response.status);
+          console.log('Response headers:', response.headers);
+
           if (response.ok) {
             toast({
               title: "Éxito",
               description: "Foto de perfil subida automáticamente",
             });
+            
+            // Recargar la página después de subir exitosamente
+            setTimeout(() => {
+              window.location.reload();
+            }, 1000);
           } else {
-            const errorData = await response.json();
+            const errorData = await response.json().catch(() => ({ message: 'Error del servidor' }));
+            console.error('Error response:', errorData);
             toast({
               variant: "destructive",
               title: "Error",
