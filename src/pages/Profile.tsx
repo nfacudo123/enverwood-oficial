@@ -250,43 +250,93 @@ const Profile = () => {
     });
   };
 
-  const handleProfileSave = async () => {
-    console.log('Saving profile data:', profileData);
-    console.log('Photo file selected:', profileData.foto);
+  const uploadPhoto = async () => {
+    if (!profileData.foto) return;
     
-    if (profileData.foto) {
-      console.log('Converting photo to base64...');
-      // Si hay una foto, convertirla a base64 y incluirla en el JSON
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64String = reader.result as string;
-        console.log('Base64 conversion complete, length:', base64String.length);
-        const photoData = base64String.split(',')[1]; // Remover el prefijo data:image/...;base64,
-        console.log('Sending update with photo data length:', photoData.length);
-        
-        updateProfile({
-          name: profileData.firstName,
-          apellidos: profileData.lastName,
-          foto: photoData
-        });
-      };
-      reader.onerror = (error) => {
-        console.error('Error reading file:', error);
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
         toast({
           variant: "destructive",
           title: "Error",
-          description: "Error al procesar la imagen",
+          description: "No se encontró token de autenticación",
         });
+        return;
+      }
+
+      // Obtener el ID del usuario del perfil
+      const userId = userProfile?.id;
+      if (!userId) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "No se pudo obtener el ID del usuario",
+        });
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        try {
+          const base64String = reader.result as string;
+          const photoData = base64String.split(',')[1]; // Remover el prefijo data:image/...;base64,
+          
+          const response = await fetch(`http://localhost:4000/api/perfil/foto/${userId}`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ foto: photoData }),
+          });
+
+          if (response.ok) {
+            toast({
+              title: "Éxito",
+              description: "Foto de perfil actualizada correctamente",
+            });
+          } else {
+            const errorData = await response.json();
+            toast({
+              variant: "destructive",
+              title: "Error",
+              description: errorData.message || "Error al subir la foto",
+            });
+          }
+        } catch (error) {
+          console.error('Error uploading photo:', error);
+          toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Error al subir la foto",
+          });
+        }
       };
+      
       reader.readAsDataURL(profileData.foto);
-    } else {
-      console.log('No photo selected, updating without photo');
-      // Si no hay foto, solo actualizar nombre y apellidos
-      updateProfile({
-        name: profileData.firstName,
-        apellidos: profileData.lastName
+    } catch (error) {
+      console.error('Error uploading photo:', error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Error al procesar la imagen",
       });
     }
+  };
+
+  const handleProfileSave = async () => {
+    console.log('Saving profile data:', profileData);
+    
+    // Subir foto por separado si existe
+    if (profileData.foto) {
+      await uploadPhoto();
+    }
+    
+    // Actualizar nombre y apellidos
+    updateProfile({
+      name: profileData.firstName,
+      apellidos: profileData.lastName
+    });
   };
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
