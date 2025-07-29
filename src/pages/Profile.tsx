@@ -105,7 +105,24 @@ const Profile = () => {
         if (response.ok) {
           const data = await response.json();
           console.log('Profile data received:', data);
-          setUserProfile(data);
+          
+          // Mapear los datos de la API al formato del interface UserProfile
+          const mappedProfile = {
+            id: data.id,
+            username: data.username,
+            firstName: data.name,
+            lastName: data.apellidos,
+            email: data.email,
+            phone: data.telefono,
+            address: data.direccion,
+            city: data.ciudad,
+            state: data.estado,
+            country: data.pais_id?.toString(),
+            walletAddress: data.wallet_usdt,
+            foto: data.foto
+          };
+          
+          setUserProfile(mappedProfile);
           
           // Inicializar los estados con los datos del usuario según el JSON del API
           setProfileData({
