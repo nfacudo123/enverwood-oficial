@@ -39,7 +39,8 @@ const Profile = () => {
   // Estados para los formularios
   const [profileData, setProfileData] = useState({
     firstName: '',
-    lastName: ''
+    lastName: '',
+    foto: null as File | null
   });
   
   const [contactData, setContactData] = useState({
@@ -108,7 +109,8 @@ const Profile = () => {
           // Inicializar los estados con los datos del usuario según el JSON del API
           setProfileData({
             firstName: data.name || '',
-            lastName: data.apellidos || ''
+            lastName: data.apellidos || '',
+            foto: null
           });
           
           setContactData({
@@ -204,7 +206,8 @@ const Profile = () => {
           // Actualizar estados locales según el JSON del API
           setProfileData({
             firstName: updatedData.name || '',
-            lastName: updatedData.apellidos || ''
+            lastName: updatedData.apellidos || '',
+            foto: null
           });
           
           setContactData({
@@ -247,12 +250,44 @@ const Profile = () => {
     });
   };
 
-  const handleProfileSave = () => {
+  const handleProfileSave = async () => {
     console.log('Saving profile data:', profileData);
-    updateProfile({
-      name: profileData.firstName,
-      apellidos: profileData.lastName
-    });
+    
+    if (profileData.foto) {
+      // Si hay una foto, convertirla a base64 y incluirla en el JSON
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        updateProfile({
+          name: profileData.firstName,
+          apellidos: profileData.lastName,
+          foto: base64String.split(',')[1] // Remover el prefijo data:image/...;base64,
+        });
+      };
+      reader.readAsDataURL(profileData.foto);
+    } else {
+      // Si no hay foto, solo actualizar nombre y apellidos
+      updateProfile({
+        name: profileData.firstName,
+        apellidos: profileData.lastName
+      });
+    }
+  };
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validar que sea una imagen
+      if (file.type.startsWith('image/')) {
+        setProfileData({...profileData, foto: file});
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Por favor selecciona un archivo de imagen válido",
+        });
+      }
+    }
   };
 
   const handleContactSave = () => {
@@ -414,6 +449,35 @@ const Profile = () => {
                           readOnly
                         />
                       </div>
+                      
+                      {/* Campo para foto de perfil */}
+                      <div>
+                        <Label htmlFor="profile-photo">Foto de Perfil</Label>
+                        <div className="mt-1 flex items-center gap-4">
+                          <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
+                            {profileData.foto ? (
+                              <img 
+                                src={URL.createObjectURL(profileData.foto)} 
+                                alt="Preview" 
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-12 h-12 bg-green-500 rounded-full"></div>
+                            )}
+                          </div>
+                          <Input
+                            id="profile-photo"
+                            type="file"
+                            accept="image/*"
+                            onChange={handlePhotoChange}
+                            className="flex-1"
+                          />
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1">
+                          Formatos permitidos: JPG, PNG, GIF. Tamaño máximo: 5MB
+                        </p>
+                      </div>
+
                       <div className="grid grid-cols-2 gap-4">
                         <div>
                           <Label htmlFor="first-name">Nombres</Label>
