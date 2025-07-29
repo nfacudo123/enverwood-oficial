@@ -24,6 +24,7 @@ interface UserProfile {
   state: string;
   country: string;
   walletAddress: string;
+  foto?: string;
 }
 
 const Profile = () => {
@@ -537,8 +538,16 @@ const Profile = () => {
             <div className="max-w-4xl mx-auto">
               {/* Header con información del usuario */}
               <div className="flex items-center gap-4 mb-6 p-4 bg-gray-50 rounded-lg">
-                <div className="w-16 h-16 bg-gray-400 rounded-full flex items-center justify-center">
-                  <div className="w-12 h-12 bg-green-500 rounded-full"></div>
+                <div className="w-16 h-16 bg-gray-400 rounded-full flex items-center justify-center overflow-hidden">
+                  {userProfile?.foto ? (
+                    <img 
+                      src={`http://localhost:4000/${userProfile.foto.replace(/\\/g, '/')}`}
+                      alt="Profile Picture" 
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-12 h-12 bg-green-500 rounded-full"></div>
+                  )}
                 </div>
                 <div>
                   <h2 className="text-xl font-bold">{userProfile?.firstName} {userProfile?.lastName}</h2>
@@ -603,16 +612,22 @@ const Profile = () => {
                       <div>
                         <Label htmlFor="foto">Foto de Perfil</Label>
                         <div className="mt-1 flex items-center gap-4">
-                          <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
-                            {profileData.foto ? (
-                              <img 
-                                src={URL.createObjectURL(profileData.foto)} 
-                                alt="Preview" 
-                                className="w-full h-full object-cover"
-                              />
-                            ) : (
-                              <div className="w-12 h-12 bg-green-500 rounded-full"></div>
-                            )}
+                        <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
+                          {profileData.foto ? (
+                            <img 
+                              src={URL.createObjectURL(profileData.foto)} 
+                              alt="Preview" 
+                              className="w-full h-full object-cover"
+                            />
+                          ) : userProfile?.foto ? (
+                            <img 
+                              src={`http://localhost:4000/${userProfile.foto.replace(/\\/g, '/')}`}
+                              alt="Profile Picture" 
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-12 h-12 bg-green-500 rounded-full"></div>
+                          )}
                           </div>
                           <Input
                             id="foto"
