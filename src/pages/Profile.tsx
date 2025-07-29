@@ -252,20 +252,35 @@ const Profile = () => {
 
   const handleProfileSave = async () => {
     console.log('Saving profile data:', profileData);
+    console.log('Photo file selected:', profileData.foto);
     
     if (profileData.foto) {
+      console.log('Converting photo to base64...');
       // Si hay una foto, convertirla a base64 y incluirla en el JSON
       const reader = new FileReader();
       reader.onloadend = () => {
         const base64String = reader.result as string;
+        console.log('Base64 conversion complete, length:', base64String.length);
+        const photoData = base64String.split(',')[1]; // Remover el prefijo data:image/...;base64,
+        console.log('Sending update with photo data length:', photoData.length);
+        
         updateProfile({
           name: profileData.firstName,
           apellidos: profileData.lastName,
-          foto: base64String.split(',')[1] // Remover el prefijo data:image/...;base64,
+          foto: photoData
+        });
+      };
+      reader.onerror = (error) => {
+        console.error('Error reading file:', error);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Error al procesar la imagen",
         });
       };
       reader.readAsDataURL(profileData.foto);
     } else {
+      console.log('No photo selected, updating without photo');
       // Si no hay foto, solo actualizar nombre y apellidos
       updateProfile({
         name: profileData.firstName,
