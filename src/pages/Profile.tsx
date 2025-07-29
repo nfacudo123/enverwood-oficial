@@ -385,88 +385,50 @@ const Profile = () => {
         return;
       }
 
-      const reader = new FileReader();
-      reader.onloadend = async () => {
-        try {
-          const base64String = reader.result as string;
-          console.log('Base64 string completo (primeros 100 chars):', base64String.substring(0, 100));
-          
-          if (!base64String || !base64String.includes(',')) {
-            console.error('Base64 string inválido:', base64String);
-            toast({
-              variant: "destructive",
-              title: "Error",
-              description: "Error al procesar la imagen",
-            });
-            return;
-          }
-          
-          const photoData = base64String.split(',')[1];
-          console.log('Datos de la foto (primeros 50 chars):', photoData.substring(0, 50));
-          console.log('Longitud de datos de foto:', photoData.length);
-          
-          const requestBody = { foto: photoData };
-          console.log('Request body:', requestBody);
-          
-          const response = await fetch(`http://localhost:4000/api/perfil/foto/${userId}`, {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(requestBody),
-          });
-
-          console.log('Response status:', response.status);
-          const responseText = await response.text();
-          console.log('Response text:', responseText);
-
-          let responseData;
-          try {
-            responseData = JSON.parse(responseText);
-          } catch (e) {
-            console.error('Error parsing response JSON:', e);
-            responseData = { message: responseText };
-          }
-
-          if (response.ok) {
-            toast({
-              title: "Éxito",
-              description: "Foto de perfil subida automáticamente",
-            });
-            
-            setTimeout(() => {
-              window.location.reload();
-            }, 1000);
-          } else {
-            console.error('Error response:', responseData);
-            toast({
-              variant: "destructive",
-              title: "Error",
-              description: responseData.message || responseData.error || "Error al subir la foto",
-            });
-          }
-        } catch (error) {
-          console.error('Error uploading photo:', error);
-          toast({
-            variant: "destructive",
-            title: "Error",
-            description: "Error al subir la foto",
-          });
-        }
-      };
+      // Crear FormData para enviar el archivo
+      const formData = new FormData();
+      formData.append('foto', file);
       
-      reader.onerror = (error) => {
-        console.error('Error reading file:', error);
+      console.log('FormData creado con archivo:', file.name);
+      
+      const response = await fetch(`http://localhost:4000/api/perfil/foto/${userId}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          // NO incluir Content-Type para FormData, el navegador lo establece automáticamente
+        },
+        body: formData,
+      });
+
+      console.log('Response status:', response.status);
+      const responseText = await response.text();
+      console.log('Response text:', responseText);
+
+      let responseData;
+      try {
+        responseData = JSON.parse(responseText);
+      } catch (e) {
+        console.error('Error parsing response JSON:', e);
+        responseData = { message: responseText };
+      }
+
+      if (response.ok) {
+        toast({
+          title: "Éxito",
+          description: "Foto de perfil subida automáticamente",
+        });
+        
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      } else {
+        console.error('Error response:', responseData);
         toast({
           variant: "destructive",
           title: "Error",
-          description: "Error al leer el archivo",
+          description: responseData.message || responseData.error || "Error al subir la foto",
         });
-      };
-      
-      console.log('Iniciando lectura del archivo...');
-      reader.readAsDataURL(file);
+      }
     } catch (error) {
       console.error('Error uploading photo:', error);
       toast({
