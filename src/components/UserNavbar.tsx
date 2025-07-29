@@ -30,6 +30,7 @@ interface UserInfo {
   wallet_usdt?: string;
   estado?: string;
   email?: string;
+  foto?: string;
 }
 
 interface UserNavbarProps {
@@ -68,7 +69,9 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
             firstName: data.firstName || data.name || '',
             lastName: data.lastName || data.apellidos || '',
             wallet_usdt: data.wallet_usdt || '',
-            estado: data.estado || '0'
+            estado: data.estado || '0',
+            email: data.email || '',
+            foto: data.foto || ''
           });
         }
       } catch (error) {
@@ -318,16 +321,33 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
             <h1 className="text-2xl font-semibold text-foreground">
               {title}
             </h1>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-6">
+              {/* Estado Activo - ahora en navbar principal */}
+              <div className={`flex items-center gap-2 ${userInfo?.estado === '1' ? 'text-success' : 'text-destructive'}`}>
+                <div className={`w-2 h-2 rounded-full ${userInfo?.estado === '1' ? 'bg-success' : 'bg-destructive'}`} />
+                <span className="text-sm font-medium">{userInfo?.estado === '1' ? 'Activo' : 'Inactivo'}</span>
+              </div>
+              
               <ThemeToggle />
+              
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <div className="flex items-center gap-3 cursor-pointer hover:bg-accent rounded-lg p-2 transition-colors">
                     <div className="text-right">
-                      <p className="text-sm font-medium text-foreground">{userInfo?.username || 'Usuario'}</p>
-                      <p className="text-xs text-muted-foreground">{userInfo?.estado === '1' ? 'En línea' : 'Inactivo'}</p>
+                      <p className="text-sm font-medium text-foreground">
+                        {userInfo?.firstName && userInfo?.lastName 
+                          ? `${userInfo.firstName} ${userInfo.lastName}` 
+                          : userInfo?.username || 'Usuario'}
+                      </p>
+                      <p className="text-xs text-muted-foreground">En línea</p>
                     </div>
                     <Avatar className="h-9 w-9">
+                      {userInfo?.foto ? (
+                        <AvatarImage 
+                          src={`http://localhost:4000/${userInfo.foto.replace(/\\/g, '/')}`}
+                          alt="Profile Picture"
+                        />
+                      ) : null}
                       <AvatarFallback className="bg-primary text-primary-foreground text-sm font-medium">
                         {getInitials()}
                       </AvatarFallback>
@@ -345,10 +365,6 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
                   >
                     <User className="w-4 h-4 text-muted-foreground" />
                     <span className="text-sm">Mi Perfil</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className={`flex items-center gap-3 px-3 py-2 ${userInfo?.estado === '1' ? 'text-success' : 'text-destructive'}`}>
-                    <div className={`w-2 h-2 rounded-full ${userInfo?.estado === '1' ? 'bg-success' : 'bg-destructive'}`} />
-                    <span className="text-sm">{userInfo?.estado === '1' ? 'Estado: Activo' : 'Estado: Inactivo'}</span>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem 
