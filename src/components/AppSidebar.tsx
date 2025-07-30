@@ -100,6 +100,7 @@ const adminItems = [
   { title: "Tipo de Comisión", icon: Percent, url: "/comtipo" },
   { title: "Cambio de Patrocinador", icon: Repeat, url: "/sponsor-change" },
   { title: "Link de Conferencias", icon: LinkIcon, url: "/linkconf" },
+  { title: "Métodos de Pago", icon: CreditCard, url: "/metpago" },
 ];
 
 export function AppSidebar() {

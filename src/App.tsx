@@ -22,6 +22,7 @@ import SponsorChange from "./pages/SponsorChange";
 import LinkConferencias from "./pages/LinkConferencias";
 import ComTipo from "./pages/ComTipo";
 import Pagos from "./pages/Pagos";
+import MetPago from "./pages/MetPago";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminRoute from "./components/AdminRoute";
 import NotFound from "./pages/NotFound";
@@ -191,6 +192,15 @@ const App = () => (
             element={
               <AdminRoute>
                 <Pagos />
+              </AdminRoute>
+            } 
+          />
+
+          <Route 
+            path="/metpago" 
+            element={
+              <AdminRoute>
+                <MetPago />
               </AdminRoute>
             } 
           />
