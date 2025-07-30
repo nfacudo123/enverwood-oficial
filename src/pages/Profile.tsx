@@ -711,7 +711,7 @@ const Profile = () => {
                               <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                             </Button>
                           </PopoverTrigger>
-                          <PopoverContent className="w-full p-4">
+                          <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-4">
                             <div className="space-y-2">
                               <div className="text-sm font-medium mb-3">Selecciona métodos de pago:</div>
                               {(paymentMethods || []).map((method) => (
