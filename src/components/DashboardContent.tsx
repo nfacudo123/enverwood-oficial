@@ -12,6 +12,9 @@ export function DashboardContent() {
   const [userInfo, setUserInfo] = useState<any>(null);
   const [referidos, setReferidos] = useState<any[]>([]);
   const [comisiones, setComisiones] = useState<any>(null);
+  const [utilidades, setUtilidades] = useState<any[]>([]);
+  const [comisionesDetalle, setComisionesDetalle] = useState<any[]>([]);
+  const [noticias, setNoticias] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
   const currentUrl = window.location.origin;
@@ -72,8 +75,79 @@ export function DashboardContent() {
       }
     };
 
+    const fetchUtilidades = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const idUser = parseInt(localStorage.getItem('idUser') || '0');
+        if (!token || !idUser) return;
+
+        const response = await fetch('http://localhost:4000/api/inversiones/utilidades', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const filteredUtilidades = data.filter((utilidad: any) => utilidad.usid === idUser);
+          setUtilidades(filteredUtilidades.slice(0, 5)); // Solo los primeros 5
+        }
+      } catch (error) {
+        console.error('Error fetching utilidades:', error);
+      }
+    };
+
+    const fetchComisionesDetalle = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const idUser = localStorage.getItem('idUser');
+        if (!token || !idUser) return;
+
+        const response = await fetch(`http://localhost:4000/api/comisiones/comisiones/${idUser}`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setComisionesDetalle(data.slice(0, 5)); // Solo las primeras 5
+        }
+      } catch (error) {
+        console.error('Error fetching comisiones detalle:', error);
+      }
+    };
+
+    const fetchNoticias = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        const response = await fetch('http://localhost:4000/api/noticias', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setNoticias(data.slice(0, 5)); // Solo las primeras 5
+        }
+      } catch (error) {
+        console.error('Error fetching noticias:', error);
+      }
+    };
+
     fetchUserInfo();
     fetchComisiones();
+    fetchUtilidades();
+    fetchComisionesDetalle();
+    fetchNoticias();
   }, []);
 
   const fetchReferidos = async () => {
@@ -339,93 +413,100 @@ export function DashboardContent() {
       )}
 
       <div className="grid gap-6 md:grid-cols-2">
-        {/* Progreso de pack actual */}
+        {/* Utilidades */}
         <Card className="bg-card border border-border shadow-card">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold text-card-foreground">Progreso de pack actual</CardTitle>
+            <CardTitle className="text-lg font-semibold text-card-foreground">Utilidades Recientes</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="bg-destructive/10 text-destructive text-center py-8 rounded-lg border border-destructive/20">
-              <p className="font-medium">Sin Pack</p>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-border">
+                    <th className="text-left py-2 px-3 font-semibold text-xs text-muted-foreground">ID</th>
+                    <th className="text-left py-2 px-3 font-semibold text-xs text-muted-foreground">Valor Utilidad</th>
+                    <th className="text-left py-2 px-3 font-semibold text-xs text-muted-foreground">Fecha</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {utilidades.map((utilidad, index) => (
+                    <tr key={utilidad.id} className="border-b border-border hover:bg-accent/50">
+                      <td className="py-2 px-3 text-xs text-card-foreground">{utilidad.id}</td>
+                      <td className="py-2 px-3 text-xs text-card-foreground font-medium">${parseFloat(utilidad.val_utilidad).toFixed(2)}</td>
+                      <td className="py-2 px-3 text-xs text-muted-foreground">{new Date(utilidad.fecha).toLocaleDateString()}</td>
+                    </tr>
+                  ))}
+                  {utilidades.length === 0 && (
+                    <tr>
+                      <td colSpan={3} className="py-4 text-center text-xs text-muted-foreground">
+                        No hay utilidades
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
             </div>
           </CardContent>
         </Card>
 
-        {/* Resumen de tu negocio */}
+        {/* Comisiones */}
         <Card className="bg-card border border-border shadow-card">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold text-card-foreground">Resumen de tu negocio</CardTitle>
+            <CardTitle className="text-lg font-semibold text-card-foreground">Comisiones Recientes</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <p className="text-sm font-medium text-muted-foreground mb-2">Patrocinador: N/A</p>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-accent p-4 rounded-lg border border-border">
-                <p className="text-sm text-accent-foreground/80">Estado:</p>
-                <p className="font-medium text-accent-foreground">Inactivo</p>
-                <p className="text-sm text-accent-foreground/80 mt-2">Volumen Equipo:</p>
-                <p className="font-medium text-accent-foreground">Sin Rango</p>
-              </div>
-              <div className="bg-accent p-4 rounded-lg border border-border">
-                <p className="text-sm text-accent-foreground/80">Totales en equipo:</p>
-                <p className="font-medium text-accent-foreground">0</p>
-                <p className="text-sm text-accent-foreground/80 mt-2">Mis Directos:</p>
-                <p className="font-medium text-accent-foreground">{referidos.length}</p>
-              </div>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-border">
+                    <th className="text-left py-2 px-3 font-semibold text-xs text-muted-foreground">Tipo Comisión</th>
+                    <th className="text-left py-2 px-3 font-semibold text-xs text-muted-foreground">Valor</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {comisionesDetalle.map((comision, index) => (
+                    <tr key={comision.id} className="border-b border-border hover:bg-accent/50">
+                      <td className="py-2 px-3 text-xs text-card-foreground">{comision.tipo_comision}</td>
+                      <td className="py-2 px-3 text-xs text-card-foreground font-medium">${parseFloat(comision.valor).toFixed(2)}</td>
+                    </tr>
+                  ))}
+                  {comisionesDetalle.length === 0 && (
+                    <tr>
+                      <td colSpan={2} className="py-4 text-center text-xs text-muted-foreground">
+                        No hay comisiones
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Recent Candidates Table */}
+      {/* Noticias Recientes */}
       <Card className="bg-card border border-border shadow-card">
         <CardHeader>
-          <CardTitle className="text-xl font-semibold text-card-foreground">Referidos Recientes</CardTitle>
+          <CardTitle className="text-xl font-semibold text-card-foreground">Noticias Recientes</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-border">
-                  <th className="text-left py-3 px-4 font-semibold text-sm text-muted-foreground">Nombre</th>
-                  <th className="text-left py-3 px-4 font-semibold text-sm text-muted-foreground">Username</th>
-                  <th className="text-left py-3 px-4 font-semibold text-sm text-muted-foreground">Email</th>
-                  <th className="text-left py-3 px-4 font-semibold text-sm text-muted-foreground">Estado</th>
-                  <th className="text-left py-3 px-4 font-semibold text-sm text-muted-foreground">Fecha Registro</th>
-                </tr>
-              </thead>
-              <tbody>
-                {referidos.slice(0, 5).map((referido, index) => (
-                  <tr key={referido.id} className="border-b border-border hover:bg-accent/50">
-                    <td className="py-3 px-4 text-sm text-card-foreground font-medium">
-                      {referido.name} {referido.apellidos}
-                    </td>
-                    <td className="py-3 px-4 text-sm text-muted-foreground">
-                      {referido.username}
-                    </td>
-                    <td className="py-3 px-4 text-sm text-muted-foreground">
-                      {referido.email}
-                    </td>
-                    <td className="py-3 px-4">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success/10 text-success border border-success/20">
-                        Activo
-                      </span>
-                    </td>
-                    <td className="py-3 px-4 text-sm text-muted-foreground">
-                      {new Date(referido.created_at).toLocaleDateString()}
-                    </td>
-                  </tr>
-                ))}
-                {referidos.length === 0 && (
-                  <tr>
-                    <td colSpan={5} className="py-8 text-center text-muted-foreground">
-                      No hay referidos recientes
-                    </td>
-                  </tr>
+          <div className="space-y-4">
+            {noticias.map((noticia, index) => (
+              <div key={noticia.id} className="border-b border-border pb-4 last:border-b-0">
+                <h4 className="text-sm font-semibold text-card-foreground mb-2">{noticia.titulo}</h4>
+                <p className="text-xs text-muted-foreground line-clamp-3">{noticia.noticia}</p>
+                {noticia.created_at && (
+                  <p className="text-xs text-muted-foreground mt-2">
+                    {new Date(noticia.created_at).toLocaleDateString()}
+                  </p>
                 )}
-              </tbody>
-            </table>
+              </div>
+            ))}
+            {noticias.length === 0 && (
+              <div className="py-8 text-center text-muted-foreground">
+                No hay noticias recientes
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
