@@ -33,9 +33,17 @@ interface Inversion {
   comprobante?: string;
 }
 
+interface PaymentMethod {
+  id: number;
+  titulo: string;
+  img_qr: string;
+  dato: string;
+}
+
 export default function Meminverso() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [inversion, setInversion] = useState<Inversion | null>(null);
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [loading, setLoading] = useState(true);
   const [purchasing, setPurchasing] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -48,6 +56,24 @@ export default function Meminverso() {
     const file = event.target.files?.[0];
     if (file) {
       setSelectedFile(file);
+    }
+  };
+
+  const fetchPaymentMethods = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:4000/api/metodo_pago', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setPaymentMethods(data);
+      }
+    } catch (error) {
+      console.error('Error fetching payment methods:', error);
     }
   };
 
@@ -282,6 +308,7 @@ export default function Meminverso() {
 
   useEffect(() => {
     checkUserInvestment();
+    fetchPaymentMethods();
   }, []);
 
   // Función para extraer el nombre del archivo de la ruta completa
@@ -380,20 +407,25 @@ export default function Meminverso() {
                   </p>
                 </div>
 
-                {/* QR Code Section */}
+                {/* Payment Methods Section */}
                 <Card>
                   <CardContent className="p-6">
-                    <div className="flex flex-col items-center space-y-4">
-                      <div className="bg-white p-4 rounded-lg border">
-                        <img 
-                          src="/lovable-uploads/be1d0da5-3efa-4997-a9d3-41fc85ed4ad7.png" 
-                          alt="QR Code" 
-                          className="w-64 h-64 object-contain"
-                        />
-                      </div>
-                      <p className="text-sm text-gray-600 font-mono">
-                        USDT: TLnR8w2ez79LFLCUfnc7qEUCNDNWxUefx
-                      </p>
+                    <div className="grid grid-cols-2 gap-4">
+                      {paymentMethods.map((method) => (
+                        <div key={method.id} className="flex flex-col items-center space-y-2 p-4 border rounded-lg">
+                          <h3 className="font-semibold text-lg">{method.titulo}</h3>
+                          <div className="bg-white p-2 rounded-lg border">
+                            <img 
+                              src={`http://localhost:4000/${method.img_qr.replace(/\\/g, '/')}`} 
+                              alt={`QR Code ${method.titulo}`} 
+                              className="w-32 h-32 object-contain"
+                            />
+                          </div>
+                          <p className="text-sm text-gray-600 font-mono text-center break-all">
+                            {method.dato}
+                          </p>
+                        </div>
+                      ))}
                     </div>
                   </CardContent>
                 </Card>
