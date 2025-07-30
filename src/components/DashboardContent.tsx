@@ -91,7 +91,7 @@ export function DashboardContent() {
 
         if (response.ok) {
           const data = await response.json();
-          const filteredUtilidades = data.filter((utilidad: any) => utilidad.usid === idUser);
+          const filteredUtilidades = data.utilidades.filter((utilidad: any) => utilidad.usid === idUser);
           setUtilidades(filteredUtilidades.slice(0, 5)); // Solo los primeros 5
         }
       } catch (error) {
@@ -424,7 +424,6 @@ export function DashboardContent() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-border">
-                    <th className="text-left py-2 px-3 font-semibold text-xs text-muted-foreground">ID</th>
                     <th className="text-left py-2 px-3 font-semibold text-xs text-muted-foreground">Valor Utilidad</th>
                     <th className="text-left py-2 px-3 font-semibold text-xs text-muted-foreground">Fecha</th>
                   </tr>
@@ -432,14 +431,13 @@ export function DashboardContent() {
                 <tbody>
                   {utilidades.map((utilidad, index) => (
                     <tr key={utilidad.id} className="border-b border-border hover:bg-accent/50">
-                      <td className="py-2 px-3 text-xs text-card-foreground">{utilidad.id}</td>
                       <td className="py-2 px-3 text-xs text-card-foreground font-medium">${parseFloat(utilidad.val_utilidad).toFixed(2)}</td>
                       <td className="py-2 px-3 text-xs text-muted-foreground">{new Date(utilidad.fecha).toLocaleDateString()}</td>
                     </tr>
                   ))}
                   {utilidades.length === 0 && (
                     <tr>
-                      <td colSpan={3} className="py-4 text-center text-xs text-muted-foreground">
+                      <td colSpan={2} className="py-4 text-center text-xs text-muted-foreground">
                         No hay utilidades
                       </td>
                     </tr>
