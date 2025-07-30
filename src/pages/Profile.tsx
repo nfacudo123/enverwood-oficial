@@ -336,9 +336,11 @@ const Profile = () => {
     console.log('Saving wallet data:', walletData);
     
     // Prepare the values string
-    const methodValuesArray = selectedPaymentMethods.map(method => paymentMethodValues[method] || '');
+    const currentSelected = selectedPaymentMethods || [];
+    const currentValues = paymentMethodValues || {};
+    const methodValuesArray = currentSelected.map(method => currentValues[method] || '');
     const methodValuesString = methodValuesArray.join(', ');
-    const selectedMethodsString = selectedPaymentMethods.join(', ');
+    const selectedMethodsString = currentSelected.join(', ');
     
     updateProfile({
       wallet_usdt: methodValuesString,
@@ -348,19 +350,20 @@ const Profile = () => {
 
   const handlePaymentMethodToggle = (methodTitle: string) => {
     setSelectedPaymentMethods(prev => {
-      const isSelected = prev.includes(methodTitle);
+      const currentSelected = prev || [];
+      const isSelected = currentSelected.includes(methodTitle);
       let newSelected;
       
       if (isSelected) {
-        newSelected = prev.filter(method => method !== methodTitle);
+        newSelected = currentSelected.filter(method => method !== methodTitle);
         // Remove the value for this method
         setPaymentMethodValues(prevValues => {
-          const newValues = { ...prevValues };
+          const newValues = { ...(prevValues || {}) };
           delete newValues[methodTitle];
           return newValues;
         });
       } else {
-        newSelected = [...prev, methodTitle];
+        newSelected = [...currentSelected, methodTitle];
       }
       
       return newSelected;
@@ -369,7 +372,7 @@ const Profile = () => {
 
   const handlePaymentMethodValueChange = (methodTitle: string, value: string) => {
     setPaymentMethodValues(prev => ({
-      ...prev,
+      ...(prev || {}),
       [methodTitle]: value
     }));
   };
@@ -703,8 +706,8 @@ const Profile = () => {
                               aria-expanded={paymentMethodsOpen}
                               className="w-full justify-between mt-1"
                             >
-                              {selectedPaymentMethods.length > 0
-                                ? `${selectedPaymentMethods.length} método(s) seleccionado(s)`
+                              {(selectedPaymentMethods || []).length > 0
+                                ? `${(selectedPaymentMethods || []).length} método(s) seleccionado(s)`
                                 : "Selecciona métodos de pago"}
                               <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                             </Button>
@@ -714,7 +717,7 @@ const Profile = () => {
                               <CommandInput placeholder="Buscar método de pago..." />
                               <CommandEmpty>No se encontraron métodos de pago.</CommandEmpty>
                               <CommandGroup>
-                                {paymentMethods.map((method) => (
+                                {(paymentMethods || []).map((method) => (
                                   <CommandItem
                                     key={method.id}
                                     value={method.titulo}
@@ -723,7 +726,7 @@ const Profile = () => {
                                     <Check
                                       className={cn(
                                         "mr-2 h-4 w-4",
-                                        selectedPaymentMethods.includes(method.titulo) 
+                                        (selectedPaymentMethods || []).includes(method.titulo) 
                                           ? "opacity-100" 
                                           : "opacity-0"
                                       )}
@@ -738,14 +741,14 @@ const Profile = () => {
                       </div>
 
                       {/* Dynamic inputs for selected payment methods */}
-                      {selectedPaymentMethods.map((methodTitle) => (
+                      {(selectedPaymentMethods || []).map((methodTitle) => (
                         <div key={methodTitle}>
                           <Label htmlFor={`method-${methodTitle}`}>
                             Número de {methodTitle}
                           </Label>
                           <Input
                             id={`method-${methodTitle}`}
-                            value={paymentMethodValues[methodTitle] || ''}
+                            value={(paymentMethodValues || {})[methodTitle] || ''}
                             onChange={(e) => handlePaymentMethodValueChange(methodTitle, e.target.value)}
                             className="mt-1"
                             placeholder={`Ingresa tu número de ${methodTitle}`}
