@@ -866,7 +866,7 @@ const Profile = () => {
                           />
                         </div>
                         <div>
-                          <Label htmlFor="city">Ciudad/Provincia</Label>
+                          <Label htmlFor="city">Ciudad / Provincia</Label>
                           <Input 
                             id="city" 
                             value={contactData.city}
@@ -875,16 +875,7 @@ const Profile = () => {
                           />
                         </div>
                       </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <Label htmlFor="state">Departamento/Estado</Label>
-                          <Input 
-                            id="state" 
-                            value={contactData.state}
-                            onChange={(e) => setContactData({...contactData, state: e.target.value})}
-                            className="mt-1"
-                          />
-                        </div>
+                      <div className="grid grid-cols-1 gap-4">
                         <div>
                           <Label htmlFor="country">País</Label>
                           <Select 
