@@ -31,8 +31,13 @@ export default function MetPago() {
   // Fetch payment methods
   const fetchPaymentMethods = async () => {
     try {
+      const token = localStorage.getItem('token');
       console.log("Intentando conectar a:", 'http://localhost:4000/api/metodo_pago');
-      const response = await fetch('http://localhost:4000/api/metodo_pago');
+      const response = await fetch('http://localhost:4000/api/metodo_pago', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       console.log("Respuesta recibida:", response.status, response.statusText);
       
       if (response.ok) {
@@ -67,8 +72,12 @@ export default function MetPago() {
     }
 
     try {
+      const token = localStorage.getItem('token');
       const response = await fetch('http://localhost:4000/api/metodo_pago', {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
         body: formDataToSend
       });
 
@@ -99,8 +108,12 @@ export default function MetPago() {
     }
 
     try {
+      const token = localStorage.getItem('token');
       const response = await fetch(`http://localhost:4000/api/metodo_pago/${editingMethod.id}`, {
         method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
         body: formDataToSend
       });
 
@@ -126,8 +139,12 @@ export default function MetPago() {
     }
 
     try {
+      const token = localStorage.getItem('token');
       const response = await fetch(`http://localhost:4000/api/metodo_pago/${id}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
       });
 
       if (response.ok) {
