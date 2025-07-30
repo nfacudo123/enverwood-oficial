@@ -17,6 +17,7 @@ import {
 
 interface Utilidad {
   id: number;
+  usid: number;
   val_utilidad: string;
   fecha: string;
   name: string;
@@ -45,7 +46,7 @@ const Util: React.FC = () => {
       const token = localStorage.getItem('token');
       const idUser = localStorage.getItem('idUser');
       
-      const response = await fetch(`http://localhost:4000/api/inversiones/utilidades/${idUser}`, {
+      const response = await fetch(`http://localhost:4000/api/inversiones/utilidades?usid=${idUser}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
