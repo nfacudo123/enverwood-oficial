@@ -75,7 +75,6 @@ const menuItems = [
     title: "Financiera",
     icon: BarChart3,
     items: [
-      { title: "Mis rendimientos", icon: TrendingUp, url: "#" },
       { title: "Comisiones", icon: Target, url: "/comision" },
       { title: "Utilidades usuario", icon: DollarSign, url: "/util" },
     ]
