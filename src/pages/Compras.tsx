@@ -259,16 +259,9 @@ export default function Compras() {
                 <TableCell>
                   <div className="flex flex-col gap-2">
                     <Input
-                      type="text"
+                      type="number"
+                      min='0'
                       placeholder="Utilidad"
-                      value={utilidades[inversion.id] || ''}
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        // Solo permitir números y punto decimal
-                        if (value === '' || /^\d*\.?\d*$/.test(value)) {
-                          setUtilidades(prev => ({ ...prev, [inversion.id]: value }));
-                        }
-                      }}
                       className="w-24"
                     />
                     <div className="flex gap-1">
