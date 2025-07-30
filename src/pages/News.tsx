@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/AppSidebar";
+import { OrganizationLayout } from "@/components/OrganizationLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -187,148 +186,142 @@ export default function News() {
   }, []);
 
   return (
-    <SidebarProvider>
-      <div className="flex min-h-screen w-full bg-gray-50">
-        <AppSidebar />
-        <main className="flex-1 p-6">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-4">
-              <SidebarTrigger className="lg:hidden" />
-              <h1 className="text-2xl font-bold text-gray-900">Noticias</h1>
+    <OrganizationLayout title="Noticias">
+      <main className="flex-1 p-6">
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-2xl font-bold text-gray-900">Noticias</h1>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="bg-green-600 hover:bg-green-700 text-white">
+                <Plus className="w-4 h-4 mr-2" />
+                Agregar Noticias
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Agregar Noticia</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="titulo">Título:</Label>
+                  <Input
+                    id="titulo"
+                    value={newNoticia.titulo}
+                    onChange={(e) => setNewNoticia({ ...newNoticia, titulo: e.target.value })}
+                    placeholder="Ingrese el título de la noticia"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="noticia">Noticia:</Label>
+                  <Textarea
+                    id="noticia"
+                    value={newNoticia.noticia}
+                    onChange={(e) => setNewNoticia({ ...newNoticia, noticia: e.target.value })}
+                    placeholder="Ingrese el contenido de la noticia"
+                    rows={4}
+                  />
+                </div>
+                <div className="flex justify-end space-x-2">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setIsDialogOpen(false)}
+                  >
+                    Cerrar
+                  </Button>
+                  <Button 
+                    onClick={handleAddNoticia}
+                    className="bg-green-600 hover:bg-green-700 text-white"
+                  >
+                    Agregar
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Lista de Noticias</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="mb-4 flex justify-between items-center">
+              <div className="flex items-center space-x-2">
+                <span>Show</span>
+                <select className="border rounded px-2 py-1">
+                  <option>10</option>
+                  <option>25</option>
+                  <option>50</option>
+                </select>
+                <span>entries</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <span>Search:</span>
+                <Input className="w-48" placeholder="Buscar..." />
+              </div>
             </div>
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              <DialogTrigger asChild>
-                <Button className="bg-green-600 hover:bg-green-700 text-white">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Agregar Noticias
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                  <DialogTitle>Agregar Noticia</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="titulo">Título:</Label>
-                    <Input
-                      id="titulo"
-                      value={newNoticia.titulo}
-                      onChange={(e) => setNewNoticia({ ...newNoticia, titulo: e.target.value })}
-                      placeholder="Ingrese el título de la noticia"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="noticia">Noticia:</Label>
-                    <Textarea
-                      id="noticia"
-                      value={newNoticia.noticia}
-                      onChange={(e) => setNewNoticia({ ...newNoticia, noticia: e.target.value })}
-                      placeholder="Ingrese el contenido de la noticia"
-                      rows={4}
-                    />
-                  </div>
-                  <div className="flex justify-end space-x-2">
-                    <Button 
-                      variant="outline" 
-                      onClick={() => setIsDialogOpen(false)}
-                    >
-                      Cerrar
-                    </Button>
-                    <Button 
-                      onClick={handleAddNoticia}
-                      className="bg-green-600 hover:bg-green-700 text-white"
-                    >
-                      Agregar
-                    </Button>
-                  </div>
-                </div>
-              </DialogContent>
-            </Dialog>
-          </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Lista de Noticias</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="mb-4 flex justify-between items-center">
-                <div className="flex items-center space-x-2">
-                  <span>Show</span>
-                  <select className="border rounded px-2 py-1">
-                    <option>10</option>
-                    <option>25</option>
-                    <option>50</option>
-                  </select>
-                  <span>entries</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <span>Search:</span>
-                  <Input className="w-48" placeholder="Buscar..." />
-                </div>
-              </div>
-
-              <Table>
-                <TableHeader>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-16">#</TableHead>
+                  <TableHead>Título</TableHead>
+                  <TableHead>Noticia</TableHead>
+                  <TableHead className="w-24">Eliminar</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {isLoading ? (
                   <TableRow>
-                    <TableHead className="w-16">#</TableHead>
-                    <TableHead>Título</TableHead>
-                    <TableHead>Noticia</TableHead>
-                    <TableHead className="w-24">Eliminar</TableHead>
+                    <TableCell colSpan={4} className="text-center py-8">
+                      Cargando...
+                    </TableCell>
                   </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {isLoading ? (
-                    <TableRow>
-                      <TableCell colSpan={4} className="text-center py-8">
-                        Cargando...
+                ) : noticias.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={4} className="text-center py-8 text-orange-600">
+                      No data available in table
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  Array.isArray(noticias) ? noticias.map((noticia, index) => (
+                    <TableRow key={noticia.id}>
+                      <TableCell>{index + 1}</TableCell>
+                      <TableCell>{noticia.titulo}</TableCell>
+                      <TableCell>{noticia.noticia}</TableCell>
+                      <TableCell>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => handleDeleteNoticia(noticia.id)}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
                       </TableCell>
                     </TableRow>
-                  ) : noticias.length === 0 ? (
+                  )) : (
                     <TableRow>
-                      <TableCell colSpan={4} className="text-center py-8 text-orange-600">
-                        No data available in table
+                      <TableCell colSpan={4} className="text-center py-8 text-red-600">
+                        Error: Los datos no tienen el formato esperado
                       </TableCell>
                     </TableRow>
-                  ) : (
-                    Array.isArray(noticias) ? noticias.map((noticia, index) => (
-                      <TableRow key={noticia.id}>
-                        <TableCell>{index + 1}</TableCell>
-                        <TableCell>{noticia.titulo}</TableCell>
-                        <TableCell>{noticia.noticia}</TableCell>
-                        <TableCell>
-                          <Button
-                            variant="destructive"
-                            size="sm"
-                            onClick={() => handleDeleteNoticia(noticia.id)}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    )) : (
-                      <TableRow>
-                        <TableCell colSpan={4} className="text-center py-8 text-red-600">
-                          Error: Los datos no tienen el formato esperado
-                        </TableCell>
-                      </TableRow>
-                    )
-                  )}
-                </TableBody>
-              </Table>
+                  )
+                )}
+              </TableBody>
+            </Table>
 
-              <div className="mt-4 flex justify-between items-center">
-                <div className="text-sm text-gray-600">
-                  Showing 0 to 0 of 0 entries
-                </div>
-                <div className="flex space-x-2">
-                  <Button variant="outline" size="sm">Previous</Button>
-                  <Button variant="outline" size="sm">Next</Button>
-                </div>
+            <div className="mt-4 flex justify-between items-center">
+              <div className="text-sm text-gray-600">
+                Showing 0 to 0 of 0 entries
               </div>
-            </CardContent>
-          </Card>
-        </main>
-      </div>
-    </SidebarProvider>
+              <div className="flex space-x-2">
+                <Button variant="outline" size="sm">Previous</Button>
+                <Button variant="outline" size="sm">Next</Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </main>
+    </OrganizationLayout>
   );
 }
