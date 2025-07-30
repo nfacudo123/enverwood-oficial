@@ -5,7 +5,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Eye, Download, CheckCircle } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Eye, Download, CheckCircle, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface Inversion {
@@ -33,6 +34,7 @@ interface Inversion {
 export default function Compras() {
   const [inversiones, setInversiones] = useState<Inversion[]>([]);
   const [loading, setLoading] = useState(true);
+  const [utilidades, setUtilidades] = useState<{ [key: number]: string }>({});
   const { toast } = useToast();
 
   useEffect(() => {
@@ -105,6 +107,16 @@ export default function Compras() {
 
   const handleAprobar = async (id: number) => {
     try {
+      const utilidad = utilidades[id];
+      if (!utilidad || utilidad.trim() === '') {
+        toast({
+          title: "Error",
+          description: "Debe ingresar una utilidad válida",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const token = localStorage.getItem('token');
       if (!token) {
         toast({
@@ -121,6 +133,9 @@ export default function Compras() {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
+        body: JSON.stringify({
+          utilidad: utilidad
+        }),
       });
 
       if (!response.ok) {
@@ -132,6 +147,9 @@ export default function Compras() {
         description: "Inversión validada y comisiones distribuidas correctamente",
       });
 
+      // Limpiar el input de utilidad
+      setUtilidades(prev => ({ ...prev, [id]: '' }));
+      
       // Recargar los datos para actualizar la tabla
       fetchInversiones();
     } catch (error) {
@@ -139,6 +157,47 @@ export default function Compras() {
       toast({
         title: "Error",
         description: "No se pudo aprobar la inversión",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleCaducarCiclo = async (id: number) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast({
+          title: "Error",
+          description: "No se encontró token de autenticación",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const response = await fetch(`http://localhost:4000/api/inversiones/caducar/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      toast({
+        title: "Éxito",
+        description: "Ciclo caducado correctamente",
+      });
+
+      // Recargar los datos para actualizar la tabla
+      fetchInversiones();
+    } catch (error) {
+      console.error('Error caducando ciclo:', error);
+      toast({
+        title: "Error",
+        description: "No se pudo caducar el ciclo",
         variant: "destructive",
       });
     }
@@ -154,13 +213,13 @@ export default function Compras() {
           <TableHead>Fecha</TableHead>
           <TableHead>Ver Comprobante</TableHead>
           <TableHead>Tipo</TableHead>
-          {showAprobar && <TableHead>Aprobar Depósitos</TableHead>}
+          {showAprobar && <TableHead>Registrar utilidades</TableHead>}
         </TableRow>
       </TableHeader>
       <TableBody>
         {inversiones.length === 0 ? (
           <TableRow>
-            <TableCell colSpan={showAprobar ? 8 : 7} className="text-center py-8">
+            <TableCell colSpan={showAprobar ? 7 : 6} className="text-center py-8">
               No data available in table
             </TableCell>
           </TableRow>
@@ -188,14 +247,33 @@ export default function Compras() {
               </TableCell>
                {showAprobar && (
                 <TableCell>
-                  <Button 
-                    variant="default" 
-                    size="sm"
-                    onClick={() => handleAprobar(inversion.id)}
-                  >
-                    <CheckCircle className="h-4 w-4 mr-1" />
-                    Aprobar
-                  </Button>
+                  <div className="flex flex-col gap-2">
+                    <Input
+                      type="number"
+                      placeholder="Utilidad"
+                      value={utilidades[inversion.id] || ''}
+                      onChange={(e) => setUtilidades(prev => ({ ...prev, [inversion.id]: e.target.value }))}
+                      className="w-20"
+                    />
+                    <div className="flex gap-1">
+                      <Button 
+                        variant="default" 
+                        size="sm"
+                        onClick={() => handleAprobar(inversion.id)}
+                        className="bg-green-600 hover:bg-green-700"
+                      >
+                        Aprobar
+                      </Button>
+                      <Button 
+                        variant="default" 
+                        size="sm"
+                        onClick={() => handleCaducarCiclo(inversion.id)}
+                        className="bg-green-600 hover:bg-green-700"
+                      >
+                        Caducar ciclo
+                      </Button>
+                    </div>
+                  </div>
                 </TableCell>
                )}
             </TableRow>
