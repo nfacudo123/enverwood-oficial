@@ -17,6 +17,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Copy, User, Link, LogOut, TrendingUp, Video } from "lucide-react";
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
@@ -28,9 +29,15 @@ interface UserInfo {
   firstName: string;
   lastName: string;
   wallet_usdt?: string;
+  met_pago?: string;
   estado?: string;
   email?: string;
   foto?: string;
+}
+
+interface UserPaymentMethod {
+  title: string;
+  value: string;
 }
 
 interface UserNavbarProps {
@@ -45,6 +52,9 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
   const [withdrawAmount, setWithdrawAmount] = useState<string>("");
   const [availableBalance, setAvailableBalance] = useState<number>(0);
   const [alertMessage, setAlertMessage] = useState<string>("");
+  const [userPaymentMethods, setUserPaymentMethods] = useState<UserPaymentMethod[]>([]);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>("");
+  const [selectedDestinationAccount, setSelectedDestinationAccount] = useState<string>("");
   const { logout } = useAuth();
   const navigate = useNavigate();
 
@@ -69,10 +79,22 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
             firstName: data.firstName || data.name || '',
             lastName: data.lastName || data.apellidos || '',
             wallet_usdt: data.wallet_usdt || '',
+            met_pago: data.met_pago || '',
             estado: data.estado || '0',
             email: data.email || '',
             foto: data.foto || ''
           });
+
+          // Parse user payment methods
+          if (data.met_pago && data.wallet_usdt) {
+            const methodNames = data.met_pago.split(', ');
+            const methodValues = data.wallet_usdt.split(', ');
+            const parsedMethods = methodNames.map((name: string, index: number) => ({
+              title: name,
+              value: methodValues[index] || ''
+            }));
+            setUserPaymentMethods(parsedMethods);
+          }
         }
       } catch (error) {
         console.error('Error fetching user info:', error);
@@ -267,8 +289,8 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
       const withdrawData = {
         usuario_id: parseInt(idUser),
         monto: parseFloat(withdrawAmount),
-        wallet_usdt: userInfo?.wallet_usdt || '',
-        metodo_pago: 'USDT TRC20'
+        wallet_usdt: selectedDestinationAccount,
+        metodo_pago: selectedPaymentMethod
       };
 
       const response = await fetch('http://localhost:4000/api/retiros', {
@@ -282,7 +304,10 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
 
       if (response.ok) {
         setIsWithdrawModalOpen(false);
-        setWithdrawAmount('');
+        setWithdrawAmount("");
+        setSelectedPaymentMethod("");
+        setSelectedDestinationAccount("");
+        setAlertMessage("");
         await Swal.fire({
           icon: 'success',
           title: 'Solicitud enviada',
@@ -309,6 +334,15 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
         confirmButtonText: 'Entendido',
         confirmButtonColor: '#ef4444',
       });
+    }
+  };
+
+  const handlePaymentMethodChange = (value: string) => {
+    setSelectedPaymentMethod(value);
+    // Find the corresponding destination account
+    const selectedMethod = userPaymentMethods.find(method => method.title === value);
+    if (selectedMethod) {
+      setSelectedDestinationAccount(selectedMethod.value);
     }
   };
 
@@ -431,21 +465,28 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
           <form onSubmit={handleWithdrawSubmit} className="space-y-4">
             <div>
               <Label htmlFor="payment-method">Medio de pago</Label>
-              <Input
-                id="payment-method"
-                defaultValue="USDT TRC20"
-                readOnly
-                className="mt-1 bg-gray-50"
-              />
+              <Select value={selectedPaymentMethod} onValueChange={handlePaymentMethodChange}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder="Selecciona un método de pago" />
+                </SelectTrigger>
+                <SelectContent>
+                  {userPaymentMethods.map((method, index) => (
+                    <SelectItem key={index} value={method.title}>
+                      {method.title}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div>
               <Label htmlFor="destination-account">Cuenta de Destino</Label>
               <Input
                 id="destination-account"
-                value={userInfo?.wallet_usdt || ''}
+                value={selectedDestinationAccount}
                 readOnly
                 className="mt-1 bg-gray-50"
+                placeholder="Selecciona un método de pago primero"
               />
             </div>
 
