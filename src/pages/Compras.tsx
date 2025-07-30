@@ -131,7 +131,7 @@ export default function Compras() {
       console.log('Datos:', { utilidad: utilidad });
 
       const response = await fetch(`http://localhost:4000/api/inversiones/validar/${id}`, {
-        method: 'PUT',
+        method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
