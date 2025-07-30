@@ -14,8 +14,10 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Users, UserCheck } from 'lucide-react';
+import { Users, UserCheck, Search, FileDown, Filter, X } from 'lucide-react';
 import { toast } from 'sonner';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import * as XLSX from 'xlsx';
 
 interface User {
   id: number;
@@ -34,12 +36,15 @@ interface User {
 
 const UserAdmin = () => {
   const [users, setUsers] = useState<User[]>([]);
+  const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [activeUsers, setActiveUsers] = useState(0);
   const [inactiveUsers, setInactiveUsers] = useState(0);
   const [paises, setPaises] = useState<Array<{ id: number; nombre: string }>>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
   const [editFormData, setEditFormData] = useState({
     name: '',
     email: '',
@@ -104,6 +109,7 @@ const UserAdmin = () => {
       console.log('First user sample:', usersArray[0]);
       
       setUsers(usersArray);
+      setFilteredUsers(usersArray);
       
       // Calculate active/inactive users based on estado field (handle both string and number)
       const active = usersArray.filter((user: User) => user.estado === 1 || user.estado === '1').length;
@@ -248,6 +254,71 @@ const UserAdmin = () => {
     return pais ? pais.nombre : `País ${paisId}`;
   };
 
+  const handleSearch = (term: string) => {
+    setSearchTerm(term);
+    applyFilters(term, statusFilter);
+  };
+
+  const handleStatusFilter = (status: string) => {
+    setStatusFilter(status);
+    applyFilters(searchTerm, status);
+  };
+
+  const applyFilters = (search: string, status: string) => {
+    let filtered = users;
+
+    // Apply search filter
+    if (search.trim()) {
+      filtered = filtered.filter(user =>
+        user.name.toLowerCase().includes(search.toLowerCase()) ||
+        user.apellidos.toLowerCase().includes(search.toLowerCase()) ||
+        user.username.toLowerCase().includes(search.toLowerCase()) ||
+        user.email.toLowerCase().includes(search.toLowerCase()) ||
+        user.telefono.includes(search) ||
+        getPaisName(user.pais_id).toLowerCase().includes(search.toLowerCase())
+      );
+    }
+
+    // Apply status filter
+    if (status !== 'all') {
+      if (status === 'active') {
+        filtered = filtered.filter(user => user.estado === 1 || user.estado === '1');
+      } else if (status === 'inactive') {
+        filtered = filtered.filter(user => user.estado === null || user.estado === 0 || user.estado === '0');
+      }
+    }
+
+    setFilteredUsers(filtered);
+  };
+
+  const clearFilters = () => {
+    setSearchTerm('');
+    setStatusFilter('all');
+    setFilteredUsers(users);
+  };
+
+  const exportToExcel = () => {
+    const dataToExport = filteredUsers.map((user, index) => ({
+      '#': index + 1,
+      'Estado': user.estado === null || user.estado === 0 || user.estado === '0' ? 'Inactivo' : 'Activo',
+      'Nombre': user.name,
+      'Apellido': user.apellidos,
+      'Usuario': user.username,
+      'Email': user.email,
+      'Teléfono': user.telefono,
+      'País': getPaisName(user.pais_id),
+      'Ciudad': user.ciudad || '',
+      'Dirección': user.direccion || '',
+      'Fecha de Creación': new Date(user.created_at).toLocaleDateString()
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Usuarios');
+    XLSX.writeFile(workbook, `usuarios_${new Date().toISOString().split('T')[0]}.xlsx`);
+    toast.success('Archivo Excel exportado exitosamente');
+  };
+
   return (
     <OrganizationLayout title="Administración de Usuarios">
       <div className="p-6 space-y-6">
@@ -284,13 +355,66 @@ const UserAdmin = () => {
             <CardTitle>Administrar</CardTitle>
           </CardHeader>
           <CardContent>
+            {/* Filters Section */}
+            <div className="bg-green-50 p-4 rounded-lg border border-green-200 mb-6">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                {/* Search Input */}
+                <div className="space-y-2">
+                  <Label htmlFor="search">Buscar Usuario</Label>
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="search"
+                      placeholder="Buscar por nombre, usuario, email..."
+                      value={searchTerm}
+                      onChange={(e) => handleSearch(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
+                </div>
+
+                {/* Status Filter */}
+                <div className="space-y-2">
+                  <Label>Filtrar por Estado</Label>
+                  <Select value={statusFilter} onValueChange={handleStatusFilter}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Todos los estados" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Todos</SelectItem>
+                      <SelectItem value="active">Activos</SelectItem>
+                      <SelectItem value="inactive">Inactivos</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Export Button */}
+                <Button onClick={exportToExcel} variant="outline" className="flex items-center gap-2">
+                  <FileDown className="h-4 w-4" />
+                  Exportar Excel
+                </Button>
+
+                {/* Clear Filters Button */}
+                <Button onClick={clearFilters} variant="outline" className="flex items-center gap-2">
+                  <X className="h-4 w-4" />
+                  Limpiar Filtros
+                </Button>
+              </div>
+              
+              {/* Results Summary */}
+              <div className="mt-3 text-sm text-muted-foreground">
+                Mostrando {filteredUsers.length} de {users.length} usuarios
+                {searchTerm && ` • Búsqueda: "${searchTerm}"`}
+                {statusFilter !== 'all' && ` • Estado: ${statusFilter === 'active' ? 'Activos' : 'Inactivos'}`}
+              </div>
+            </div>
             {loading ? (
               <div className="text-center py-8">
                 <p>Cargando usuarios...</p>
               </div>
-            ) : users.length === 0 ? (
+            ) : filteredUsers.length === 0 ? (
               <div className="text-center py-8">
-                <p>No hay usuarios disponibles</p>
+                <p>{users.length === 0 ? 'No hay usuarios disponibles' : 'No se encontraron usuarios con los filtros aplicados'}</p>
               </div>
             ) : (
               <div className="rounded-md border">
@@ -309,8 +433,8 @@ const UserAdmin = () => {
                       <TableHead className="text-right">Acciones</TableHead>
                     </TableRow>
                   </TableHeader>
-                  <TableBody>
-                    {users.map((user, index) => (
+                   <TableBody>
+                     {filteredUsers.map((user, index) => (
                       <TableRow key={user.id}>
                         <TableCell className="font-medium">{index + 1}</TableCell>
                          <TableCell>
