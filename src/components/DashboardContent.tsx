@@ -82,6 +82,7 @@ export function DashboardContent() {
         if (!token || !idUser) return;
 
         const response = await fetch('http://localhost:4000/api/inversiones/utilidades', {
+          method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
