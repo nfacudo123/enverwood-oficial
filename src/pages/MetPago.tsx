@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { OrganizationLayout } from '@/components/OrganizationLayout';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -6,7 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Edit, Trash2, Plus } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
 interface PaymentMethod {
   id: number;
@@ -35,18 +36,11 @@ export default function MetPago() {
         const data = await response.json();
         setPaymentMethods(data);
       } else {
-        toast({
-          title: "Error",
-          description: "No se pudieron cargar los métodos de pago",
-          variant: "destructive"
-        });
+        toast.error("No se pudieron cargar los métodos de pago");
       }
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Error de conexión",
-        variant: "destructive"
-      });
+      console.error("Error fetching payment methods:", error);
+      toast.error("Error de conexión");
     } finally {
       setLoading(false);
     }
@@ -74,26 +68,16 @@ export default function MetPago() {
       });
 
       if (response.ok) {
-        toast({
-          title: "Éxito",
-          description: "Método de pago creado correctamente"
-        });
+        toast.success("Método de pago creado correctamente");
         setIsCreateModalOpen(false);
         setFormData({ titulo: '', dato: '', img_qr: null });
         fetchPaymentMethods();
       } else {
-        toast({
-          title: "Error",
-          description: "No se pudo crear el método de pago",
-          variant: "destructive"
-        });
+        toast.error("No se pudo crear el método de pago");
       }
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Error de conexión",
-        variant: "destructive"
-      });
+      console.error("Error creating payment method:", error);
+      toast.error("Error de conexión");
     }
   };
 
@@ -116,27 +100,17 @@ export default function MetPago() {
       });
 
       if (response.ok) {
-        toast({
-          title: "Éxito",
-          description: "Método de pago actualizado correctamente"
-        });
+        toast.success("Método de pago actualizado correctamente");
         setIsEditModalOpen(false);
         setEditingMethod(null);
         setFormData({ titulo: '', dato: '', img_qr: null });
         fetchPaymentMethods();
       } else {
-        toast({
-          title: "Error",
-          description: "No se pudo actualizar el método de pago",
-          variant: "destructive"
-        });
+        toast.error("No se pudo actualizar el método de pago");
       }
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Error de conexión",
-        variant: "destructive"
-      });
+      console.error("Error updating payment method:", error);
+      toast.error("Error de conexión");
     }
   };
 
@@ -152,24 +126,14 @@ export default function MetPago() {
       });
 
       if (response.ok) {
-        toast({
-          title: "Éxito",
-          description: "Método de pago eliminado correctamente"
-        });
+        toast.success("Método de pago eliminado correctamente");
         fetchPaymentMethods();
       } else {
-        toast({
-          title: "Error",
-          description: "No se pudo eliminar el método de pago",
-          variant: "destructive"
-        });
+        toast.error("No se pudo eliminar el método de pago");
       }
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Error de conexión",
-        variant: "destructive"
-      });
+      console.error("Error deleting payment method:", error);
+      toast.error("Error de conexión");
     }
   };
 
@@ -199,7 +163,7 @@ export default function MetPago() {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <OrganizationLayout title="Métodos de Pago">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
           <CardTitle className="text-2xl font-bold">Métodos de Pago</CardTitle>
@@ -357,6 +321,6 @@ export default function MetPago() {
           </form>
         </DialogContent>
       </Dialog>
-    </div>
+    </OrganizationLayout>
   );
 }
