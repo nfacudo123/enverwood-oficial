@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/AppSidebar";
-import { SidebarTrigger } from "@/components/ui/sidebar";
+import { OrganizationLayout } from "@/components/OrganizationLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -205,125 +203,112 @@ const HorarioRetiros = () => {
   }, []);
 
   return (
-    <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-background">
-        <AppSidebar />
-        <div className="flex-1 flex flex-col">
-          <header className="flex items-center gap-4 border-b px-6 py-4 bg-card">
-            <SidebarTrigger />
-            <div className="flex items-center gap-2">
-              <Clock className="h-6 w-6 text-primary" />
-              <h1 className="text-2xl font-bold text-foreground">Horario de Retiros</h1>
-            </div>
-          </header>
-
-          <main className="flex-1 p-6 space-y-6">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle className="text-xl font-semibold">
-                  Gestión de Horarios de Retiro
-                </CardTitle>
-                <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
-                  <DialogTrigger asChild>
-                    <Button>
-                      <Plus className="h-4 w-4 mr-2" />
-                      Crear Horario
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Crear Nuevo Horario</DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-4">
-                      <div>
-                        <Label htmlFor="horario">Horario</Label>
-                        <Input
-                          id="horario"
-                          type="datetime-local"
-                          value={formData.horario}
-                          onChange={(e) => setFormData({ ...formData, horario: e.target.value })}
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="fee">Fee</Label>
-                        <Input
-                          id="fee"
-                          type="number"
-                          step="0.01"
-                          value={formData.fee}
-                          onChange={(e) => setFormData({ ...formData, fee: e.target.value })}
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="mensaje">Mensaje de Retiro</Label>
-                        <Textarea
-                          id="mensaje"
-                          value={formData.mensaje_retiro}
-                          onChange={(e) => setFormData({ ...formData, mensaje_retiro: e.target.value })}
-                        />
-                      </div>
-                      <Button onClick={handleCreateHorario} className="w-full">
-                        Crear Horario
-                      </Button>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-              </CardHeader>
-              <CardContent>
-                {loading ? (
-                  <div className="text-center py-8">
-                    <p>Cargando horarios...</p>
+    <OrganizationLayout title="Horario de Retiros">
+      <main className="flex-1 p-6 space-y-6">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle className="text-xl font-semibold">
+              Gestión de Horarios de Retiro
+            </CardTitle>
+            <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
+              <DialogTrigger asChild>
+                <Button>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Crear Horario
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Crear Nuevo Horario</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="horario">Horario</Label>
+                    <Input
+                      id="horario"
+                      type="datetime-local"
+                      value={formData.horario}
+                      onChange={(e) => setFormData({ ...formData, horario: e.target.value })}
+                    />
                   </div>
-                ) : (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>ID</TableHead>
-                        <TableHead>Horario</TableHead>
-                        <TableHead>Fee</TableHead>
-                        <TableHead>Mensaje</TableHead>
-                        <TableHead>Acciones</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {horarios.map((horario) => (
-                        <TableRow key={horario.id}>
-                          <TableCell>{horario.id}</TableCell>
-                          <TableCell>{formatDateTime(horario.horario)}</TableCell>
-                          <TableCell>
-                            <Badge variant="secondary">${horario.fee}</Badge>
-                          </TableCell>
-                          <TableCell className="max-w-xs truncate">
-                            {horario.mensaje_retiro}
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex gap-2">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => openEditModal(horario)}
-                              >
-                                <Edit className="h-4 w-4" />
-                              </Button>
-                              <Button
-                                variant="destructive"
-                                size="sm"
-                                onClick={() => handleDeleteHorario(horario.id)}
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                )}
-              </CardContent>
-            </Card>
-          </main>
-        </div>
-      </div>
+                  <div>
+                    <Label htmlFor="fee">Fee</Label>
+                    <Input
+                      id="fee"
+                      type="number"
+                      step="0.01"
+                      value={formData.fee}
+                      onChange={(e) => setFormData({ ...formData, fee: e.target.value })}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="mensaje">Mensaje de Retiro</Label>
+                    <Textarea
+                      id="mensaje"
+                      value={formData.mensaje_retiro}
+                      onChange={(e) => setFormData({ ...formData, mensaje_retiro: e.target.value })}
+                    />
+                  </div>
+                  <Button onClick={handleCreateHorario} className="w-full">
+                    Crear Horario
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </CardHeader>
+          <CardContent>
+            {loading ? (
+              <div className="text-center py-8">
+                <p>Cargando horarios...</p>
+              </div>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>ID</TableHead>
+                    <TableHead>Horario</TableHead>
+                    <TableHead>Fee</TableHead>
+                    <TableHead>Mensaje</TableHead>
+                    <TableHead>Acciones</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {horarios.map((horario) => (
+                    <TableRow key={horario.id}>
+                      <TableCell>{horario.id}</TableCell>
+                      <TableCell>{formatDateTime(horario.horario)}</TableCell>
+                      <TableCell>
+                        <Badge variant="secondary">${horario.fee}</Badge>
+                      </TableCell>
+                      <TableCell className="max-w-xs truncate">
+                        {horario.mensaje_retiro}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => openEditModal(horario)}
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => handleDeleteHorario(horario.id)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </CardContent>
+        </Card>
+      </main>
 
       {/* Modal de Edición */}
       <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
@@ -365,7 +350,7 @@ const HorarioRetiros = () => {
           </div>
         </DialogContent>
       </Dialog>
-    </SidebarProvider>
+    </OrganizationLayout>
   );
 };
 
