@@ -8,12 +8,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Check, ChevronDown, Eye, EyeOff, Loader2 } from "lucide-react";
+import { ChevronDown, Eye, EyeOff, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { UserNavbar } from '@/components/UserNavbar';
-import { cn } from "@/lib/utils";
 
 interface UserProfile {
   id: string;
@@ -712,30 +711,28 @@ const Profile = () => {
                               <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                             </Button>
                           </PopoverTrigger>
-                          <PopoverContent className="w-full p-0">
-                            <Command>
-                              <CommandInput placeholder="Buscar método de pago..." />
-                              <CommandEmpty>No se encontraron métodos de pago.</CommandEmpty>
-                              <CommandGroup>
-                                {(paymentMethods || []).map((method) => (
-                                  <CommandItem
-                                    key={method.id}
-                                    value={method.titulo}
-                                    onSelect={() => handlePaymentMethodToggle(method.titulo)}
+                          <PopoverContent className="w-full p-4">
+                            <div className="space-y-2">
+                              <div className="text-sm font-medium mb-3">Selecciona métodos de pago:</div>
+                              {(paymentMethods || []).map((method) => (
+                                <div key={method.id} className="flex items-center space-x-2">
+                                  <Checkbox
+                                    id={`method-${method.id}`}
+                                    checked={(selectedPaymentMethods || []).includes(method.titulo)}
+                                    onCheckedChange={() => handlePaymentMethodToggle(method.titulo)}
+                                  />
+                                  <label
+                                    htmlFor={`method-${method.id}`}
+                                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
                                   >
-                                    <Check
-                                      className={cn(
-                                        "mr-2 h-4 w-4",
-                                        (selectedPaymentMethods || []).includes(method.titulo) 
-                                          ? "opacity-100" 
-                                          : "opacity-0"
-                                      )}
-                                    />
                                     {method.titulo}
-                                  </CommandItem>
-                                ))}
-                              </CommandGroup>
-                            </Command>
+                                  </label>
+                                </div>
+                              ))}
+                              {(paymentMethods || []).length === 0 && (
+                                <div className="text-sm text-gray-500">No hay métodos de pago disponibles</div>
+                              )}
+                            </div>
                           </PopoverContent>
                         </Popover>
                       </div>
