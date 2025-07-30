@@ -101,6 +101,7 @@ const adminItems = [
   { title: "Cambio de Patrocinador", icon: Repeat, url: "/sponsor-change" },
   { title: "Link de Conferencias", icon: LinkIcon, url: "/linkconf" },
   { title: "Métodos de Pago", icon: CreditCard, url: "/metpago" },
+  { title: "Utilidades", icon: TrendingUp, url: "/utiladmin" },
 ];
 
 export function AppSidebar() {

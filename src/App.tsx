@@ -23,6 +23,7 @@ import LinkConferencias from "./pages/LinkConferencias";
 import ComTipo from "./pages/ComTipo";
 import Pagos from "./pages/Pagos";
 import MetPago from "./pages/MetPago";
+import UtilAdmin from "./pages/UtilAdmin";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminRoute from "./components/AdminRoute";
 import NotFound from "./pages/NotFound";
@@ -201,6 +202,15 @@ const App = () => (
             element={
               <AdminRoute>
                 <MetPago />
+              </AdminRoute>
+            } 
+          />
+
+          <Route 
+            path="/utiladmin" 
+            element={
+              <AdminRoute>
+                <UtilAdmin />
               </AdminRoute>
             } 
           />
