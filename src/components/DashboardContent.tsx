@@ -137,7 +137,7 @@ export function DashboardContent() {
 
         if (response.ok) {
           const data = await response.json();
-          setNoticias(data.slice(0, 5)); // Solo las primeras 5
+          setNoticias(data.noticias.slice(0, 5)); // Solo las primeras 5 del array noticias
         }
       } catch (error) {
         console.error('Error fetching noticias:', error);
