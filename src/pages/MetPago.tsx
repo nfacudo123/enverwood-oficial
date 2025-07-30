@@ -31,11 +31,16 @@ export default function MetPago() {
   // Fetch payment methods
   const fetchPaymentMethods = async () => {
     try {
+      console.log("Intentando conectar a:", 'http://localhost:4000/api/metodo_pago');
       const response = await fetch('http://localhost:4000/api/metodo_pago');
+      console.log("Respuesta recibida:", response.status, response.statusText);
+      
       if (response.ok) {
         const data = await response.json();
+        console.log("Datos recibidos:", data);
         setPaymentMethods(data);
       } else {
+        console.error("Error de respuesta:", response.status, response.statusText);
         toast.error("No se pudieron cargar los métodos de pago");
       }
     } catch (error) {
