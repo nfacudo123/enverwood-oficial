@@ -44,9 +44,9 @@ const Util: React.FC = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const idUser = localStorage.getItem('idUser');
+      const idUser = parseInt(localStorage.getItem('idUser') || '0');
       
-      const response = await fetch(`http://localhost:4000/api/inversiones/utilidades?usid=${idUser}`, {
+      const response = await fetch('http://localhost:4000/api/inversiones/utilidades', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -54,7 +54,11 @@ const Util: React.FC = () => {
 
       if (response.ok) {
         const data = await response.json();
-        setUtilidades(data.utilidades || []);
+        // Filtrar solo las utilidades donde usid coincida con el usuario conectado
+        const utilidadesUsuario = (data.utilidades || []).filter((utilidad: Utilidad) => 
+          utilidad.usid === idUser
+        );
+        setUtilidades(utilidadesUsuario);
       } else {
         console.error('Error al obtener utilidades del usuario');
       }
