@@ -76,8 +76,8 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
           const data = await response.json();
           setUserInfo({
             username: data.username || '',
-            firstName: data.firstName || data.name || '',
-            lastName: data.lastName || data.apellidos || '',
+            firstName: data.name || '',
+            lastName: data.apellidos || '',
             wallet_usdt: data.wallet_usdt || '',
             met_pago: data.met_pago || '',
             estado: data.estado || '0',
