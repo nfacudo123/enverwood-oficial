@@ -127,6 +127,9 @@ export default function Compras() {
         return;
       }
 
+      console.log('Enviando solicitud a:', `http://localhost:4000/api/inversiones/validar/${id}`);
+      console.log('Datos:', { utilidad: utilidad });
+
       const response = await fetch(`http://localhost:4000/api/inversiones/validar/${id}`, {
         method: 'PUT',
         headers: {
@@ -138,9 +141,16 @@ export default function Compras() {
         }),
       });
 
+      console.log('Response status:', response.status);
+      
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        console.log('Error response:', errorText);
+        throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
       }
+
+      const responseData = await response.json();
+      console.log('Success response:', responseData);
 
       toast({
         title: "Éxito",
@@ -156,7 +166,7 @@ export default function Compras() {
       console.error('Error aprobando inversión:', error);
       toast({
         title: "Error",
-        description: "No se pudo aprobar la inversión",
+        description: error instanceof Error ? error.message : "No se pudo aprobar la inversión",
         variant: "destructive",
       });
     }
@@ -249,11 +259,17 @@ export default function Compras() {
                 <TableCell>
                   <div className="flex flex-col gap-2">
                     <Input
-                      type="number"
+                      type="text"
                       placeholder="Utilidad"
                       value={utilidades[inversion.id] || ''}
-                      onChange={(e) => setUtilidades(prev => ({ ...prev, [inversion.id]: e.target.value }))}
-                      className="w-20"
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        // Solo permitir números y punto decimal
+                        if (value === '' || /^\d*\.?\d*$/.test(value)) {
+                          setUtilidades(prev => ({ ...prev, [inversion.id]: value }));
+                        }
+                      }}
+                      className="w-24"
                     />
                     <div className="flex gap-1">
                       <Button 
@@ -261,6 +277,7 @@ export default function Compras() {
                         size="sm"
                         onClick={() => handleAprobar(inversion.id)}
                         className="bg-green-600 hover:bg-green-700"
+                        disabled={!utilidades[inversion.id] || utilidades[inversion.id].trim() === ''}
                       >
                         Aprobar
                       </Button>
