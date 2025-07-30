@@ -8,9 +8,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Check, ChevronDown, Eye, EyeOff, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { UserNavbar } from '@/components/UserNavbar';
+import { cn } from "@/lib/utils";
 
 interface UserProfile {
   id: string;
@@ -27,6 +30,13 @@ interface UserProfile {
   foto?: string;
 }
 
+interface PaymentMethod {
+  id: number;
+  titulo: string;
+  img_qr: string;
+  dato: string;
+}
+
 const Profile = () => {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -35,6 +45,10 @@ const Profile = () => {
   const [error, setError] = useState<string | null>(null);
   const [updating, setUpdating] = useState(false);
   const [paises, setPaises] = useState<Array<{ id: number; nombre: string }>>([]);
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
+  const [selectedPaymentMethods, setSelectedPaymentMethods] = useState<string[]>([]);
+  const [paymentMethodValues, setPaymentMethodValues] = useState<{ [key: string]: string }>({});
+  const [paymentMethodsOpen, setPaymentMethodsOpen] = useState(false);
   const { toast } = useToast();
 
   // Estados para los formularios
@@ -54,7 +68,9 @@ const Profile = () => {
   });
   
   const [walletData, setWalletData] = useState({
-    walletAddress: ''
+    walletAddress: '',
+    selectedMethods: '',
+    methodValues: ''
   });
   
   const [passwordData, setPasswordData] = useState({
@@ -76,7 +92,26 @@ const Profile = () => {
     };
     
     fetchPaises();
+    fetchPaymentMethods();
   }, []);
+
+  const fetchPaymentMethods = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:4000/api/metodo_pago', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setPaymentMethods(data);
+      }
+    } catch (error) {
+      console.error('Error fetching payment methods:', error);
+    }
+  };
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -141,8 +176,26 @@ const Profile = () => {
           });
           
           setWalletData({
-            walletAddress: data.wallet_usdt || ''
+            walletAddress: data.wallet_usdt || '',
+            selectedMethods: data.met_pago || '',
+            methodValues: data.wallet_usdt || ''
           });
+
+          // Parse existing payment methods if they exist
+          if (data.met_pago) {
+            const existingMethods = data.met_pago.split(', ');
+            setSelectedPaymentMethods(existingMethods);
+            
+            // Parse existing values if they exist
+            if (data.wallet_usdt) {
+              const existingValues = data.wallet_usdt.split(', ');
+              const valuesMap: { [key: string]: string } = {};
+              existingMethods.forEach((method, index) => {
+                valuesMap[method] = existingValues[index] || '';
+              });
+              setPaymentMethodValues(valuesMap);
+            }
+          }
         } else {
           const errorData = await response.json().catch(() => ({ message: 'Error del servidor' }));
           console.error('Profile fetch error:', errorData);
@@ -238,8 +291,26 @@ const Profile = () => {
           });
           
           setWalletData({
-            walletAddress: updatedData.wallet_usdt || ''
+            walletAddress: updatedData.wallet_usdt || '',
+            selectedMethods: updatedData.met_pago || '',
+            methodValues: updatedData.wallet_usdt || ''
           });
+
+          // Parse updated payment methods if they exist
+          if (updatedData.met_pago) {
+            const existingMethods = updatedData.met_pago.split(', ');
+            setSelectedPaymentMethods(existingMethods);
+            
+            // Parse updated values if they exist
+            if (updatedData.wallet_usdt) {
+              const existingValues = updatedData.wallet_usdt.split(', ');
+              const valuesMap: { [key: string]: string } = {};
+              existingMethods.forEach((method, index) => {
+                valuesMap[method] = existingValues[index] || '';
+              });
+              setPaymentMethodValues(valuesMap);
+            }
+          }
         }
       } else {
         console.error('Update failed:', result);
@@ -263,9 +334,44 @@ const Profile = () => {
 
   const handleWalletSave = () => {
     console.log('Saving wallet data:', walletData);
+    
+    // Prepare the values string
+    const methodValuesArray = selectedPaymentMethods.map(method => paymentMethodValues[method] || '');
+    const methodValuesString = methodValuesArray.join(', ');
+    const selectedMethodsString = selectedPaymentMethods.join(', ');
+    
     updateProfile({
-      wallet_usdt: walletData.walletAddress
+      wallet_usdt: methodValuesString,
+      met_pago: selectedMethodsString
     });
+  };
+
+  const handlePaymentMethodToggle = (methodTitle: string) => {
+    setSelectedPaymentMethods(prev => {
+      const isSelected = prev.includes(methodTitle);
+      let newSelected;
+      
+      if (isSelected) {
+        newSelected = prev.filter(method => method !== methodTitle);
+        // Remove the value for this method
+        setPaymentMethodValues(prevValues => {
+          const newValues = { ...prevValues };
+          delete newValues[methodTitle];
+          return newValues;
+        });
+      } else {
+        newSelected = [...prev, methodTitle];
+      }
+      
+      return newSelected;
+    });
+  };
+
+  const handlePaymentMethodValueChange = (methodTitle: string, value: string) => {
+    setPaymentMethodValues(prev => ({
+      ...prev,
+      [methodTitle]: value
+    }));
   };
 
   const uploadPhoto = async () => {
@@ -588,14 +694,65 @@ const Profile = () => {
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <div>
-                        <Label htmlFor="wallet-address">Dirección Wallet USDT(TRC20)</Label>
-                        <Input 
-                          id="wallet-address" 
-                          value={walletData.walletAddress}
-                          onChange={(e) => setWalletData({...walletData, walletAddress: e.target.value})}
-                          className="mt-1"
-                        />
+                        <Label htmlFor="payment-methods">Selecciona método de Pago</Label>
+                        <Popover open={paymentMethodsOpen} onOpenChange={setPaymentMethodsOpen}>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              role="combobox"
+                              aria-expanded={paymentMethodsOpen}
+                              className="w-full justify-between mt-1"
+                            >
+                              {selectedPaymentMethods.length > 0
+                                ? `${selectedPaymentMethods.length} método(s) seleccionado(s)`
+                                : "Selecciona métodos de pago"}
+                              <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-full p-0">
+                            <Command>
+                              <CommandInput placeholder="Buscar método de pago..." />
+                              <CommandEmpty>No se encontraron métodos de pago.</CommandEmpty>
+                              <CommandGroup>
+                                {paymentMethods.map((method) => (
+                                  <CommandItem
+                                    key={method.id}
+                                    value={method.titulo}
+                                    onSelect={() => handlePaymentMethodToggle(method.titulo)}
+                                  >
+                                    <Check
+                                      className={cn(
+                                        "mr-2 h-4 w-4",
+                                        selectedPaymentMethods.includes(method.titulo) 
+                                          ? "opacity-100" 
+                                          : "opacity-0"
+                                      )}
+                                    />
+                                    {method.titulo}
+                                  </CommandItem>
+                                ))}
+                              </CommandGroup>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
                       </div>
+
+                      {/* Dynamic inputs for selected payment methods */}
+                      {selectedPaymentMethods.map((methodTitle) => (
+                        <div key={methodTitle}>
+                          <Label htmlFor={`method-${methodTitle}`}>
+                            Número de {methodTitle}
+                          </Label>
+                          <Input
+                            id={`method-${methodTitle}`}
+                            value={paymentMethodValues[methodTitle] || ''}
+                            onChange={(e) => handlePaymentMethodValueChange(methodTitle, e.target.value)}
+                            className="mt-1"
+                            placeholder={`Ingresa tu número de ${methodTitle}`}
+                          />
+                        </div>
+                      ))}
+
                       <Button 
                         className="w-full bg-green-500 hover:bg-green-600 text-white"
                         onClick={handleWalletSave}
