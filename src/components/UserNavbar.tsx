@@ -45,6 +45,13 @@ interface UserNavbarProps {
   showSidebarTrigger?: boolean;
 }
 
+interface HorarioRetiro {
+  id: number;
+  horario: string;
+  fee: string;
+  mensaje_retiro: string;
+}
+
 export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProps) => {
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
@@ -55,6 +62,10 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
   const [userPaymentMethods, setUserPaymentMethods] = useState<UserPaymentMethod[]>([]);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>("");
   const [selectedDestinationAccount, setSelectedDestinationAccount] = useState<string>("");
+  const [horariosRetiro, setHorariosRetiro] = useState<HorarioRetiro[]>([]);
+  const [isWithdrawEnabled, setIsWithdrawEnabled] = useState<boolean>(false);
+  const [currentFee, setCurrentFee] = useState<number>(0);
+  const [nextSchedules, setNextSchedules] = useState<string[]>([]);
   const { logout } = useAuth();
   const navigate = useNavigate();
 
@@ -162,9 +173,71 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
     }
   };
 
+  const fetchHorariosRetiro = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      const response = await fetch('http://localhost:4000/api/tiempo-retiro', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setHorariosRetiro(data);
+        checkWithdrawAvailability(data);
+      }
+    } catch (error) {
+      console.error('Error fetching horarios retiro:', error);
+    }
+  };
+
+  const checkWithdrawAvailability = (horarios: HorarioRetiro[]) => {
+    if (!horarios || horarios.length === 0) {
+      setIsWithdrawEnabled(false);
+      return;
+    }
+
+    const now = new Date();
+    let available = false;
+    let fee = 0;
+    const nextDates: string[] = [];
+
+    for (const horario of horarios) {
+      const scheduleDate = new Date(horario.horario);
+      
+      // Check if current time is within the schedule range (considering a 1-hour window)
+      const timeDiff = Math.abs(now.getTime() - scheduleDate.getTime());
+      const hourInMs = 60 * 60 * 1000;
+      
+      if (timeDiff <= hourInMs) {
+        available = true;
+        fee = parseFloat(horario.fee);
+        break;
+      } else if (scheduleDate > now) {
+        // Collect future schedules
+        nextDates.push(scheduleDate.toLocaleString('es-ES', {
+          year: 'numeric',
+          month: '2-digit', 
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit'
+        }));
+      }
+    }
+
+    setIsWithdrawEnabled(available);
+    setCurrentFee(fee);
+    setNextSchedules(nextDates.slice(0, 3)); // Show next 3 schedules
+  };
+
     fetchUserInfo();
     fetchConferenceLink();
     fetchWithdrawals();
+    fetchHorariosRetiro();
   }, []);
 
   const showAlert = (message: string) => {
@@ -286,9 +359,16 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
         return;
       }
 
+      // Apply fee to withdrawal amount
+      const finalAmount = parseFloat(withdrawAmount) - currentFee;
+      if (finalAmount <= 0) {
+        showAlert('El monto después de descontar la comisión debe ser mayor a 0');
+        return;
+      }
+
       const withdrawData = {
         usuario_id: parseInt(idUser),
-        monto: parseFloat(withdrawAmount),
+        monto: finalAmount,
         wallet_usdt: selectedDestinationAccount,
         metodo_pago: selectedPaymentMethod
       };
@@ -441,10 +521,27 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
             <DialogTitle>Solicitar Retiro</DialogTitle>
           </DialogHeader>
           
-          <div className="bg-accent border border-border rounded-lg p-4 mb-4">
-            <p className="text-sm text-accent-foreground">
-              <span className="font-medium">Alerta:</span> Puedes realizar la solicitud de tu retiro del 1 al 5 de cada mes.
-              Recuerda que el valor se verá reflejado en tu Wallet el día 10 de cada mes.
+          <div className={`border rounded-lg p-4 mb-4 ${isWithdrawEnabled ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
+            <p className="text-sm">
+              <span className="font-medium">
+                {isWithdrawEnabled ? 
+                  (horariosRetiro.find(h => {
+                    const scheduleDate = new Date(h.horario);
+                    const now = new Date();
+                    const timeDiff = Math.abs(now.getTime() - scheduleDate.getTime());
+                    const hourInMs = 60 * 60 * 1000;
+                    return timeDiff <= hourInMs;
+                  })?.mensaje_retiro || 'Retiros disponibles') :
+                  'Los retiros están disponibles en los horarios:'
+                }
+              </span>
+              {!isWithdrawEnabled && nextSchedules.length > 0 && (
+                <div className="mt-2">
+                  {nextSchedules.map((date, index) => (
+                    <div key={index} className="text-red-700">• {date}</div>
+                  ))}
+                </div>
+              )}
             </p>
           </div>
 
@@ -501,13 +598,21 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
                 min="0"
                 step="0.01"
                 className="mt-1"
+                disabled={!isWithdrawEnabled}
               />
+              {currentFee > 0 && withdrawAmount && (
+                <div className="mt-2 text-xs text-muted-foreground">
+                  <p>Comisión: ${currentFee.toFixed(2)}</p>
+                  <p>Monto final: ${(parseFloat(withdrawAmount) - currentFee).toFixed(2)}</p>
+                </div>
+              )}
             </div>
 
             <div className="flex justify-end pt-4">
               <Button 
                 type="submit"
                 className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                disabled={!isWithdrawEnabled}
               >
                 Solicitar
               </Button>
