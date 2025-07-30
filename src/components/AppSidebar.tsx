@@ -77,6 +77,7 @@ const menuItems = [
     items: [
       { title: "Mis rendimientos", icon: TrendingUp, url: "#" },
       { title: "Comisiones", icon: Target, url: "/comision" },
+      { title: "Utilidades usuario", icon: DollarSign, url: "/util" },
     ]
   },
   {
