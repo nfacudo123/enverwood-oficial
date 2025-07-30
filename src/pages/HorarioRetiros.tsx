@@ -112,7 +112,7 @@ const HorarioRetiros = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:4000/api/tiempo-retiro`, {
+      const response = await fetch(`http://localhost:4000/api/tiempo-retiro/${selectedHorario.id}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
