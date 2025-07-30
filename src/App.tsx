@@ -25,6 +25,7 @@ import Pagos from "./pages/Pagos";
 import MetPago from "./pages/MetPago";
 import UtilAdmin from "./pages/UtilAdmin";
 import Util from "./pages/Util";
+import HorarioRetiros from "./pages/HorarioRetiros";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminRoute from "./components/AdminRoute";
 import NotFound from "./pages/NotFound";
@@ -221,6 +222,15 @@ const App = () => (
             element={
               <AdminRoute>
                 <UtilAdmin />
+              </AdminRoute>
+            } 
+          />
+
+          <Route 
+            path="/horret" 
+            element={
+              <AdminRoute>
+                <HorarioRetiros />
               </AdminRoute>
             } 
           />

@@ -102,6 +102,7 @@ const adminItems = [
   { title: "Link de Conferencias", icon: LinkIcon, url: "/linkconf" },
   { title: "Métodos de Pago", icon: CreditCard, url: "/metpago" },
   { title: "Utilidades", icon: TrendingUp, url: "/utiladmin" },
+  { title: "Horario de Retiros", icon: Clock, url: "/horret" },
 ];
 
 export function AppSidebar() {
