@@ -15,7 +15,7 @@ interface Retiro {
   id: number;
   usuario_id: number;
   monto: string;
-  estado: number;
+  estado: string;
   fecha: string;
   wallet_usdt: string;
   metodo_pago: string;
@@ -113,9 +113,9 @@ const Pagos: React.FC = () => {
 
     // Filtrar por estado según el tab activo
     if (activeTab === 'pendientes') {
-      filtered = filtered.filter(retiro => retiro.estado === 0);
+      filtered = filtered.filter(retiro => retiro.estado === "0" || retiro.estado === "pendiente");
     } else {
-      filtered = filtered.filter(retiro => retiro.estado === 1);
+      filtered = filtered.filter(retiro => retiro.estado === "1");
     }
 
     // Filtrar por término de búsqueda
@@ -208,7 +208,7 @@ const Pagos: React.FC = () => {
       'Billetera': retiro.wallet_usdt,
       'Método de Pago': retiro.metodo_pago,
       'Fecha': new Date(retiro.fecha).toLocaleString('es-ES'),
-      'Estado': retiro.estado === 0 ? 'Pendiente' : 'Realizado'
+      'Estado': (retiro.estado === "0" || retiro.estado === "pendiente") ? 'Pendiente' : 'Realizado'
     }));
 
     const ws = XLSX.utils.json_to_sheet(dataToExport);
