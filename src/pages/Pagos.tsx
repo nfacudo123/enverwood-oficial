@@ -53,7 +53,7 @@ const Pagos: React.FC = () => {
       console.log('Token disponible:', !!token);
       console.log('Haciendo petición a:', 'http://localhost:4000/api/retiros');
       
-      const response = await fetch('http://localhost:4000/api/retiros', {
+      const response = await fetch('/api/retiros', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -92,7 +92,7 @@ const Pagos: React.FC = () => {
   const fetchTotales = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:4000/api/retiros/sumatorias/totales', {
+      const response = await fetch('/api/retiros/sumatorias/totales', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -134,7 +134,7 @@ const Pagos: React.FC = () => {
   const handleAprobar = async (id: number) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:4000/api/retiros/aprobar/${id}`, {
+      const response = await fetch(`/api/retiros/aprobar/${id}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -169,7 +169,7 @@ const Pagos: React.FC = () => {
   const handleCancelar = async (id: number) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:4000/api/retiros/${id}`, {
+      const response = await fetch(`/api/retiros/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
