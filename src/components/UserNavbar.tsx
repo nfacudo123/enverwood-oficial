@@ -369,7 +369,6 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
       const withdrawData = {
         usuario_id: parseInt(idUser),
         monto: finalAmount,
-        comision: currentFee,
         wallet_usdt: selectedDestinationAccount,
         metodo_pago: selectedPaymentMethod
       };
