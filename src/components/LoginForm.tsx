@@ -46,8 +46,8 @@ const LoginForm = () => {
       </div>
 
       {/* Right side - Login Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 lg:p-8 bg-gradient-to-bl from-white to-success/5">
-        <Card className="w-full max-w-md shadow-elegant border border-success-dark/50 bg-success-dark/95 backdrop-blur-sm">
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 lg:p-8" style={{backgroundColor: '#82d88d'}}>
+        <Card className="w-full max-w-md shadow-elegant border border-[#026a53]/50 backdrop-blur-sm" style={{backgroundColor: '#026a53'}}>
           <CardContent className="p-8">
             <div className="text-center mb-8">
               <img src="/lovable-uploads/015e7117-dc93-4a71-ac60-25cbf3535efb.png" alt="InvertGold" className="h-12 mx-auto mb-4" />
