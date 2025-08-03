@@ -47,19 +47,19 @@ const LoginForm = () => {
 
       {/* Right side - Login Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-6 lg:p-8 bg-gradient-to-bl from-white to-success/5">
-        <Card className="w-full max-w-md shadow-elegant border border-success/30 bg-white/90 backdrop-blur-sm">
+        <Card className="w-full max-w-md shadow-elegant border border-success-dark/50 bg-success-dark/95 backdrop-blur-sm">
           <CardContent className="p-8">
             <div className="text-center mb-8">
               <img src="/lovable-uploads/015e7117-dc93-4a71-ac60-25cbf3535efb.png" alt="InvertGold" className="h-12 mx-auto mb-4" />
-              <h1 className="text-2xl lg:text-3xl font-bold text-success-dark mb-2">
+              <h1 className="text-2xl lg:text-3xl font-bold text-white mb-2">
                 InvertGold Inversiones
               </h1>
-              <p className="text-success/70">Inicia sesión en tu cuenta</p>
+              <p className="text-white/70">Inicia sesión en tu cuenta</p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
-                <label htmlFor="email" className="text-sm font-medium text-success-dark">
+                <label htmlFor="email" className="text-sm font-medium text-white">
                   Correo electrónico
                 </label>
                 <Input
@@ -75,7 +75,7 @@ const LoginForm = () => {
               </div>
 
               <div className="space-y-2">
-                <label htmlFor="password" className="text-sm font-medium text-success-dark">
+                <label htmlFor="password" className="text-sm font-medium text-white">
                   Contraseña
                 </label>
                 <div className="relative">
@@ -109,11 +109,11 @@ const LoginForm = () => {
                     className="w-4 h-4 text-success border-success/30 rounded focus:ring-success/30"
                     disabled={isLoading}
                   />
-                  <span className="ml-2 text-sm text-success/70">Recordarme</span>
+                  <span className="ml-2 text-sm text-white/70">Recordarme</span>
                 </label>
                 <button
                   type="button"
-                  className="text-sm text-success hover:text-success-dark font-medium"
+                  className="text-sm text-white/80 hover:text-white font-medium"
                   disabled={isLoading}
                 >
                   ¿Olvidaste tu contraseña?
