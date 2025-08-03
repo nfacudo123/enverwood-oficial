@@ -8,7 +8,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Edit, Trash2, Plus } from "lucide-react";
 import { toast } from "sonner";
-import { apiUrl } from '@/lib/config';
 
 interface PaymentMethod {
   id: number;
@@ -33,8 +32,8 @@ export default function MetPago() {
   const fetchPaymentMethods = async () => {
     try {
       const token = localStorage.getItem('token');
-      console.log("Intentando conectar a:", apiUrl('/api/metodo_pago'));
-      const response = await fetch(apiUrl('/api/metodo_pago'), {
+      console.log("Intentando conectar a:", 'http://localhost:4000/api/metodo_pago');
+      const response = await fetch('http://localhost:4000/api/metodo_pago', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -74,7 +73,7 @@ export default function MetPago() {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(apiUrl('/api/metodo_pago'), {
+      const response = await fetch('http://localhost:4000/api/metodo_pago', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -110,7 +109,7 @@ export default function MetPago() {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(apiUrl(`/api/metodo_pago/${editingMethod.id}`), {
+      const response = await fetch(`http://localhost:4000/api/metodo_pago/${editingMethod.id}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -141,7 +140,7 @@ export default function MetPago() {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(apiUrl(`/api/metodo_pago/${id}`), {
+      const response = await fetch(`http://localhost:4000/api/metodo_pago/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -259,7 +258,7 @@ export default function MetPago() {
                   <TableCell>
                     {method.img_qr && (
                       <img 
-                        src={apiUrl(`/${method.img_qr.replace(/\\/g, '/')}`)} 
+                        src={`http://localhost:4000/${method.img_qr.replace(/\\/g, '/')}`} 
                         alt="QR Code" 
                         className="w-16 h-16 object-cover rounded"
                       />
@@ -327,7 +326,7 @@ export default function MetPago() {
               {editingMethod?.img_qr && (
                 <div className="mt-2">
                   <img 
-                    src={apiUrl(`/${editingMethod.img_qr.replace(/\\/g, '/')}`)} 
+                    src={`http://localhost:4000/${editingMethod.img_qr.replace(/\\/g, '/')}`} 
                     alt="QR Code actual" 
                     className="w-20 h-20 object-cover rounded"
                   />

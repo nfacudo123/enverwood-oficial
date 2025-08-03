@@ -14,7 +14,6 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { apiUrl } from '@/lib/config';
 
 interface ReferidoFlat {
   id: number;
@@ -133,7 +132,7 @@ const Refes = () => {
         }
 
         console.log('Obteniendo referidos...');
-        const response = await fetch(apiUrl('/api/mis-referidos'), {
+        const response = await fetch('http://localhost:4000/api/mis-referidos', {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',

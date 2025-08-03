@@ -1,7 +1,6 @@
 
 import { useState } from 'react';
 import Swal from 'sweetalert2';
-import { apiUrl } from '@/lib/config';
 
 interface LoginCredentials {
   email: string;
@@ -21,10 +20,10 @@ export const useAuth = () => {
     setIsLoading(true);
     
     try {
-      console.log('Enviando solicitud de login a:', apiUrl('/api/auth/login'));
+      console.log('Enviando solicitud de login a:', 'http://localhost:4000/api/auth/login');
       console.log('Credenciales:', credentials);
       
-      const response = await fetch(apiUrl('/api/auth/login'), {
+      const response = await fetch('http://localhost:4000/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -88,7 +87,7 @@ export const useAuth = () => {
       await Swal.fire({
         icon: 'error',
         title: 'Error de conexión',
-        text: 'No se pudo conectar al servidor. Verifica que el backend esté ejecutándose en el puerto configurado',
+        text: 'No se pudo conectar al servidor. Verifica que el backend esté ejecutándose en http://localhost:4000',
         confirmButtonText: 'Entendido',
         confirmButtonColor: '#5b73e8',
         background: '#fff',

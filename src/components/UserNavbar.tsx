@@ -23,7 +23,6 @@ import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import Swal from 'sweetalert2';
-import { apiUrl } from '@/lib/config';
 
 interface UserInfo {
   username: string;
@@ -76,7 +75,7 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
         const token = localStorage.getItem('token');
         if (!token) return;
 
-        const response = await fetch(apiUrl('/api/perfil'), {
+        const response = await fetch('http://localhost:4000/api/perfil', {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -118,7 +117,7 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
         const token = localStorage.getItem('token');
         if (!token) return;
 
-        const response = await fetch(apiUrl('/api/link'), {
+        const response = await fetch('http://localhost:4000/api/link', {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
@@ -141,7 +140,7 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
       if (!token || !idUser) return;
 
       // Obtener total de retiros (sin filtrar)
-      const retirosResponse = await fetch(apiUrl(`/api/retiros/${idUser}`), {
+      const retirosResponse = await fetch(`http://localhost:4000/api/retiros/${idUser}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -149,7 +148,7 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
       });
 
       // Obtener total disponible de comisiones
-      const comisionesResponse = await fetch(apiUrl(`/api/comisiones/sumatorias/${idUser}`), {
+      const comisionesResponse = await fetch(`http://localhost:4000/api/comisiones/sumatorias/${idUser}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -179,7 +178,7 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
       const token = localStorage.getItem('token');
       if (!token) return;
 
-      const response = await fetch(apiUrl('/api/tiempo-retiro'), {
+      const response = await fetch('http://localhost:4000/api/tiempo-retiro', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -376,7 +375,7 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
         metodo_pago: selectedPaymentMethod
       };
 
-      const response = await fetch(apiUrl('/api/retiros'), {
+      const response = await fetch('http://localhost:4000/api/retiros', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -458,7 +457,7 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
                     <Avatar className="h-9 w-9">
                       {userInfo?.foto ? (
                         <AvatarImage 
-                          src={apiUrl(`/${userInfo.foto.replace(/\\/g, '/')}`)}
+                          src={`http://localhost:4000/${userInfo.foto.replace(/\\/g, '/')}`}
                           alt="Profile Picture"
                         />
                       ) : null}

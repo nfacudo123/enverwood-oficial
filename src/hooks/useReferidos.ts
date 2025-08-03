@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { apiUrl } from '@/lib/config';
 
 interface ReferidoData {
   id: number;
@@ -144,7 +143,7 @@ export const useReferidos = () => {
 
         console.log('Obteniendo referidos con token:', token.substring(0, 10) + '...');
         
-        const response = await fetch(apiUrl('/api/mis-referidos'), {
+        const response = await fetch('http://localhost:4000/api/mis-referidos', {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',

@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/dialog";
 import { File, X } from "lucide-react";
 import { OrganizationLayout } from '@/components/OrganizationLayout';
-import { apiUrl } from '@/lib/config';
 
 interface Inversion {
   id: number;
@@ -51,7 +50,7 @@ const VaucherPago = () => {
         return;
       }
 
-      const response = await fetch(apiUrl('/api/inversiones'), {
+      const response = await fetch('http://localhost:4000/api/inversiones', {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -174,7 +173,7 @@ const VaucherPago = () => {
             <div className="bg-gray-50 p-4 rounded-lg border w-full">
               {selectedComprobante ? (
                 <img 
-                  src={apiUrl(`/${getFileName(selectedComprobante)}`)}
+                  src={`http://localhost:4000/${getFileName(selectedComprobante)}`}
                   alt="Comprobante de pago" 
                   className="w-full h-auto max-h-96 object-contain rounded"
                   onError={(e) => {

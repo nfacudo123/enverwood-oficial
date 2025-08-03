@@ -13,7 +13,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { ChevronDown, Eye, EyeOff, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { UserNavbar } from '@/components/UserNavbar';
-import { apiUrl } from '@/lib/config';
 
 interface UserProfile {
   id: string;
@@ -81,7 +80,7 @@ const Profile = () => {
   useEffect(() => {
     const fetchPaises = async () => {
       try {
-        const response = await fetch(apiUrl('/api/paises'));
+        const response = await fetch('http://localhost:4000/api/paises');
         if (response.ok) {
           const data = await response.json();
           setPaises(data.paises);
@@ -98,7 +97,7 @@ const Profile = () => {
   const fetchPaymentMethods = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(apiUrl('/api/metodo_pago'), {
+      const response = await fetch('http://localhost:4000/api/metodo_pago', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -124,9 +123,9 @@ const Profile = () => {
         }
 
         console.log('Token found:', token);
-        console.log('Fetching user profile from:', apiUrl('/api/perfil'));
+        console.log('Fetching user profile from:', 'http://localhost:4000/api/perfil');
         
-        const response = await fetch(apiUrl('/api/perfil'), {
+        const response = await fetch('http://localhost:4000/api/perfil', {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -241,7 +240,7 @@ const Profile = () => {
       console.log('Updating profile with data:', updateData);
       console.log('Using Bearer token:', token);
 
-      const response = await fetch(apiUrl('/api/perfil/update'), {
+      const response = await fetch('http://localhost:4000/api/perfil/update', {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -261,7 +260,7 @@ const Profile = () => {
         });
         
         // Recargar los datos del perfil después de la actualización
-        const profileResponse = await fetch(apiUrl('/api/perfil'), {
+        const profileResponse = await fetch('http://localhost:4000/api/perfil', {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -408,7 +407,7 @@ const Profile = () => {
           const base64String = reader.result as string;
           const photoData = base64String.split(',')[1]; // Remover el prefijo data:image/...;base64,
           
-          const response = await fetch(apiUrl(`/api/perfil/foto/${userId}`), {
+          const response = await fetch(`http://localhost:4000/api/perfil/foto/${userId}`, {
             method: 'POST',
             headers: {
               'Authorization': `Bearer ${token}`,
@@ -518,7 +517,7 @@ const Profile = () => {
       
       console.log('FormData creado con archivo:', file.name);
       
-      const response = await fetch(apiUrl(`/api/perfil/foto/${userId}`), {
+      const response = await fetch(`http://localhost:4000/api/perfil/foto/${userId}`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -667,7 +666,7 @@ const Profile = () => {
                 <div className="w-16 h-16 bg-gray-400 rounded-full flex items-center justify-center overflow-hidden">
                   {userProfile?.foto ? (
                     <img 
-                      src={apiUrl(`/${userProfile.foto.replace(/\\/g, '/')}`)}	
+                      src={`http://localhost:4000/${userProfile.foto.replace(/\\/g, '/')}`}
                       alt="Profile Picture" 
                       className="w-full h-full object-cover"
                     />
@@ -796,7 +795,7 @@ const Profile = () => {
                             />
                           ) : userProfile?.foto ? (
                             <img 
-                              src={apiUrl(`/${userProfile.foto.replace(/\\/g, '/')}`)}
+                              src={`http://localhost:4000/${userProfile.foto.replace(/\\/g, '/')}`}
                               alt="Profile Picture" 
                               className="w-full h-full object-cover"
                             />

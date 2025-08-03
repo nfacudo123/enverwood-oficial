@@ -8,7 +8,6 @@ import { Pagination, PaginationContent, PaginationItem, PaginationLink, Paginati
 import { useToast } from '@/hooks/use-toast';
 import { FileDown } from 'lucide-react';
 import * as XLSX from 'xlsx';
-import { apiUrl } from '@/lib/config';
 
 interface Comision {
   id: number;
@@ -52,7 +51,7 @@ const Comision: React.FC = () => {
         setLoading(false);
         return;
       }
-      const response = await fetch(apiUrl(`/api/comisiones/comisiones/${idUser}`), {
+      const response = await fetch(`http://localhost:4000/api/comisiones/comisiones/${idUser}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'

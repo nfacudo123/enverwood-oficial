@@ -8,7 +8,6 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Eye, Download, CheckCircle, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { apiUrl } from '@/lib/config';
 
 interface Inversion {
   id: number;
@@ -54,7 +53,7 @@ export default function Compras() {
         return;
       }
 
-      const response = await fetch(apiUrl('/api/inversiones'), {
+      const response = await fetch('http://localhost:4000/api/inversiones', {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -128,10 +127,10 @@ export default function Compras() {
         return;
       }
 
-      console.log('Enviando solicitud a:', apiUrl(`/api/inversiones/validar/${id}`));
+      console.log('Enviando solicitud a:', `http://localhost:4000/api/inversiones/validar/${id}`);
       console.log('Datos:', { utilidad: utilidad });
 
-      const response = await fetch(apiUrl(`/api/inversiones/validar/${id}`), {
+      const response = await fetch(`http://localhost:4000/api/inversiones/validar/${id}`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -185,7 +184,7 @@ export default function Compras() {
         return;
       }
 
-      const response = await fetch(apiUrl(`/api/inversiones/caducar/${id}`), {
+      const response = await fetch(`http://localhost:4000/api/inversiones/caducar/${id}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -245,7 +244,7 @@ export default function Compras() {
                 <Button 
                   variant="outline" 
                   size="sm"
-                  onClick={() => window.open(apiUrl(`/${inversion.comprobante}`), '_blank')}
+                  onClick={() => window.open(`http://localhost:4000/${inversion.comprobante}`, '_blank')}
                   disabled={!inversion.comprobante}
                 >
                   <Eye className="h-4 w-4" />

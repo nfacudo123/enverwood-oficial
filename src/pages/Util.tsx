@@ -14,7 +14,6 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { apiUrl } from '@/lib/config';
 
 interface Utilidad {
   id: number;
@@ -47,7 +46,7 @@ const Util: React.FC = () => {
       const token = localStorage.getItem('token');
       const idUser = parseInt(localStorage.getItem('idUser') || '0');
       
-      const response = await fetch(apiUrl('/api/inversiones/utilidades'), {
+      const response = await fetch('http://localhost:4000/api/inversiones/utilidades', {
         headers: {
           'Authorization': `Bearer ${token}`
         }

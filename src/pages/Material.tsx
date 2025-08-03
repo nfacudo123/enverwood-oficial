@@ -22,7 +22,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { OrganizationLayout } from '@/components/OrganizationLayout';
-import { apiUrl } from '@/lib/config';
 
 const Material = () => {
   const [entriesPerPage, setEntriesPerPage] = useState(10);
@@ -50,7 +49,7 @@ const Material = () => {
       const authToken = localStorage.getItem('token');
       console.log('Using auth token:', authToken);
       
-      const response = await fetch(apiUrl('/api/recursos'), {
+      const response = await fetch('http://localhost:4000/api/recursos', {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${authToken}`,
@@ -93,7 +92,7 @@ const Material = () => {
     try {
       const token = localStorage.getItem('token');
       
-      const response = await fetch(apiUrl(`/api/recursos/${id}`), {
+      const response = await fetch(`http://localhost:4000/api/recursos/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -124,7 +123,7 @@ const Material = () => {
     const token = localStorage.getItem('authToken');
     // For opening a document in a new tab with authentication, we need to create a temporary link
     // or handle the authentication differently since we can't add headers to window.open
-    const url = apiUrl(`/api/recursos/${id}`);
+    const url = `http://localhost:4000/api/recursos/${id}`;
     window.open(url, '_blank');
   };
 
@@ -161,7 +160,7 @@ const Material = () => {
       formData.append('nombre', materialName);
       formData.append('archivo', selectedFile);
 
-      const response = await fetch(apiUrl('/api/recursos/subir'), {
+      const response = await fetch('http://localhost:4000/api/recursos/subir', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
