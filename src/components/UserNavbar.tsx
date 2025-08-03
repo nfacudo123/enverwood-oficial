@@ -600,9 +600,11 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
                 className="mt-1"
                 disabled={!isWithdrawEnabled}
               />
-              {currentFee > 0 && withdrawAmount && (
+              {withdrawAmount && (
                 <div className="mt-2 text-xs text-muted-foreground">
-                  <p>Comisión: ${currentFee.toFixed(2)}</p>
+                  {localStorage.getItem('idUser') === '1' && (
+                    <p>Comisión: ${currentFee.toFixed(2)}</p>
+                  )}
                   <p>Monto final: ${(parseFloat(withdrawAmount) - currentFee).toFixed(2)}</p>
                 </div>
               )}
