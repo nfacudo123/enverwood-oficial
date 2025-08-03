@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Plus, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { apiUrl } from '@/lib/config';
 
 interface Noticia {
   id: number;
@@ -41,7 +42,7 @@ export default function News() {
         return;
       }
 
-      const response = await fetch('http://localhost:4000/api/noticias', {
+      const response = await fetch(apiUrl('/api/noticias'), {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -103,7 +104,7 @@ export default function News() {
         return;
       }
 
-      const response = await fetch('http://localhost:4000/api/noticias', {
+      const response = await fetch(apiUrl('/api/noticias'), {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -150,7 +151,7 @@ export default function News() {
         return;
       }
 
-      const response = await fetch(`http://localhost:4000/api/noticias/${id}`, {
+      const response = await fetch(apiUrl(`/api/noticias/${id}`), {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,

@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/dialog";
 import { Upload, Leaf, Check, File, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { apiUrl } from '@/lib/config';
 
 interface Inversion {
   id: number;
@@ -60,7 +61,7 @@ export default function Meminverso() {
   const fetchPaymentMethods = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:4000/api/metodo_pago', {
+      const response = await fetch(apiUrl('/api/metodo_pago'), {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -85,7 +86,7 @@ export default function Meminverso() {
         return;
       }
 
-      const response = await fetch(`http://localhost:4000/api/inversiones`, {
+      const response = await fetch(apiUrl(`/api/inversiones`), {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -143,7 +144,7 @@ export default function Meminverso() {
         return;
       }
 
-      const response = await fetch('http://localhost:4000/api/inversiones', {
+      const response = await fetch(apiUrl('/api/inversiones'), {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -199,7 +200,7 @@ export default function Meminverso() {
         return;
       }
 
-      const response = await fetch(`http://localhost:4000/api/inversiones/${inversion.id}`, {
+      const response = await fetch(apiUrl(`/api/inversiones/${inversion.id}`), {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -259,7 +260,7 @@ export default function Meminverso() {
       const formData = new FormData();
       formData.append('comprobante', selectedFile);
 
-      const response = await fetch(`http://localhost:4000/api/inversiones/comprobante/${inversion.id}`, {
+      const response = await fetch(apiUrl(`/api/inversiones/comprobante/${inversion.id}`), {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -393,7 +394,7 @@ export default function Meminverso() {
                       <h3 className="font-semibold text-lg">{method.titulo}</h3>
                       <div className="bg-white p-2 rounded-lg border">
                         <img 
-                          src={`http://localhost:4000/${method.img_qr.replace(/\\/g, '/')}`} 
+                          src={apiUrl(`/${method.img_qr.replace(/\\/g, '/')}`)} 
                           alt={`QR Code ${method.titulo}`} 
                           className="w-32 h-32 object-contain"
                         />
@@ -528,7 +529,7 @@ export default function Meminverso() {
             <div className="bg-gray-50 p-4 rounded-lg border w-full">
               {inversion?.comprobante ? (
                 <img 
-                  src={`http://localhost:4000/${getFileName(inversion.comprobante)}`}
+                  src={apiUrl(`/${getFileName(inversion.comprobante)}`)}
                   alt="Comprobante de pago" 
                   className="w-full h-auto max-h-96 object-contain rounded"
                   onError={(e) => {

@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { OrganizationLayout } from "@/components/OrganizationLayout";
+import { apiUrl } from '@/lib/config';
 
 export default function LinkConferencias() {
   const [link, setLink] = useState("");
@@ -25,7 +26,7 @@ export default function LinkConferencias() {
           return;
         }
 
-        const response = await fetch("http://localhost:4000/api/link", {
+        const response = await fetch(apiUrl("/api/link"), {
           headers: {
             "Authorization": `Bearer ${token}`,
             "Content-Type": "application/json",
@@ -78,7 +79,7 @@ export default function LinkConferencias() {
         return;
       }
 
-      const response = await fetch(`http://localhost:4000/api/link/${linkId}`, {
+      const response = await fetch(apiUrl(`/api/link/${linkId}`), {
         method: "PUT",
         headers: {
           "Authorization": `Bearer ${token}`,

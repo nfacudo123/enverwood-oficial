@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Building, TrendingUp, Users, DollarSign, Copy, ShoppingCart, UserCheck, Bitcoin } from "lucide-react";
 import Swal from 'sweetalert2';
+import { apiUrl } from '@/lib/config';
 
 export function DashboardContent() {
   const [userInfo, setUserInfo] = useState<any>(null);
@@ -31,7 +32,7 @@ export function DashboardContent() {
         }
 
         console.log('Haciendo fetch a /api/perfil...');
-        const response = await fetch('http://localhost:4000/api/perfil', {
+        const response = await fetch(apiUrl('/api/perfil'), {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -58,7 +59,7 @@ export function DashboardContent() {
         const idUser = localStorage.getItem('idUser');
         if (!token || !idUser) return;
 
-        const response = await fetch(`http://localhost:4000/api/comisiones/sumatorias/${idUser}`, {
+        const response = await fetch(apiUrl(`/api/comisiones/sumatorias/${idUser}`), {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -81,7 +82,7 @@ export function DashboardContent() {
         const idUser = parseInt(localStorage.getItem('idUser') || '0');
         if (!token || !idUser) return;
 
-        const response = await fetch('http://localhost:4000/api/inversiones/utilidades', {
+        const response = await fetch(apiUrl('/api/inversiones/utilidades'), {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -105,7 +106,7 @@ export function DashboardContent() {
         const idUser = localStorage.getItem('idUser');
         if (!token || !idUser) return;
 
-        const response = await fetch(`http://localhost:4000/api/comisiones/comisiones/${idUser}`, {
+        const response = await fetch(apiUrl(`/api/comisiones/comisiones/${idUser}`), {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -127,7 +128,7 @@ export function DashboardContent() {
         const token = localStorage.getItem('token');
         if (!token) return;
 
-        const response = await fetch('http://localhost:4000/api/noticias', {
+        const response = await fetch(apiUrl('/api/noticias'), {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -157,7 +158,7 @@ export function DashboardContent() {
       const token = localStorage.getItem('token');
       if (!token) return;
 
-      const response = await fetch('http://localhost:4000/api/mis-referidos', {
+      const response = await fetch(apiUrl('/api/mis-referidos'), {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,

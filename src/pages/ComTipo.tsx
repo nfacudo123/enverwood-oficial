@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Plus, Edit, Trash2 } from 'lucide-react';
+import { apiUrl } from '@/lib/config';
 import {
   Dialog,
   DialogContent,
@@ -47,7 +48,7 @@ const ComTipo = () => {
   const fetchTipos = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:4000/api/comision-tipo', {
+      const response = await fetch(apiUrl('/api/comision-tipo'), {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -86,7 +87,7 @@ const ComTipo = () => {
         porcentaje: formData.porcentaje
       };
 
-      const response = await fetch('http://localhost:4000/api/comision-tipo', {
+      const response = await fetch(apiUrl('/api/comision-tipo'), {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -132,7 +133,7 @@ const ComTipo = () => {
         porcentaje: editFormData.porcentaje
       };
 
-      const response = await fetch(`http://localhost:4000/api/comision-tipo/${editingTipo.id}`, {
+      const response = await fetch(apiUrl(`/api/comision-tipo/${editingTipo.id}`), {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,

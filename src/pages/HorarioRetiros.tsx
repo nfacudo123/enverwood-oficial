@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Edit, Trash2, Clock } from "lucide-react";
 import { format } from 'date-fns';
+import { apiUrl } from '@/lib/config';
 
 interface HorarioRetiro {
   id: number;
@@ -42,7 +43,7 @@ const HorarioRetiros = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:4000/api/tiempo-retiro', {
+      const response = await fetch(apiUrl('/api/tiempo-retiro'), {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -70,7 +71,7 @@ const HorarioRetiros = () => {
   const handleCreateHorario = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:4000/api/tiempo-retiro', {
+      const response = await fetch(apiUrl('/api/tiempo-retiro'), {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -110,7 +111,7 @@ const HorarioRetiros = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:4000/api/tiempo-retiro/${selectedHorario.id}`, {
+      const response = await fetch(apiUrl(`/api/tiempo-retiro/${selectedHorario.id}`), {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -151,7 +152,7 @@ const HorarioRetiros = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:4000/api/tiempo-retiro/${id}`, {
+      const response = await fetch(apiUrl(`/api/tiempo-retiro/${id}`), {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,

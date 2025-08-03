@@ -10,6 +10,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { apiUrl } from '@/lib/config';
 
 interface User {
   id: number;
@@ -40,7 +41,7 @@ export default function SponsorChange() {
         return;
       }
 
-      const response = await fetch('http://localhost:4000/api/users', {
+      const response = await fetch(apiUrl('/api/users'), {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -86,7 +87,7 @@ export default function SponsorChange() {
         return;
       }
 
-      const response = await fetch('http://localhost:4000/api/sponsor/cambiar', {
+      const response = await fetch(apiUrl('/api/sponsor/cambiar'), {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
