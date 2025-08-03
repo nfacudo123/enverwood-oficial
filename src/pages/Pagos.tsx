@@ -50,6 +50,9 @@ const Pagos: React.FC = () => {
   const fetchRetiros = async () => {
     try {
       const token = localStorage.getItem('token');
+      console.log('Token disponible:', !!token);
+      console.log('Haciendo petición a:', 'http://localhost:4000/api/retiros');
+      
       const response = await fetch('http://localhost:4000/api/retiros', {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -57,13 +60,20 @@ const Pagos: React.FC = () => {
         }
       });
 
+      console.log('Respuesta status:', response.status);
+      console.log('Respuesta ok:', response.ok);
+
       if (response.ok) {
         const data = await response.json();
+        console.log('Datos de retiros recibidos:', data);
+        console.log('Cantidad de retiros:', data.length);
         setRetiros(data);
       } else {
+        const errorText = await response.text();
+        console.log('Error response:', errorText);
         toast({
           title: "Error",
-          description: "Error al obtener los retiros",
+          description: `Error al obtener los retiros: ${response.status}`,
           variant: "destructive"
         });
       }
