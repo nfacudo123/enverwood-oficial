@@ -37,9 +37,9 @@ const LoginForm = () => {
         <div className="max-w-md text-center text-white">
           <div className="mb-8 relative">
             <img 
-              src="/lovable-uploads/4211eb60-236a-404f-ad78-45388e24554c.png" 
+              src="/lovable-uploads/d21418d0-3faf-4db2-9faf-e4ba991aba66.png" 
               alt="InvertGold Representative" 
-              className="w-80 h-80 mx-auto object-cover shadow-2xl border-4 border-white/20"
+              className="w-80 h-80 mx-auto object-cover"
             />
           </div>
         </div>
