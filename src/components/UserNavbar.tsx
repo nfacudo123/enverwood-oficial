@@ -215,6 +215,7 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
       
       if (timeDiff <= hourInMs) {
         available = true;
+        // Store fee percentage, will be calculated later based on withdrawal amount
         fee = parseFloat(horario.fee);
         break;
       } else if (scheduleDate > now) {
@@ -359,8 +360,9 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
         return;
       }
 
-      // Apply fee to withdrawal amount
-      const finalAmount = parseFloat(withdrawAmount) - currentFee;
+      // Apply fee percentage to withdrawal amount
+      const feeAmount = (parseFloat(withdrawAmount) * currentFee) / 100;
+      const finalAmount = parseFloat(withdrawAmount) - feeAmount;
       if (finalAmount <= 0) {
         showAlert('El monto después de descontar la comisión debe ser mayor a 0');
         return;
@@ -603,9 +605,9 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
               {withdrawAmount && (
                 <div className="mt-2 text-xs text-muted-foreground">
                   {localStorage.getItem('idUser') === '1' && (
-                    <p>Comisión: ${currentFee.toFixed(2)}</p>
+                    <p>Comisión ({currentFee}%): ${((parseFloat(withdrawAmount) * currentFee) / 100).toFixed(2)}</p>
                   )}
-                  <p>Monto final: ${(parseFloat(withdrawAmount) - currentFee).toFixed(2)}</p>
+                  <p>Monto final: ${(parseFloat(withdrawAmount) - ((parseFloat(withdrawAmount) * currentFee) / 100)).toFixed(2)}</p>
                 </div>
               )}
             </div>

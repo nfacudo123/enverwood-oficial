@@ -232,13 +232,16 @@ const HorarioRetiros = () => {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="fee">Fee</Label>
+                    <Label htmlFor="fee">Fee (%)</Label>
                     <Input
                       id="fee"
                       type="number"
                       step="0.01"
+                      min="0"
+                      max="100"
                       value={formData.fee}
                       onChange={(e) => setFormData({ ...formData, fee: e.target.value })}
+                      placeholder="Ej: 2.5 para 2.5%"
                     />
                   </div>
                   <div>
@@ -278,7 +281,7 @@ const HorarioRetiros = () => {
                       <TableCell>{horario.id}</TableCell>
                       <TableCell>{formatDateTime(horario.horario)}</TableCell>
                       <TableCell>
-                        <Badge variant="secondary">${horario.fee}</Badge>
+                        <Badge variant="secondary">{horario.fee}%</Badge>
                       </TableCell>
                       <TableCell className="max-w-xs truncate">
                         {horario.mensaje_retiro}
@@ -327,13 +330,16 @@ const HorarioRetiros = () => {
               />
             </div>
             <div>
-              <Label htmlFor="edit-fee">Fee</Label>
+              <Label htmlFor="edit-fee">Fee (%)</Label>
               <Input
                 id="edit-fee"
                 type="number"
                 step="0.01"
+                min="0"
+                max="100"
                 value={formData.fee}
                 onChange={(e) => setFormData({ ...formData, fee: e.target.value })}
+                placeholder="Ej: 2.5 para 2.5%"
               />
             </div>
             <div>
