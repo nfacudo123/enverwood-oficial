@@ -18,6 +18,7 @@ import { Users, UserCheck, Search, FileDown, Filter, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import * as XLSX from 'xlsx';
+import { apiUrl } from '@/lib/config';
 
 interface User {
   id: number;
@@ -75,8 +76,8 @@ const UserAdmin = () => {
         return;
       }
 
-      console.log('Making request to: http://localhost:4000/api/users');
-      const response = await fetch('http://localhost:4000/api/users', {
+      console.log('Making request to:', apiUrl('/api/users'));
+      const response = await fetch(apiUrl('/api/users'), {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -128,7 +129,7 @@ const UserAdmin = () => {
 
   const fetchPaises = async () => {
     try {
-      const response = await fetch('http://localhost:4000/api/paises');
+      const response = await fetch(apiUrl('/api/paises'));
       if (response.ok) {
         const data = await response.json();
         setPaises(data.paises);
@@ -223,7 +224,7 @@ const UserAdmin = () => {
         updateData.password = editFormData.password;
       }
 
-      const response = await fetch(`http://localhost:4000/api/usuarios/${selectedUser.id}`, {
+      const response = await fetch(apiUrl(`/api/usuarios/${selectedUser.id}`), {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,

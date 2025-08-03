@@ -10,6 +10,7 @@ import { Pagination, PaginationContent, PaginationItem, PaginationLink, Paginati
 import { useToast } from '@/hooks/use-toast';
 import { FileDown } from 'lucide-react';
 import * as XLSX from 'xlsx';
+import { apiUrl } from '@/lib/config';
 
 interface Retiro {
   id: number;
@@ -50,7 +51,7 @@ const Requests: React.FC = () => {
   const fetchRetiros = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:4000/api/retiros', {
+      const response = await fetch(apiUrl('/api/retiros'), {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -90,7 +91,7 @@ const Requests: React.FC = () => {
   const fetchTotales = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:4000/api/retiros/sumatorias/totales', {
+      const response = await fetch(apiUrl('/api/retiros/sumatorias/totales'), {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'

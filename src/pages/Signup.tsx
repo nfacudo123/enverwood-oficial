@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Eye, EyeOff } from "lucide-react";
 import Swal from 'sweetalert2';
+import { apiUrl } from '@/lib/config';
 
 const Signup = () => {
   const { username } = useParams();
@@ -30,7 +31,7 @@ const Signup = () => {
   useEffect(() => {
     const fetchPaises = async () => {
       try {
-        const response = await fetch('http://localhost:4000/api/paises');
+        const response = await fetch(apiUrl('/api/paises'));
         if (response.ok) {
           const data = await response.json();
           setPaises(data.paises);
@@ -49,7 +50,7 @@ const Signup = () => {
       if (username) {
         try {
           console.log('Obteniendo sponsorId para username:', username);
-          const response = await fetch(`http://localhost:4000/api/users/u/${username}`);
+          const response = await fetch(apiUrl(`/api/users/u/${username}`));
           
           if (response.ok) {
             const userData = await response.json();
@@ -118,7 +119,7 @@ const Signup = () => {
       console.log('Enviando datos de registro con sponsorId:', registrationData);
       console.log('SponsorId siendo enviado:', sponsorId);
       
-      const response = await fetch('http://localhost:4000/api/auth/register', {
+      const response = await fetch(apiUrl('/api/auth/register'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
