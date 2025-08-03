@@ -308,7 +308,7 @@ export function DashboardContent() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <h3 className="text-lg font-semibold text-accent-foreground mb-2">
-                Bienvenido a Enverwood {userInfo?.name || ''} {userInfo?.apellidos || ''}
+                Bienvenido a InvertGold {userInfo?.name || ''} {userInfo?.apellidos || ''}
               </h3>
               <p className="text-sm text-accent-foreground/80">
                 Gestiona tu negocio y monitorea tus ganancias

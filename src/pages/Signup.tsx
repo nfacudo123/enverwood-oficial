@@ -182,10 +182,8 @@ const Signup = () => {
         {/* Header */}
         <div className="text-center space-y-4">
           <div className="flex items-center justify-center">
-            <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-xl">E</span>
-            </div>
-            <span className="ml-3 text-white text-2xl font-semibold">enverwood</span>
+            <img src="/lovable-uploads/394439db-ab1d-41f3-b2af-ebc4055c72d3.png" alt="InvertGold" className="w-12 h-12" />
+            <span className="ml-3 text-white text-2xl font-semibold">InvertGold</span>
           </div>
           <div>
             <h1 className="text-2xl font-bold text-white">Crear Cuenta</h1>

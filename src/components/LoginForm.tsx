@@ -80,8 +80,9 @@ const LoginForm = () => {
         <Card className="w-full max-w-md shadow-elegant border-0">
           <CardContent className="p-8">
             <div className="text-center mb-8">
+              <img src="/lovable-uploads/015e7117-dc93-4a71-ac60-25cbf3535efb.png" alt="InvertGold" className="h-12 mx-auto mb-4" />
               <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">
-                Enverwood Inversiones
+                InvertGold Inversiones
               </h1>
               <p className="text-gray-600">Inicia sesión en tu cuenta</p>
             </div>

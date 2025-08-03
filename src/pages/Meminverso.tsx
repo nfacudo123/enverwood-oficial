@@ -161,7 +161,7 @@ export default function Meminverso() {
         setMontoInversion('');
         toast({
           title: "¡Compra exitosa!",
-          description: "Tu membresía Enverwood ha sido adquirida correctamente",
+          description: "Tu membresía InvertGold ha sido adquirida correctamente",
         });
       } else {
         const errorData = await response.json();
@@ -323,7 +323,7 @@ export default function Meminverso() {
 
   if (loading) {
     return (
-      <OrganizationLayout title="Comprar membresía Enverwood">
+      <OrganizationLayout title="Comprar membresía InvertGold">
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
@@ -335,7 +335,7 @@ export default function Meminverso() {
   }
 
   return (
-    <OrganizationLayout title="Comprar membresía Enverwood">
+    <OrganizationLayout title="Comprar membresía InvertGold">
       <div className="flex-1 space-y-6 p-4 md:p-8">
         {shouldShowPurchaseButton ? (
           <>
@@ -343,7 +343,7 @@ export default function Meminverso() {
             <Card className="bg-gradient-to-br from-gray-800 to-gray-900 text-white">
               <CardContent className="p-8">
                 <div className="flex flex-col items-center space-y-6">
-                  <h2 className="text-2xl font-bold">Membresía Enverwood</h2>
+                  <h2 className="text-2xl font-bold">Membresía InvertGold</h2>
                   <div className="flex items-center justify-center">
                     <Leaf className="w-24 h-24 text-green-400" />
                   </div>
