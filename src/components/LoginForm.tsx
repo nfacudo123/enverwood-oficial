@@ -33,13 +33,13 @@ const LoginForm = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-success-dark/10 to-success/5 flex">
       {/* Left side - Illustration (hidden on mobile/tablet) */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-success-dark to-success items-center justify-center p-8">
+      <div className="hidden lg:flex lg:w-1/2 items-center justify-center p-8" style={{backgroundColor: '#82d88d'}}>
         <div className="max-w-md text-center text-white">
           <div className="mb-8 relative">
             <img 
-              src="/lovable-uploads/fc42ffcb-03d0-497d-8086-09c100b9a570.png" 
+              src="/lovable-uploads/4211eb60-236a-404f-ad78-45388e24554c.png" 
               alt="InvertGold Representative" 
-              className="w-80 h-80 mx-auto object-cover rounded-full shadow-2xl border-4 border-white/20"
+              className="w-80 h-80 mx-auto object-cover shadow-2xl border-4 border-white/20"
             />
           </div>
         </div>
