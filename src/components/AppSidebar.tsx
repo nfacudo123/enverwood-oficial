@@ -124,10 +124,7 @@ export function AppSidebar() {
     <Sidebar className="sidebar-gradient border-r-0">
       <SidebarHeader className="p-6 border-b border-sidebar-border">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center shadow-lg">
-            <TrendingUp className="w-5 h-5 text-white" />
-          </div>
-          <span className="font-bold text-xl text-sidebar-foreground tracking-wide">Admiry</span>
+          <img src="/lovable-uploads/015e7117-dc93-4a71-ac60-25cbf3535efb.png" alt="InvertGold" className="h-12 mx-auto mb-4" />
         </div>
       </SidebarHeader>
       
