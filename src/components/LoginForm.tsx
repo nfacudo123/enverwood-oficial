@@ -32,14 +32,15 @@ const LoginForm = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* Background with financial charts */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-black">
-        <div className="absolute inset-0 opacity-30">
-          <div className="absolute top-1/4 left-1/4 w-96 h-64 bg-gradient-to-r from-green-400/20 to-emerald-500/20 rounded-lg transform rotate-12"></div>
-          <div className="absolute bottom-1/4 right-1/4 w-80 h-48 bg-gradient-to-r from-green-500/20 to-teal-400/20 rounded-lg transform -rotate-12"></div>
-        </div>
-        {/* Green overlay gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-green-400/80 via-green-500/70 to-emerald-600/80"></div>
+      {/* Background image */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: `url('/lovable-uploads/96fba110-75ca-46ee-b765-74f6a1f4c6f9.png')`
+        }}
+      >
+        {/* Dark overlay for better text readability */}
+        <div className="absolute inset-0 bg-black/20"></div>
       </div>
 
       <div className="relative z-10 min-h-screen flex">
