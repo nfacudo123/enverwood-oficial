@@ -50,7 +50,7 @@ const LoginForm = () => {
             <img 
               src="/lovable-uploads/21fedf2f-604a-4148-a71f-5e0c6a7449b6.png" 
               alt="Customer Service Representative" 
-              className="w-auto h-screen max-h-screen object-cover object-bottom"
+              className="w-auto h-screen max-h-screen object-contain object-bottom"
             />
           </div>
         </div>
