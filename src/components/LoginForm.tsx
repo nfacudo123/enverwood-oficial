@@ -45,12 +45,12 @@ const LoginForm = () => {
 
       <div className="relative z-10 min-h-screen flex">
         {/* Left side - Model with headset (hidden on mobile/tablet) */}
-        <div className="hidden lg:flex lg:w-1/2 items-center justify-start pl-16">
+        <div className="hidden lg:flex lg:w-1/2 items-end justify-start pl-16 pb-0">
           <div className="relative">
             <img 
-              src="/lovable-uploads/21fedf2f-604a-4148-a71f-5e0c6a7449b6.png" 
+              src="/lovable-uploads/4173a180-5790-4b8a-ac97-552692650786.png" 
               alt="Customer Service Representative" 
-              className="w-96 h-auto object-cover"
+              className="w-auto h-screen max-h-screen object-cover object-bottom"
             />
           </div>
         </div>
