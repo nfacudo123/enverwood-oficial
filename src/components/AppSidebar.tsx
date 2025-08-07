@@ -84,6 +84,7 @@ const menuItems = [
     icon: FileText,
     items: [
       { title: "Documentos", icon: FileText, url: "/material" },
+      { title: "Retirar Ganancias", icon: TrendingUp, url: "/requests" },
     ]
   }
 ];

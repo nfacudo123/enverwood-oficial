@@ -127,7 +127,12 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
 
         if (response.ok) {
           const data = await response.json();
-          setConferenceLink(data.link || '');
+          if (Array.isArray(data)) {
+            const conferenceData = data.find((link: any) => link.id === 1);
+            setConferenceLink(conferenceData?.link || '');
+          } else {
+            setConferenceLink(data.link || '');
+          }
         }
       } catch (error) {
         console.error('Error fetching conference link:', error);
