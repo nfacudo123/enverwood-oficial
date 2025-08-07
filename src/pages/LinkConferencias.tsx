@@ -6,15 +6,23 @@ import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { OrganizationLayout } from "@/components/OrganizationLayout";
 import { apiUrl } from '@/lib/config';
+import { MessageCircle, Send, Video } from 'lucide-react';
+
+interface LinkData {
+  id: number;
+  link: string;
+}
 
 export default function LinkConferencias() {
-  const [link, setLink] = useState("");
+  const [links, setLinks] = useState<LinkData[]>([]);
   const [loading, setLoading] = useState(false);
-  const [linkId, setLinkId] = useState<number | null>(null);
+  const [conferenceLink, setConferenceLink] = useState("");
+  const [whatsappLink, setWhatsappLink] = useState("");
+  const [telegramLink, setTelegramLink] = useState("");
 
-  // Fetch current link
+  // Fetch current links
   useEffect(() => {
-    const fetchLink = async () => {
+    const fetchLinks = async () => {
       try {
         const token = localStorage.getItem("token");
         if (!token) {
@@ -34,31 +42,34 @@ export default function LinkConferencias() {
         });
 
         if (!response.ok) {
-          throw new Error("Error al obtener el link");
+          throw new Error("Error al obtener los links");
         }
 
         const data = await response.json();
-        if (data.id) {
-          setLinkId(data.id);
-          setLink(data.link || "");
+        if (Array.isArray(data)) {
+          setLinks(data);
+          const conferenceData = data.find((link: LinkData) => link.id === 1);
+          const whatsappData = data.find((link: LinkData) => link.id === 2);
+          const telegramData = data.find((link: LinkData) => link.id === 3);
+          
+          setConferenceLink(conferenceData?.link || "");
+          setWhatsappLink(whatsappData?.link || "");
+          setTelegramLink(telegramData?.link || "");
         }
       } catch (error) {
         console.error("Error:", error);
         toast({
           title: "Error",
-          description: "Error al cargar el link de conferencias",
+          description: "Error al cargar los links",
           variant: "destructive",
         });
       }
     };
 
-    fetchLink();
+    fetchLinks();
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
+  const updateLink = async (id: number, newLink: string) => {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -70,23 +81,14 @@ export default function LinkConferencias() {
         return;
       }
 
-      if (!linkId) {
-        toast({
-          title: "Error",
-          description: "No se encontró el ID del link",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      const response = await fetch(apiUrl(`/api/link/${linkId}`), {
+      const response = await fetch(apiUrl(`/api/link/${id}`), {
         method: "PUT",
         headers: {
           "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          link: link,
+          link: newLink,
         }),
       });
 
@@ -96,52 +98,141 @@ export default function LinkConferencias() {
 
       toast({
         title: "Éxito",
-        description: "Link de conferencias actualizado correctamente",
+        description: "Link actualizado correctamente",
       });
     } catch (error) {
       console.error("Error:", error);
       toast({
         title: "Error",
-        description: "Error al actualizar el link de conferencias",
+        description: "Error al actualizar el link",
         variant: "destructive",
       });
-    } finally {
-      setLoading(false);
     }
   };
 
+  const handleConferenceSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    await updateLink(1, conferenceLink);
+    setLoading(false);
+  };
+
+  const handleWhatsappSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    await updateLink(2, whatsappLink);
+    setLoading(false);
+  };
+
+  const handleTelegramSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    await updateLink(3, telegramLink);
+    setLoading(false);
+  };
+
   return (
-    <OrganizationLayout title="Link de Conferencias">
+    <OrganizationLayout title="Configurar Links">
       <div className="container mx-auto p-6">
-        <div className="max-w-2xl mx-auto">
+        <div className="max-w-4xl mx-auto space-y-6">
+          {/* Conference Link */}
           <Card>
             <CardHeader>
-              <CardTitle>Configurar Link de Conferencias</CardTitle>
-              <CardDescription>
-                Ingresa el link de conferencias que se utilizará para las reuniones
-              </CardDescription>
+              <CardTitle className="flex items-center gap-2">
+                <Video className="h-5 w-5" />
+                Link de Conferencias
+              </CardTitle>
+              <CardDescription>Link para las reuniones de conferencia</CardDescription>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="link">Ingresa el Link de conferencias:</Label>
-                  <Input
-                    id="link"
-                    type="url"
-                    placeholder="https://zoom.us/j/..."
-                    value={link}
-                    onChange={(e) => setLink(e.target.value)}
-                    required
-                  />
-                </div>
-                
-                <Button type="submit" disabled={loading} className="w-full bg-green-500 hover:bg-green-600 text-white">
-                  {loading ? "Actualizando..." : "Actualizar"}
+              <form onSubmit={handleConferenceSubmit} className="space-y-4">
+                <Input
+                  type="url"
+                  placeholder="https://zoom.us/j/..."
+                  value={conferenceLink}
+                  onChange={(e) => setConferenceLink(e.target.value)}
+                  required
+                />
+                <Button type="submit" disabled={loading} className="w-full">
+                  {loading ? "Actualizando..." : "Actualizar Conferencia"}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+
+          {/* WhatsApp Link */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <MessageCircle className="h-5 w-5" />
+                Link de WhatsApp
+              </CardTitle>
+              <CardDescription>Link para contacto por WhatsApp</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleWhatsappSubmit} className="space-y-4">
+                <Input
+                  type="url"
+                  placeholder="https://api.whatsapp.com/send?phone=..."
+                  value={whatsappLink}
+                  onChange={(e) => setWhatsappLink(e.target.value)}
+                  required
+                />
+                <Button type="submit" disabled={loading} className="w-full">
+                  {loading ? "Actualizando..." : "Actualizar WhatsApp"}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+
+          {/* Telegram Link */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Send className="h-5 w-5" />
+                Link de Telegram
+              </CardTitle>
+              <CardDescription>Link para contacto por Telegram</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleTelegramSubmit} className="space-y-4">
+                <Input
+                  type="url"
+                  placeholder="t.me/nombredeusuario"
+                  value={telegramLink}
+                  onChange={(e) => setTelegramLink(e.target.value)}
+                  required
+                />
+                <Button type="submit" disabled={loading} className="w-full">
+                  {loading ? "Actualizando..." : "Actualizar Telegram"}
                 </Button>
               </form>
             </CardContent>
           </Card>
         </div>
+
+        {/* Floating Icons */}
+        {whatsappLink && (
+          <a
+            href={whatsappLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="fixed bottom-20 right-6 bg-green-500 hover:bg-green-600 text-white p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110 z-50"
+          >
+            <MessageCircle className="h-6 w-6" />
+          </a>
+        )}
+        
+        {telegramLink && (
+          <a
+            href={telegramLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="fixed bottom-6 right-6 bg-blue-500 hover:bg-blue-600 text-white p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110 z-50"
+          >
+            <Send className="h-6 w-6" />
+          </a>
+        )}
       </div>
     </OrganizationLayout>
   );
