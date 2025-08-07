@@ -210,29 +210,6 @@ export default function LinkConferencias() {
             </CardContent>
           </Card>
         </div>
-
-        {/* Floating Icons */}
-        {whatsappLink && (
-          <a
-            href={whatsappLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="fixed bottom-20 right-6 bg-green-500 hover:bg-green-600 text-white p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110 z-50"
-          >
-            <MessageCircle className="h-6 w-6" />
-          </a>
-        )}
-        
-        {telegramLink && (
-          <a
-            href={telegramLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="fixed bottom-6 right-6 bg-blue-500 hover:bg-blue-600 text-white p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110 z-50"
-          >
-            <Send className="h-6 w-6" />
-          </a>
-        )}
       </div>
     </OrganizationLayout>
   );

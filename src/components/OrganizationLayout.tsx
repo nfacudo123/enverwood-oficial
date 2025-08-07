@@ -4,6 +4,7 @@ import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
 import { UserNavbar } from '@/components/UserNavbar';
 import Footer from '@/components/Footer';
+import { FloatingContactLinks } from '@/components/FloatingContactLinks';
 
 interface OrganizationLayoutProps {
   children: React.ReactNode;
@@ -25,6 +26,7 @@ export const OrganizationLayout: React.FC<OrganizationLayoutProps> = ({
           </div>
           <Footer />
         </SidebarInset>
+        <FloatingContactLinks />
       </div>
     </SidebarProvider>
   );
