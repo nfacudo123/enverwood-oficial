@@ -132,7 +132,7 @@ export default function LinkConferencias() {
   };
 
   return (
-    <OrganizationLayout title="Configurar Links">
+    <OrganizationLayout title="Configurar Links Sociales">
       <div className="container mx-auto p-6">
         <div className="max-w-4xl mx-auto space-y-6">
           {/* Conference Link */}
@@ -140,7 +140,7 @@ export default function LinkConferencias() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Video className="h-5 w-5" />
-                Link de Conferencias
+                Links de Conferencia
               </CardTitle>
               <CardDescription>Link para las reuniones de conferencia</CardDescription>
             </CardHeader>

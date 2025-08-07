@@ -99,7 +99,7 @@ const adminItems = [
   { title: "Pagos", icon: CreditCard, url: "/pagos" },
   { title: "Tipo de Comisión", icon: Percent, url: "/comtipo" },
   { title: "Cambio de Patrocinador", icon: Repeat, url: "/sponsor-change" },
-  { title: "Link de Conferencias", icon: LinkIcon, url: "/linkconf" },
+  { title: "Links Sociales", icon: LinkIcon, url: "/linkconf" },
   { title: "Métodos de Pago", icon: CreditCard, url: "/metpago" },
   { title: "Utilidades", icon: TrendingUp, url: "/utiladmin" },
   { title: "Horario de Retiros", icon: Clock, url: "/horret" },
