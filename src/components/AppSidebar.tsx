@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { WithdrawModal } from '@/components/WithdrawModal';
 import { Link } from 'react-router-dom';
 import {
   Sidebar,
@@ -112,6 +113,7 @@ const adminItems = [
 
 export function AppSidebar() {
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
 
   useEffect(() => {
     const idUser = localStorage.getItem('idUser');
@@ -169,11 +171,22 @@ export function AppSidebar() {
                           </CollapsibleContent>
                         </Collapsible>
                       ) : (
-                        <SidebarMenuButton asChild>
-                          <Link to={item.url} className="px-3 py-2.5 hover:bg-sidebar-accent rounded-lg text-sidebar-foreground hover:text-sidebar-primary transition-colors flex items-center gap-3">
-                            <item.icon className="w-5 h-5 flex-shrink-0" />
-                            <span className="text-sm font-medium leading-tight break-words whitespace-normal">{item.title}</span>
-                          </Link>
+                        <SidebarMenuButton 
+                          className="px-3 py-2.5 hover:bg-sidebar-accent rounded-lg text-sidebar-foreground hover:text-sidebar-primary transition-colors flex items-center gap-3 cursor-pointer"
+                          onClick={() => item.title === "Retirar Ganancias" ? setIsWithdrawModalOpen(true) : null}
+                          asChild={item.title !== "Retirar Ganancias"}
+                        >
+                          {item.title === "Retirar Ganancias" ? (
+                            <>
+                              <item.icon className="w-5 h-5 flex-shrink-0" />
+                              <span className="text-sm font-medium leading-tight break-words whitespace-normal">{item.title}</span>
+                            </>
+                          ) : (
+                            <Link to={item.url} className="flex items-center gap-3">
+                              <item.icon className="w-5 h-5 flex-shrink-0" />
+                              <span className="text-sm font-medium leading-tight break-words whitespace-normal">{item.title}</span>
+                            </Link>
+                          )}
                         </SidebarMenuButton>
                       )}
                   </SidebarMenuItem>
@@ -220,11 +233,22 @@ export function AppSidebar() {
                           </CollapsibleContent>
                         </Collapsible>
                       ) : (
-                        <SidebarMenuButton asChild>
-                          <Link to={item.url}>
-                            <item.icon className="w-4 h-4 flex-shrink-0" />
-                            <span className="text-sm leading-tight break-words whitespace-normal">{item.title}</span>
-                          </Link>
+                        <SidebarMenuButton 
+                          className="cursor-pointer"
+                          onClick={() => item.title === "Retirar Ganancias" ? setIsWithdrawModalOpen(true) : null}
+                          asChild={item.title !== "Retirar Ganancias"}
+                        >
+                          {item.title === "Retirar Ganancias" ? (
+                            <>
+                              <item.icon className="w-4 h-4 flex-shrink-0" />
+                              <span className="text-sm leading-tight break-words whitespace-normal">{item.title}</span>
+                            </>
+                          ) : (
+                            <Link to={item.url}>
+                              <item.icon className="w-4 h-4 flex-shrink-0" />
+                              <span className="text-sm leading-tight break-words whitespace-normal">{item.title}</span>
+                            </Link>
+                          )}
                         </SidebarMenuButton>
                       )}
                     </SidebarMenuItem>
@@ -291,6 +315,11 @@ export function AppSidebar() {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
+      
+      <WithdrawModal 
+        isOpen={isWithdrawModalOpen} 
+        onClose={() => setIsWithdrawModalOpen(false)} 
+      />
     </Sidebar>
   );
 }

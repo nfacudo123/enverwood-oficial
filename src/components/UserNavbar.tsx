@@ -500,13 +500,6 @@ export const UserNavbar = ({ title, showSidebarTrigger = false }: UserNavbarProp
                     <Copy className="w-4 h-4 text-muted-foreground" />
                     <span className="text-sm">Links de Conferencias</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem 
-                    className="flex items-center gap-3 px-3 py-2 cursor-pointer hover:bg-accent"
-                    onClick={() => setIsWithdrawModalOpen(true)}
-                  >
-                    <TrendingUp className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-sm">Retirar Ganancias</span>
-                  </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem 
                     className="flex items-center gap-3 px-3 py-2 text-destructive cursor-pointer hover:bg-destructive/10"
