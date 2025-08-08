@@ -37,6 +37,8 @@ interface PaymentMethod {
   titulo: string;
   img_qr: string;
   dato: string;
+  opdolar: string;
+  converdolar: string;
 }
 
 export default function Meminverso() {
@@ -402,6 +404,13 @@ export default function Meminverso() {
                       <p className="text-sm text-gray-600 font-mono text-center break-all">
                         {method.dato}
                       </p>
+                      {method.opdolar === '1.00' && inversion && (
+                        <div className="text-center mt-2 p-2 bg-blue-50 rounded-lg border">
+                          <p className="text-sm font-medium text-blue-800">
+                            Total en COP: ${(parseFloat(method.converdolar) * inversion.monto).toLocaleString('es-CO')}
+                          </p>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>

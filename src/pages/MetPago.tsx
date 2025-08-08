@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Edit, Trash2, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { apiUrl } from '@/lib/config';
@@ -15,6 +16,8 @@ interface PaymentMethod {
   titulo: string;
   img_qr: string;
   dato: string;
+  opdolar: string;
+  converdolar: string;
 }
 
 export default function MetPago() {
@@ -26,7 +29,9 @@ export default function MetPago() {
   const [formData, setFormData] = useState({
     titulo: '',
     dato: '',
-    img_qr: null as File | null
+    img_qr: null as File | null,
+    opdolar: false,
+    converdolar: ''
   });
 
   // Fetch payment methods
@@ -68,6 +73,10 @@ export default function MetPago() {
     const formDataToSend = new FormData();
     formDataToSend.append('titulo', formData.titulo);
     formDataToSend.append('dato', formData.dato);
+    formDataToSend.append('opdolar', formData.opdolar ? '1.00' : '0.00');
+    if (formData.opdolar) {
+      formDataToSend.append('converdolar', formData.converdolar);
+    }
     if (formData.img_qr) {
       formDataToSend.append('img_qr', formData.img_qr);
     }
@@ -85,7 +94,7 @@ export default function MetPago() {
       if (response.ok) {
         toast.success("Método de pago creado correctamente");
         setIsCreateModalOpen(false);
-        setFormData({ titulo: '', dato: '', img_qr: null });
+        setFormData({ titulo: '', dato: '', img_qr: null, opdolar: false, converdolar: '' });
         fetchPaymentMethods();
       } else {
         toast.error("No se pudo crear el método de pago");
@@ -104,6 +113,10 @@ export default function MetPago() {
     const formDataToSend = new FormData();
     formDataToSend.append('titulo', formData.titulo);
     formDataToSend.append('dato', formData.dato);
+    formDataToSend.append('opdolar', formData.opdolar ? '1.00' : '0.00');
+    if (formData.opdolar) {
+      formDataToSend.append('converdolar', formData.converdolar);
+    }
     if (formData.img_qr) {
       formDataToSend.append('img_qr', formData.img_qr);
     }
@@ -122,7 +135,7 @@ export default function MetPago() {
         toast.success("Método de pago actualizado correctamente");
         setIsEditModalOpen(false);
         setEditingMethod(null);
-        setFormData({ titulo: '', dato: '', img_qr: null });
+        setFormData({ titulo: '', dato: '', img_qr: null, opdolar: false, converdolar: '' });
         fetchPaymentMethods();
       } else {
         toast.error("No se pudo actualizar el método de pago");
@@ -166,14 +179,16 @@ export default function MetPago() {
     setFormData({
       titulo: method.titulo,
       dato: method.dato,
-      img_qr: null
+      img_qr: null,
+      opdolar: method.opdolar === '1.00',
+      converdolar: method.converdolar || ''
     });
     setIsEditModalOpen(true);
   };
 
   // Reset form
   const resetForm = () => {
-    setFormData({ titulo: '', dato: '', img_qr: null });
+    setFormData({ titulo: '', dato: '', img_qr: null, opdolar: false, converdolar: '' });
     setEditingMethod(null);
   };
 
@@ -230,6 +245,28 @@ export default function MetPago() {
                     required
                   />
                 </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="opdolar"
+                    checked={formData.opdolar}
+                    onCheckedChange={(checked) => setFormData({ ...formData, opdolar: checked as boolean, converdolar: checked ? formData.converdolar : '' })}
+                  />
+                  <Label htmlFor="opdolar">Convierte a dólares</Label>
+                </div>
+                {formData.opdolar && (
+                  <div>
+                    <Label htmlFor="converdolar">Tasa de conversión COP</Label>
+                    <Input
+                      id="converdolar"
+                      type="number"
+                      step="0.01"
+                      placeholder="Ej: 4200.50"
+                      value={formData.converdolar}
+                      onChange={(e) => setFormData({ ...formData, converdolar: e.target.value })}
+                      required
+                    />
+                  </div>
+                )}
                 <div className="flex justify-end space-x-2">
                   <Button type="button" variant="outline" onClick={() => setIsCreateModalOpen(false)}>
                     Cancelar
@@ -248,6 +285,8 @@ export default function MetPago() {
                 <TableHead>Título</TableHead>
                 <TableHead>Imagen QR</TableHead>
                 <TableHead>Dato</TableHead>
+                <TableHead>Conversión USD</TableHead>
+                <TableHead>Tasa COP</TableHead>
                 <TableHead>Acciones</TableHead>
               </TableRow>
             </TableHeader>
@@ -266,6 +305,8 @@ export default function MetPago() {
                     )}
                   </TableCell>
                   <TableCell>{method.dato}</TableCell>
+                  <TableCell>{method.opdolar === '1.00' ? 'Sí' : 'No'}</TableCell>
+                  <TableCell>{method.opdolar === '1.00' ? method.converdolar : '-'}</TableCell>
                   <TableCell>
                     <div className="flex space-x-2">
                       <Button
@@ -335,6 +376,28 @@ export default function MetPago() {
                 </div>
               )}
             </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="edit-opdolar"
+                checked={formData.opdolar}
+                onCheckedChange={(checked) => setFormData({ ...formData, opdolar: checked as boolean, converdolar: checked ? formData.converdolar : '' })}
+              />
+              <Label htmlFor="edit-opdolar">Convierte a dólares</Label>
+            </div>
+            {formData.opdolar && (
+              <div>
+                <Label htmlFor="edit-converdolar">Tasa de conversión COP</Label>
+                <Input
+                  id="edit-converdolar"
+                  type="number"
+                  step="0.01"
+                  placeholder="Ej: 4200.50"
+                  value={formData.converdolar}
+                  onChange={(e) => setFormData({ ...formData, converdolar: e.target.value })}
+                  required
+                />
+              </div>
+            )}
             <div className="flex justify-end space-x-2">
               <Button type="button" variant="outline" onClick={() => setIsEditModalOpen(false)}>
                 Cancelar
