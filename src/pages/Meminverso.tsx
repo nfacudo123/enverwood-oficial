@@ -321,8 +321,8 @@ export default function Meminverso() {
     return filePath;
   };
 
-  // Mostrar botón de compra si no existe inversión O si existe inversión pero no tiene comprobante
-  const shouldShowPurchaseButton = !inversion || (inversion && !inversion.comprobante);
+  // Mostrar botón de compra si no existe inversión para este usuario
+  const shouldShowPurchaseButton = !inversion;
 
   if (loading) {
     return (
