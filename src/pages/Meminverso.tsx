@@ -99,10 +99,19 @@ export default function Meminverso() {
       if (response.ok) {
         const data = await response.json();
         console.log('Inversiones data:', data);
+        console.log('Type of data:', typeof data);
+        console.log('Is array:', Array.isArray(data));
         console.log('Current user ID:', userId);
         
+        // Manejar diferentes estructuras de respuesta de la API
+        let inversiones = data;
+        if (!Array.isArray(data)) {
+          // Si data no es un array, puede que esté en una propiedad
+          inversiones = data.data || data.inversiones || [];
+        }
+        
         // Buscar inversión que coincida con el usuario_id actual
-        const userInvestment = data.find((investment: any) => 
+        const userInvestment = inversiones.find((investment: any) => 
           investment.usuario_id === parseInt(userId)
         );
         
