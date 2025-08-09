@@ -60,7 +60,7 @@ const menuItems = [
     icon: DollarSign,
     items: [
       { title: "Comprar Membresía", icon: CreditCard, url: "/meminverso" },
-      { title: "Mis compras", icon: ShoppingCart, url: "/vaucher_pago" },
+      { title: "Mis Inversiones", icon: ShoppingCart, url: "/vaucher_pago" },
       { title: "Mis Retiros", icon: TrendingUp, url: "/requests" },
     ]
   },

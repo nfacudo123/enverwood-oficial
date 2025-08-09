@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Swal from 'sweetalert2';
 import { apiUrl } from '@/lib/config';
+import { format } from 'date-fns';
 
 interface UserPaymentMethod {
   title: string;
@@ -20,6 +21,10 @@ interface UserPaymentMethod {
 interface HorarioRetiro {
   id: number;
   horario: string;
+  hora_inicio: string;
+  horario_fin: string;
+  fecha: string;
+  hora_fin: string;
   fee: string;
   mensaje_retiro: string;
 }
@@ -143,45 +148,42 @@ export const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
     }
   };
 
-  const checkWithdrawAvailability = (horarios: HorarioRetiro[]) => {
-    if (!horarios || horarios.length === 0) {
-      setIsWithdrawEnabled(false);
-      return;
-    }
+ const checkWithdrawAvailability = (horarios: HorarioRetiro[]) => {
+  if (!horarios || horarios.length === 0) {
+    setIsWithdrawEnabled(false);
+    return;
+  }
 
-    const now = new Date();
-    let available = false;
-    let fee = 0;
-    const nextDates: string[] = [];
+  const now = new Date(); // Hora actual
+  let available = false;
+  let fee = 0;
+  const futureSchedules: string[] = [];
 
-    for (const horario of horarios) {
-      const scheduleDate = new Date(horario.horario);
-      
-      // Check if current time is within the schedule range (considering a 1-hour window)
-      const timeDiff = Math.abs(now.getTime() - scheduleDate.getTime());
-      const hourInMs = 60 * 60 * 1000;
-      
-      if (timeDiff <= hourInMs) {
-        available = true;
-        // Store fee percentage, will be calculated later based on withdrawal amount
-        fee = parseFloat(horario.fee);
-        break;
-      } else if (scheduleDate > now) {
-        // Collect future schedules
-        nextDates.push(scheduleDate.toLocaleString('es-ES', {
-          year: 'numeric',
-          month: '2-digit', 
-          day: '2-digit',
-          hour: '2-digit',
-          minute: '2-digit'
-        }));
-      }
-    }
+  for (const horario of horarios) {
+  // Obtener la fecha y hora de inicio y fin
+  const staras = format(horario.fecha, 'yyyy-MM-dd');
+  const fitaras = format(horario.horario_fin, 'yyyy-MM-dd');
+  const startDate = new Date(staras + "T" + horario.hora_inicio);  // Fecha + hora_inicio
+  const endDate = new Date(fitaras + "T" + horario.hora_fin);  // horario_fin + hora_fin
 
-    setIsWithdrawEnabled(available);
-    setCurrentFee(fee);
-    setNextSchedules(nextDates.slice(0, 3)); // Show next 3 schedules
-  };
+  // Verificar si la hora actual está dentro del rango de fechas de los horarios de retiro
+  if (now >= startDate && now <= endDate) {
+    available = true; // Si la hora actual está dentro del rango de la fecha/hora
+    fee = parseFloat(horario.fee); // Obtener la comisión
+    break; // Salimos del loop cuando encontramos un horario válido
+  } else if (startDate > now) {
+    // Si la fecha de inicio es mayor que la hora actual, se considera un horario futuro
+    futureSchedules.push(
+      `Desde: ${format(startDate, 'dd/MM/yyyy')} hasta ${format(endDate, 'dd/MM/yyyy')}, en horarios desde ${format(startDate, 'hh:mm a')} hasta la(s) ${format(endDate, 'hh:mm a')} `
+    );
+  }
+}
+
+
+  setIsWithdrawEnabled(available); // Habilitar/deshabilitar retiro
+  setCurrentFee(fee); // Establecer la comisión
+  setNextSchedules(futureSchedules); // Mostrar los próximos horarios
+};
 
   const showAlert = (message: string) => {
     setAlertMessage(message);
@@ -292,29 +294,30 @@ export const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
           <DialogTitle>Solicitar Retiro</DialogTitle>
         </DialogHeader>
         
-        <div className={`border rounded-lg p-4 mb-4 ${isWithdrawEnabled ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
-          <p className="text-sm">
-            <span className="font-medium">
-              {isWithdrawEnabled ? 
-                (horariosRetiro.find(h => {
-                  const scheduleDate = new Date(h.horario);
-                  const now = new Date();
-                  const timeDiff = Math.abs(now.getTime() - scheduleDate.getTime());
-                  const hourInMs = 60 * 60 * 1000;
-                  return timeDiff <= hourInMs;
-                })?.mensaje_retiro || 'Retiros disponibles') :
-                'Los retiros están disponibles en los horarios:'
-              }
-            </span>
-            {!isWithdrawEnabled && nextSchedules.length > 0 && (
-              <div className="mt-2">
-                {nextSchedules.map((date, index) => (
-                  <div key={index} className="text-red-700">• {date}</div>
-                ))}
-              </div>
-            )}
-          </p>
-        </div>
+       <div className={`border rounded-lg p-4 mb-4 ${isWithdrawEnabled ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
+  <p className="text-sm">
+    <span className="font-medium">
+      {isWithdrawEnabled ? 
+        (horariosRetiro.find(h => {
+          const scheduleDate = new Date(h.horario + "T" + h.hora_inicio); // Hora de inicio del horario de retiro
+          const now = new Date();
+          const timeDiff = Math.abs(now.getTime() - scheduleDate.getTime());
+          const hourInMs = 60 * 60 * 1000;
+          return timeDiff <= hourInMs; // Verifica si está dentro de una hora del horario de retiro
+        })?.mensaje_retiro || 'Retiros disponibles') :
+        'Los retiros están disponibles en los horarios:'
+      }
+    </span>
+    {!isWithdrawEnabled && nextSchedules.length > 0 && (
+      <div className="mt-2">
+        {nextSchedules.map((date, index) => (
+          <div key={index} className="text-red-700">• {date}</div>
+        ))}
+      </div>
+    )}
+  </p>
+</div>
+
 
         <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 mb-4">
           <p className="text-sm text-primary">

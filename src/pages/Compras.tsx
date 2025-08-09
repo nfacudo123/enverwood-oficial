@@ -224,7 +224,7 @@ export default function Compras() {
           <TableHead>Fecha</TableHead>
           <TableHead>Ver Comprobante</TableHead>
           <TableHead>Tipo</TableHead>
-          {showAprobar && <TableHead>Registrar utilidades</TableHead>}
+          {showAprobar && <TableHead>Aprobar</TableHead>}
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -259,31 +259,15 @@ export default function Compras() {
                {showAprobar && (
                 <TableCell>
                   <div className="flex flex-col gap-2">
-                    <Input
-                      type="number"
-                      min='0'
-                      placeholder="Utilidad"
-                      className="w-24"
-                    />
-                    <div className="flex gap-1">
-                      <Button 
-                        variant="default" 
-                        size="sm"
-                        onClick={() => handleAprobar(inversion.id)}
-                        className="bg-green-600 hover:bg-green-700"
-                        disabled={!utilidades[inversion.id] || utilidades[inversion.id].trim() === ''}
-                      >
-                        Aprobar
-                      </Button>
+                      
                       <Button 
                         variant="default" 
                         size="sm"
                         onClick={() => handleCaducarCiclo(inversion.id)}
                         className="bg-green-600 hover:bg-green-700"
                       >
-                        Caducar ciclo
+                        Aprobar comprobante
                       </Button>
-                    </div>
                   </div>
                 </TableCell>
                )}

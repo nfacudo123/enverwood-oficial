@@ -21,26 +21,25 @@ import { apiUrl } from '@/lib/config';
 interface Inversion {
   id: number;
   usuario_id: number;
-  monto: number;
+  monto: string;
   activo: boolean;
   fecha_creacion: string;
   creado_en: string;
   comprobante?: string;
 }
 
+const getFileName = (filePath: string) => {
+  if (filePath && filePath.includes('/')) {
+    return filePath.split('/').pop() || filePath;
+  }
+  return filePath;
+};
+
 const VaucherPago = () => {
   const [inversiones, setInversiones] = useState<Inversion[]>([]);
   const [loading, setLoading] = useState(true);
   const [isProofModalOpen, setIsProofModalOpen] = useState(false);
   const [selectedComprobante, setSelectedComprobante] = useState<string>('');
-
-  // Función para extraer el nombre del archivo de la ruta completa
-  const getFileName = (filePath: string) => {
-    if (filePath && filePath.includes('/')) {
-      return filePath.split('/').pop() || filePath;
-    }
-    return filePath;
-  };
 
   const fetchInversiones = async () => {
     try {
@@ -62,7 +61,7 @@ const VaucherPago = () => {
       if (response.ok) {
         const data = await response.json();
         console.log('Inversiones data:', data);
-        setInversiones(data);
+        setInversiones(data.inversiones || []);
       } else {
         console.error('Error fetching inversiones:', response.status);
         setInversiones([]);
@@ -86,7 +85,7 @@ const VaucherPago = () => {
 
   if (loading) {
     return (
-      <OrganizationLayout title="Mis Compras">
+      <OrganizationLayout title="Mis Inversiones">
         <div className="p-6 flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
@@ -98,10 +97,10 @@ const VaucherPago = () => {
   }
 
   return (
-    <OrganizationLayout title="Mis Compras">
+    <OrganizationLayout title="Mis Inversiones">
       <div className="p-6">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Mis compras</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Mis Inversiones</h1>
         </div>
         
         <div className="bg-white rounded-lg border border-gray-200">
@@ -116,40 +115,39 @@ const VaucherPago = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {inversiones.length > 0 ? (
-                inversiones.map((inversion, index) => (
-                  <TableRow key={inversion.id}>
-                    <TableCell>{index + 1}</TableCell>
-                    <TableCell>${inversion.monto}</TableCell>
-                    <TableCell>
-                      {inversion.creado_en ? new Date(inversion.creado_en).toLocaleString() : ''}
-                    </TableCell>
-                    <TableCell className="text-center">
-                      {inversion.comprobante ? (
-                        <div className="flex items-center justify-center gap-2">
-                          <File className="w-4 h-4 text-green-600" />
-                          <button
-                            onClick={() => handleViewComprobante(inversion.comprobante!)}
-                            className="text-green-600 hover:text-green-800 hover:underline cursor-pointer"
-                          >
-                            Ver archivo
-                          </button>
-                        </div>
-                      ) : (
-                        <span className="text-red-600">Sin comprobante</span>
-                      )}
-                    </TableCell>
-                    <TableCell>{inversion.activo ? 'Realizado' : 'Pendiente'}</TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={5} className="text-center text-gray-500 py-8">
-                    No hay compras registradas
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
+  {inversiones.length > 0 ? (
+    inversiones.map((inversion, index) => (
+      <TableRow key={inversion.id}>
+        <TableCell>{index + 1}</TableCell>
+        <TableCell>${parseFloat(inversion.monto).toFixed(2)}</TableCell>
+        <TableCell>{inversion.creado_en ? new Date(inversion.creado_en).toLocaleString() : ''}</TableCell>
+        <TableCell className="text-center">
+          {inversion.comprobante ? (
+            <div className="flex items-center justify-center gap-2">
+              <File className="w-4 h-4 text-green-600" />
+              <button
+                onClick={() => handleViewComprobante(inversion.comprobante!)}
+                className="text-green-600 hover:text-green-800 hover:underline cursor-pointer"
+              >
+                Ver archivo
+              </button>
+            </div>
+          ) : (
+            <span className="text-red-600">Sin comprobante</span>
+          )}
+        </TableCell>
+        <TableCell>{inversion.activo ? 'Realizado' : 'Pendiente'}</TableCell>
+      </TableRow>
+    ))
+  ) : (
+    <TableRow>
+      <TableCell colSpan={5} className="text-center text-gray-500 py-8">
+        No hay compras registradas
+      </TableCell>
+    </TableRow>
+  )}
+</TableBody>
+
           </Table>
         </div>
       </div>

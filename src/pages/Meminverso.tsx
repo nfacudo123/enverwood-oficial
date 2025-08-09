@@ -50,8 +50,12 @@ export default function Meminverso() {
   const [deleting, setDeleting] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [montoInversion, setMontoInversion] = useState<string>('');
+  const [comprobanteInversion, setComprobanteInversion] = useState<string>('');
   const [isProofModalOpen, setIsProofModalOpen] = useState(false);
   const { toast } = useToast();
+
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -121,6 +125,7 @@ export default function Meminverso() {
         // Si existe inversión, establecer el monto en el campo
         if (userInvestment) {
           setMontoInversion(userInvestment.monto.toString());
+          setComprobanteInversion(userInvestment.comprobante.toString());
         }
       } else if (response.status === 404) {
         // No investment found
@@ -136,6 +141,7 @@ export default function Meminverso() {
 
   const handlePurchase = async () => {
     const monto = parseFloat(montoInversion);
+    const comprobante = parseFloat(comprobanteInversion);
     
     if (!monto || monto <= 0) {
       toast({
@@ -249,6 +255,16 @@ export default function Meminverso() {
     } finally {
       setDeleting(false);
     }
+  };
+
+  const openModal = (method: PaymentMethod) => {
+    setSelectedPaymentMethod(method);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedPaymentMethod(null);
   };
 
   const handleUploadProof = async () => {
@@ -372,16 +388,15 @@ export default function Meminverso() {
                   min="1"
                   step="0.01"
                   placeholder="Ingresa el monto a invertir"
-                  value={montoInversion}
                   onChange={(e) => setMontoInversion(e.target.value)}
                   className="bg-white text-gray-900 text-center text-lg"
-                  disabled={inversion !== null}
+                  disabled={comprobanteInversion == null}
                 />
               </div>
               
               <Button 
                 onClick={handlePurchase}
-                disabled={purchasing || inversion !== null}
+                disabled={comprobanteInversion == null}
                 className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-gray-900 px-16 py-3 text-lg font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {purchasing ? "PROCESANDO..." : "COMPRAR"}
@@ -402,27 +417,15 @@ export default function Meminverso() {
             {/* Payment Methods Section */}
             <Card>
               <CardContent className="p-6">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-4 gap-4">
                   {paymentMethods.map((method) => (
-                    <div key={method.id} className="flex flex-col items-center space-y-2 p-4 border rounded-lg">
-                      <h3 className="font-semibold text-lg">{method.titulo}</h3>
-                      <div className="bg-white p-2 rounded-lg border">
-                        <img 
-                          src={apiUrl(`/${method.img_qr.replace(/\\/g, '/')}`)} 
-                          alt={`QR Code ${method.titulo}`} 
-                          className="w-32 h-32 object-contain"
-                        />
-                      </div>
-                      <p className="text-sm text-gray-600 font-mono text-center break-all">
-                        {method.dato}
-                      </p>
-                      {method.opdolar === '1.00' && inversion && (
-                        <div className="text-center mt-2 p-2 bg-blue-50 rounded-lg border">
-                          <p className="text-sm font-medium text-blue-800">
-                            Total en COP: ${(parseFloat(method.converdolar) * inversion.monto).toLocaleString('es-CO')}
-                          </p>
-                        </div>
-                      )}
+                    <div key={method.id} className="flex flex-col items-center space-y-2">
+                      <Button
+                        onClick={() => openModal(method)}
+                        className="bg-blue-500 text-white p-4 text-lg rounded-lg"
+                      >
+                        {method.titulo}
+                      </Button>
                     </div>
                   ))}
                 </div>
@@ -467,6 +470,49 @@ export default function Meminverso() {
           </>
         )}
 
+       {/* Modal para mostrar información del método de pago */}
+<Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+  <DialogContent className="sm:max-w-md">
+    <DialogHeader>
+      <DialogTitle>{selectedPaymentMethod?.titulo}</DialogTitle>
+      <Button
+        className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none"
+        onClick={closeModal}
+        variant="ghost"
+        size="sm"
+      >
+        <X className="h-4 w-4" />
+        <span className="sr-only">Cerrar</span>
+      </Button>
+    </DialogHeader>
+    
+    <div className="space-y-4">
+      <div className="p-4">
+        <img
+          src={apiUrl(`/${selectedPaymentMethod?.img_qr.replace(/\\/g, '/')}`)}
+          alt={`QR Code for ${selectedPaymentMethod?.titulo}`}
+          className="w-48 h-48 object-contain mx-auto"
+        />
+      </div>
+
+      {/* Alerta para 'Dato' */}
+      <div className="p-4 text-center bg-yellow-100 border border-yellow-400 rounded-lg">
+        <p className="font-semibold text-yellow-700">Dato: {selectedPaymentMethod?.dato}</p>
+      </div>
+
+      {selectedPaymentMethod?.opdolar === '1.00' && inversion && (
+        <div className="text-center mt-2 p-2 bg-blue-50 rounded-lg border">
+          <p className="text-sm font-medium text-blue-800">
+            Total en COP: ${(parseFloat(selectedPaymentMethod.converdolar) * inversion.monto).toLocaleString('es-CO')}
+          </p>
+        </div>
+      )}
+    </div>
+  </DialogContent>
+</Dialog>
+
+
+
         {/* Tabla de compras - Solo mostrar si existe inversión */}
         {inversion && (
           <Card>
@@ -507,7 +553,7 @@ export default function Meminverso() {
                         {inversion?.activo ? 'Realizado' : 'Pendiente'}
                       </TableCell>
                       <TableCell className="text-center">
-                        {!inversion?.activo ? (
+                        {!inversion?.comprobante ? (
                           <Button 
                             variant="destructive" 
                             size="sm"

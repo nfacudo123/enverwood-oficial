@@ -46,30 +46,30 @@ const Signup = () => {
 
   // Función para obtener el sponsorId basado en el username
   useEffect(() => {
-    const fetchSponsorId = async () => {
-      if (username) {
-        try {
-          console.log('Obteniendo sponsorId para username:', username);
-          const response = await fetch(apiUrl(`/api/users/u/${username}`));
-          
-          if (response.ok) {
-            const userData = await response.json();
-            console.log('Datos del sponsor encontrados:', userData);
-            console.log('ID del sponsor:', userData.id);
-            setSponsorId(userData.id);
-          } else {
-            console.error('No se pudo obtener el sponsorId para el username:', username);
-            setSponsorId(null);
-          }
-        } catch (error) {
-          console.error('Error al obtener sponsorId:', error);
+  const fetchSponsorId = async () => {
+    if (username) {
+      try {
+        console.log('Obteniendo sponsorId para username:', username);
+        const response = await fetch(apiUrl(`/api/u/${username}`));
+        
+        if (response.ok) {
+          const userData = await response.json();
+          console.log('Datos del sponsor encontrados:', userData);
+          console.log('ID del sponsor:', userData.id);
+          setSponsorId(userData.id); // Asegúrate de que esto esté seteando correctamente
+        } else {
+          console.error('No se pudo obtener el sponsorId para el username:', username);
           setSponsorId(null);
         }
+      } catch (error) {
+        console.error('Error al obtener sponsorId:', error);
+        setSponsorId(null);
       }
-    };
+    }
+  };
 
-    fetchSponsorId();
-  }, [username]);
+  fetchSponsorId();
+}, [username]);
 
   const handleInputChange = (field: string, value: string | boolean) => {
     setFormData(prev => ({
@@ -112,7 +112,7 @@ const Signup = () => {
       password: formData.password,
       pais_id: parseInt(formData.pais_id),
       telefono: formData.telefono,
-      sponsorId: sponsorId // Esto debe ser el ID numérico del sponsor
+      sponsorId: sponsorId 
     };
 
     try {
