@@ -321,9 +321,7 @@ export default function Meminverso() {
     return filePath;
   };
 
-  // Mostrar botón de compra si no existe inversión para este usuario
-  const shouldShowPurchaseButton = !inversion;
-
+  
   if (loading) {
     return (
       <OrganizationLayout title="Comprar membresía InvertGold">
@@ -340,7 +338,6 @@ export default function Meminverso() {
   return (
     <OrganizationLayout title="Comprar membresía InvertGold">
       <div className="flex-1 space-y-6 p-4 md:p-8">
-        {shouldShowPurchaseButton ? (
           <>
             {/* Membership Card */}
             <Card className="bg-gradient-to-br from-gray-800 to-gray-900 text-white">
@@ -378,7 +375,6 @@ export default function Meminverso() {
               </CardContent>
             </Card>
           </>
-        ) : (
           <>
             {/* Información de compra */}
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
@@ -515,7 +511,6 @@ export default function Meminverso() {
               </CardContent>
             </Card>
           </>
-        )}
       </div>
 
       {/* Modal para mostrar comprobante */}
