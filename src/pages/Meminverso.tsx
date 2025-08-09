@@ -353,116 +353,119 @@ export default function Meminverso() {
   return (
     <OrganizationLayout title="Comprar membresía InvertGold">
       <div className="flex-1 space-y-6 p-4 md:p-8">
-        {/* Membership Card - Solo mostrar si no existe inversión */}
-        {!inversion && (
-          <Card className="bg-gradient-to-br from-gray-800 to-gray-900 text-white">
-            <CardContent className="p-8">
-              <div className="flex flex-col items-center space-y-6">
-                <h2 className="text-2xl font-bold">Membresía InvertGold</h2>
-                <div className="flex items-center justify-center">
-                  <Leaf className="w-24 h-24 text-green-400" />
-                </div>
-                
-                <div className="w-full max-w-md space-y-4">
-                  <Label htmlFor="monto" className="text-white text-lg">
-                    Monto de inversión (USD)
-                  </Label>
-                  <Input
-                    id="monto"
-                    type="number"
-                    min="1"
-                    step="0.01"
-                    placeholder="Ingresa el monto a invertir"
-                    value={montoInversion}
-                    onChange={(e) => setMontoInversion(e.target.value)}
-                    className="bg-white text-gray-900 text-center text-lg"
-                  />
-                </div>
-                
-                <Button 
-                  onClick={handlePurchase}
-                  disabled={purchasing}
-                  className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-gray-900 px-16 py-3 text-lg font-semibold rounded-lg transition-colors"
-                >
-                  {purchasing ? "PROCESANDO..." : "COMPRAR"}
-                </Button>
+        {/* Membership Card */}
+        <Card className="bg-gradient-to-br from-gray-800 to-gray-900 text-white">
+          <CardContent className="p-8">
+            <div className="flex flex-col items-center space-y-6">
+              <h2 className="text-2xl font-bold">Membresía InvertGold</h2>
+              <div className="flex items-center justify-center">
+                <Leaf className="w-24 h-24 text-green-400" />
               </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Información de compra */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <p className="text-sm text-blue-800">
-            Para realizar la compra, debes Escanear el código QR y enviar el monto solicitado al siguiente QR de USDT que se encuentra en pantalla. Una vez enviado, toma una captura de pantalla de la transacción y agrega tu comprobante. La compra tardará unos momentos en ser validada.
-          </p>
-        </div>
-
-        {/* Payment Methods Section */}
-        <Card>
-          <CardContent className="p-6">
-            <div className="grid grid-cols-2 gap-4">
-              {paymentMethods.map((method) => (
-                <div key={method.id} className="flex flex-col items-center space-y-2 p-4 border rounded-lg">
-                  <h3 className="font-semibold text-lg">{method.titulo}</h3>
-                  <div className="bg-white p-2 rounded-lg border">
-                    <img 
-                      src={apiUrl(`/${method.img_qr.replace(/\\/g, '/')}`)} 
-                      alt={`QR Code ${method.titulo}`} 
-                      className="w-32 h-32 object-contain"
-                    />
-                  </div>
-                  <p className="text-sm text-gray-600 font-mono text-center break-all">
-                    {method.dato}
-                  </p>
-                  {method.opdolar === '1.00' && inversion && (
-                    <div className="text-center mt-2 p-2 bg-blue-50 rounded-lg border">
-                      <p className="text-sm font-medium text-blue-800">
-                        Total en COP: ${(parseFloat(method.converdolar) * inversion.monto).toLocaleString('es-CO')}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Upload Section */}
-        <Card>
-          <CardContent className="p-6">
-            <div className="space-y-4">
-              <p className="text-sm text-gray-600">
-                Por favor debes enviar tu comprobante para continuar con el proceso.
-              </p>
               
-              <div className="space-y-2">
-                <Label htmlFor="comprobante">Subir imagen</Label>
-                <div className="flex items-center gap-4">
-                  <Input
-                    id="comprobante"
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileChange}
-                    className="flex-1"
-                  />
-                  <span className="text-sm text-gray-500">
-                    {selectedFile ? selectedFile.name : "Ningún archivo seleccionado"}
-                  </span>
-                </div>
+              <div className="w-full max-w-md space-y-4">
+                <Label htmlFor="monto" className="text-white text-lg">
+                  Monto de inversión (USD)
+                </Label>
+                <Input
+                  id="monto"
+                  type="number"
+                  min="1"
+                  step="0.01"
+                  placeholder="Ingresa el monto a invertir"
+                  value={montoInversion}
+                  onChange={(e) => setMontoInversion(e.target.value)}
+                  className="bg-white text-gray-900 text-center text-lg"
+                  disabled={inversion !== null}
+                />
               </div>
-
+              
               <Button 
-                onClick={handleUploadProof}
-                disabled={uploading || !selectedFile || !inversion}
-                className="bg-green-500 hover:bg-green-600 text-white"
+                onClick={handlePurchase}
+                disabled={purchasing || inversion !== null}
+                className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-gray-900 px-16 py-3 text-lg font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <Upload className="w-4 h-4 mr-2" />
-                {uploading ? "Subiendo..." : "Agregar Comprobante"}
+                {purchasing ? "PROCESANDO..." : "COMPRAR"}
               </Button>
             </div>
           </CardContent>
         </Card>
+
+        {/* Información de compra - Solo mostrar si hay inversión sin comprobante */}
+        {inversion && !inversion.comprobante && (
+          <>
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <p className="text-sm text-blue-800">
+                Para realizar la compra, debes Escanear el código QR y enviar el monto solicitado al siguiente QR de USDT que se encuentra en pantalla. Una vez enviado, toma una captura de pantalla de la transacción y agrega tu comprobante. La compra tardará unos momentos en ser validada.
+              </p>
+            </div>
+
+            {/* Payment Methods Section */}
+            <Card>
+              <CardContent className="p-6">
+                <div className="grid grid-cols-2 gap-4">
+                  {paymentMethods.map((method) => (
+                    <div key={method.id} className="flex flex-col items-center space-y-2 p-4 border rounded-lg">
+                      <h3 className="font-semibold text-lg">{method.titulo}</h3>
+                      <div className="bg-white p-2 rounded-lg border">
+                        <img 
+                          src={apiUrl(`/${method.img_qr.replace(/\\/g, '/')}`)} 
+                          alt={`QR Code ${method.titulo}`} 
+                          className="w-32 h-32 object-contain"
+                        />
+                      </div>
+                      <p className="text-sm text-gray-600 font-mono text-center break-all">
+                        {method.dato}
+                      </p>
+                      {method.opdolar === '1.00' && inversion && (
+                        <div className="text-center mt-2 p-2 bg-blue-50 rounded-lg border">
+                          <p className="text-sm font-medium text-blue-800">
+                            Total en COP: ${(parseFloat(method.converdolar) * inversion.monto).toLocaleString('es-CO')}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Upload Section */}
+            <Card>
+              <CardContent className="p-6">
+                <div className="space-y-4">
+                  <p className="text-sm text-gray-600">
+                    Por favor debes enviar tu comprobante para continuar con el proceso.
+                  </p>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="comprobante">Subir imagen</Label>
+                    <div className="flex items-center gap-4">
+                      <Input
+                        id="comprobante"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        className="flex-1"
+                      />
+                      <span className="text-sm text-gray-500">
+                        {selectedFile ? selectedFile.name : "Ningún archivo seleccionado"}
+                      </span>
+                    </div>
+                  </div>
+
+                  <Button 
+                    onClick={handleUploadProof}
+                    disabled={uploading || !selectedFile || !inversion}
+                    className="bg-green-500 hover:bg-green-600 text-white"
+                  >
+                    <Upload className="w-4 h-4 mr-2" />
+                    {uploading ? "Subiendo..." : "Agregar Comprobante"}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </>
+        )}
 
         {/* Tabla de compras - Solo mostrar si existe inversión */}
         {inversion && (
