@@ -108,6 +108,11 @@ export default function Meminverso() {
         
         console.log('User investment found:', userInvestment);
         setInversion(userInvestment || null);
+        
+        // Si existe inversión, establecer el monto en el campo
+        if (userInvestment) {
+          setMontoInversion(userInvestment.monto.toString());
+        }
       } else if (response.status === 404) {
         // No investment found
         setInversion(null);
@@ -212,6 +217,7 @@ export default function Meminverso() {
 
       if (response.ok) {
         setInversion(null);
+        setMontoInversion(''); // Limpiar el campo del monto cuando se elimina la inversión
         toast({
           title: "Eliminado",
           description: "La inversión ha sido eliminada correctamente",
