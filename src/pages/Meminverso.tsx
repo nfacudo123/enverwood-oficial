@@ -353,42 +353,43 @@ export default function Meminverso() {
   return (
     <OrganizationLayout title="Comprar membresía InvertGold">
       <div className="flex-1 space-y-6 p-4 md:p-8">
-        {/* Membership Card */}
-        <Card className="bg-gradient-to-br from-gray-800 to-gray-900 text-white">
-          <CardContent className="p-8">
-            <div className="flex flex-col items-center space-y-6">
-              <h2 className="text-2xl font-bold">Membresía InvertGold</h2>
-              <div className="flex items-center justify-center">
-                <Leaf className="w-24 h-24 text-green-400" />
+        {/* Membership Card - Solo mostrar si no existe inversión */}
+        {!inversion && (
+          <Card className="bg-gradient-to-br from-gray-800 to-gray-900 text-white">
+            <CardContent className="p-8">
+              <div className="flex flex-col items-center space-y-6">
+                <h2 className="text-2xl font-bold">Membresía InvertGold</h2>
+                <div className="flex items-center justify-center">
+                  <Leaf className="w-24 h-24 text-green-400" />
+                </div>
+                
+                <div className="w-full max-w-md space-y-4">
+                  <Label htmlFor="monto" className="text-white text-lg">
+                    Monto de inversión (USD)
+                  </Label>
+                  <Input
+                    id="monto"
+                    type="number"
+                    min="1"
+                    step="0.01"
+                    placeholder="Ingresa el monto a invertir"
+                    value={montoInversion}
+                    onChange={(e) => setMontoInversion(e.target.value)}
+                    className="bg-white text-gray-900 text-center text-lg"
+                  />
+                </div>
+                
+                <Button 
+                  onClick={handlePurchase}
+                  disabled={purchasing}
+                  className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-gray-900 px-16 py-3 text-lg font-semibold rounded-lg transition-colors"
+                >
+                  {purchasing ? "PROCESANDO..." : "COMPRAR"}
+                </Button>
               </div>
-              
-              <div className="w-full max-w-md space-y-4">
-                <Label htmlFor="monto" className="text-white text-lg">
-                  Monto de inversión (USD)
-                </Label>
-                <Input
-                  id="monto"
-                  type="number"
-                  min="1"
-                  step="0.01"
-                  placeholder="Ingresa el monto a invertir"
-                  value={montoInversion}
-                  onChange={(e) => setMontoInversion(e.target.value)}
-                  className="bg-white text-gray-900 text-center text-lg"
-                  disabled={inversion !== null}
-                />
-              </div>
-              
-              <Button 
-                onClick={handlePurchase}
-                disabled={purchasing || inversion !== null}
-                className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-gray-900 px-16 py-3 text-lg font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {purchasing ? "PROCESANDO..." : "COMPRAR"}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Información de compra */}
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
