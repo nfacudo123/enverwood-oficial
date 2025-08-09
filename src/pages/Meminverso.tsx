@@ -338,179 +338,179 @@ export default function Meminverso() {
   return (
     <OrganizationLayout title="Comprar membresía InvertGold">
       <div className="flex-1 space-y-6 p-4 md:p-8">
-          <>
-            {/* Membership Card */}
-            <Card className="bg-gradient-to-br from-gray-800 to-gray-900 text-white">
-              <CardContent className="p-8">
-                <div className="flex flex-col items-center space-y-6">
-                  <h2 className="text-2xl font-bold">Membresía InvertGold</h2>
-                  <div className="flex items-center justify-center">
-                    <Leaf className="w-24 h-24 text-green-400" />
-                  </div>
-                  
-                  <div className="w-full max-w-md space-y-4">
-                    <Label htmlFor="monto" className="text-white text-lg">
-                      Monto de inversión (USD)
-                    </Label>
-                    <Input
-                      id="monto"
-                      type="number"
-                      min="1"
-                      step="0.01"
-                      placeholder="Ingresa el monto a invertir"
-                      value={montoInversion}
-                      onChange={(e) => setMontoInversion(e.target.value)}
-                      className="bg-white text-gray-900 text-center text-lg"
+        {/* Membership Card */}
+        <Card className="bg-gradient-to-br from-gray-800 to-gray-900 text-white">
+          <CardContent className="p-8">
+            <div className="flex flex-col items-center space-y-6">
+              <h2 className="text-2xl font-bold">Membresía InvertGold</h2>
+              <div className="flex items-center justify-center">
+                <Leaf className="w-24 h-24 text-green-400" />
+              </div>
+              
+              <div className="w-full max-w-md space-y-4">
+                <Label htmlFor="monto" className="text-white text-lg">
+                  Monto de inversión (USD)
+                </Label>
+                <Input
+                  id="monto"
+                  type="number"
+                  min="1"
+                  step="0.01"
+                  placeholder="Ingresa el monto a invertir"
+                  value={montoInversion}
+                  onChange={(e) => setMontoInversion(e.target.value)}
+                  className="bg-white text-gray-900 text-center text-lg"
+                  disabled={inversion !== null}
+                />
+              </div>
+              
+              <Button 
+                onClick={handlePurchase}
+                disabled={purchasing || inversion !== null}
+                className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-gray-900 px-16 py-3 text-lg font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {purchasing ? "PROCESANDO..." : "COMPRAR"}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Información de compra */}
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <p className="text-sm text-blue-800">
+            Para realizar la compra, debes Escanear el código QR y enviar el monto solicitado al siguiente QR de USDT que se encuentra en pantalla. Una vez enviado, toma una captura de pantalla de la transacción y agrega tu comprobante. La compra tardará unos momentos en ser validada.
+          </p>
+        </div>
+
+        {/* Payment Methods Section */}
+        <Card>
+          <CardContent className="p-6">
+            <div className="grid grid-cols-2 gap-4">
+              {paymentMethods.map((method) => (
+                <div key={method.id} className="flex flex-col items-center space-y-2 p-4 border rounded-lg">
+                  <h3 className="font-semibold text-lg">{method.titulo}</h3>
+                  <div className="bg-white p-2 rounded-lg border">
+                    <img 
+                      src={apiUrl(`/${method.img_qr.replace(/\\/g, '/')}`)} 
+                      alt={`QR Code ${method.titulo}`} 
+                      className="w-32 h-32 object-contain"
                     />
                   </div>
-                  
-                  <Button 
-                    onClick={handlePurchase}
-                    disabled={purchasing}
-                    className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-gray-900 px-16 py-3 text-lg font-semibold rounded-lg transition-colors"
-                  >
-                    {purchasing ? "PROCESANDO..." : "COMPRAR"}
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </>
-          <>
-            {/* Información de compra */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <p className="text-sm text-blue-800">
-                Para realizar la compra, debes Escanear el código QR y enviar el monto solicitado al siguiente QR de USDT que se encuentra en pantalla. Una vez enviado, toma una captura de pantalla de la transacción y agrega tu comprobante. La compra tardará unos momentos en ser validada.
-              </p>
-            </div>
-
-            {/* Payment Methods Section */}
-            <Card>
-              <CardContent className="p-6">
-                <div className="grid grid-cols-2 gap-4">
-                  {paymentMethods.map((method) => (
-                    <div key={method.id} className="flex flex-col items-center space-y-2 p-4 border rounded-lg">
-                      <h3 className="font-semibold text-lg">{method.titulo}</h3>
-                      <div className="bg-white p-2 rounded-lg border">
-                        <img 
-                          src={apiUrl(`/${method.img_qr.replace(/\\/g, '/')}`)} 
-                          alt={`QR Code ${method.titulo}`} 
-                          className="w-32 h-32 object-contain"
-                        />
-                      </div>
-                      <p className="text-sm text-gray-600 font-mono text-center break-all">
-                        {method.dato}
-                      </p>
-                      {method.opdolar === '1.00' && inversion && (
-                        <div className="text-center mt-2 p-2 bg-blue-50 rounded-lg border">
-                          <p className="text-sm font-medium text-blue-800">
-                            Total en COP: ${(parseFloat(method.converdolar) * inversion.monto).toLocaleString('es-CO')}
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Upload Section */}
-            <Card>
-              <CardContent className="p-6">
-                <div className="space-y-4">
-                  <p className="text-sm text-gray-600">
-                    Por favor debes enviar tu comprobante para continuar con el proceso.
+                  <p className="text-sm text-gray-600 font-mono text-center break-all">
+                    {method.dato}
                   </p>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="comprobante">Subir imagen</Label>
-                    <div className="flex items-center gap-4">
-                      <Input
-                        id="comprobante"
-                        type="file"
-                        accept="image/*"
-                        onChange={handleFileChange}
-                        className="flex-1"
-                      />
-                      <span className="text-sm text-gray-500">
-                        {selectedFile ? selectedFile.name : "Ningún archivo seleccionado"}
-                      </span>
+                  {method.opdolar === '1.00' && inversion && (
+                    <div className="text-center mt-2 p-2 bg-blue-50 rounded-lg border">
+                      <p className="text-sm font-medium text-blue-800">
+                        Total en COP: ${(parseFloat(method.converdolar) * inversion.monto).toLocaleString('es-CO')}
+                      </p>
                     </div>
-                  </div>
-
-                  <Button 
-                    onClick={handleUploadProof}
-                    disabled={uploading || !selectedFile}
-                    className="bg-green-500 hover:bg-green-600 text-white"
-                  >
-                    <Upload className="w-4 h-4 mr-2" />
-                    {uploading ? "Subiendo..." : "Agregar Comprobante"}
-                  </Button>
+                  )}
                 </div>
-              </CardContent>
-            </Card>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
 
-            {/* Tabla de compras */}
-            <Card>
-              <CardContent className="p-6">
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="text-center">Monto</TableHead>
-                        <TableHead className="text-center">Fecha compra</TableHead>
-                        <TableHead className="text-center">Comprobante</TableHead>
-                        <TableHead className="text-center">Estado</TableHead>
-                        <TableHead className="text-center">Acción</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      <TableRow>
-                        <TableCell className="text-center">${inversion?.monto}</TableCell>
-                        <TableCell className="text-center">
-                          {inversion?.creado_en ? new Date(inversion.creado_en).toLocaleString() : ''}
-                        </TableCell>
-                        <TableCell className="text-center">
-                          {inversion?.comprobante ? (
-                            <div className="flex items-center justify-center gap-2">
-                              <File className="w-4 h-4 text-green-600" />
-                              <button
-                                onClick={() => setIsProofModalOpen(true)}
-                                className="text-green-600 hover:text-green-800 hover:underline cursor-pointer"
-                              >
-                                Ver archivo
-                              </button>
-                            </div>
-                          ) : (
-                            <span className="text-red-600">Sin comprobante</span>
-                          )}
-                        </TableCell>
-                        <TableCell className="text-center">
-                          {inversion?.activo ? 'Realizado' : 'Pendiente'}
-                        </TableCell>
-                        <TableCell className="text-center">
-                          {!inversion?.activo ? (
-                            <Button 
-                              variant="destructive" 
-                              size="sm"
-                              className="bg-red-500 hover:bg-red-600"
-                              onClick={handleDelete}
-                              disabled={deleting}
+        {/* Upload Section */}
+        <Card>
+          <CardContent className="p-6">
+            <div className="space-y-4">
+              <p className="text-sm text-gray-600">
+                Por favor debes enviar tu comprobante para continuar con el proceso.
+              </p>
+              
+              <div className="space-y-2">
+                <Label htmlFor="comprobante">Subir imagen</Label>
+                <div className="flex items-center gap-4">
+                  <Input
+                    id="comprobante"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    className="flex-1"
+                  />
+                  <span className="text-sm text-gray-500">
+                    {selectedFile ? selectedFile.name : "Ningún archivo seleccionado"}
+                  </span>
+                </div>
+              </div>
+
+              <Button 
+                onClick={handleUploadProof}
+                disabled={uploading || !selectedFile || !inversion}
+                className="bg-green-500 hover:bg-green-600 text-white"
+              >
+                <Upload className="w-4 h-4 mr-2" />
+                {uploading ? "Subiendo..." : "Agregar Comprobante"}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Tabla de compras - Solo mostrar si existe inversión */}
+        {inversion && (
+          <Card>
+            <CardContent className="p-6">
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-center">Monto</TableHead>
+                      <TableHead className="text-center">Fecha compra</TableHead>
+                      <TableHead className="text-center">Comprobante</TableHead>
+                      <TableHead className="text-center">Estado</TableHead>
+                      <TableHead className="text-center">Acción</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    <TableRow>
+                      <TableCell className="text-center">${inversion?.monto}</TableCell>
+                      <TableCell className="text-center">
+                        {inversion?.creado_en ? new Date(inversion.creado_en).toLocaleString() : ''}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {inversion?.comprobante ? (
+                          <div className="flex items-center justify-center gap-2">
+                            <File className="w-4 h-4 text-green-600" />
+                            <button
+                              onClick={() => setIsProofModalOpen(true)}
+                              className="text-green-600 hover:text-green-800 hover:underline cursor-pointer"
                             >
-                              {deleting ? "Eliminando..." : "Borrar"}
-                            </Button>
-                          ) : (
-                            <div className="flex justify-center">
-                              <Check className="w-5 h-5 text-green-500" />
-                            </div>
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    </TableBody>
-                  </Table>
-                </div>
-              </CardContent>
-            </Card>
-          </>
+                              Ver archivo
+                            </button>
+                          </div>
+                        ) : (
+                          <span className="text-red-600">Sin comprobante</span>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {inversion?.activo ? 'Realizado' : 'Pendiente'}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {!inversion?.activo ? (
+                          <Button 
+                            variant="destructive" 
+                            size="sm"
+                            className="bg-red-500 hover:bg-red-600"
+                            onClick={handleDelete}
+                            disabled={deleting}
+                          >
+                            {deleting ? "Eliminando..." : "Borrar"}
+                          </Button>
+                        ) : (
+                          <div className="flex justify-center">
+                            <Check className="w-5 h-5 text-green-500" />
+                          </div>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       {/* Modal para mostrar comprobante */}
