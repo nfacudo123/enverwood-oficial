@@ -44,8 +44,9 @@ const VaucherPago = () => {
   const fetchInversiones = async () => {
     try {
       const token = localStorage.getItem('token');
+      const idUser = localStorage.getItem('idUser');
       
-      if (!token) {
+      if (!token || !idUser) {
         setLoading(false);
         return;
       }
@@ -61,7 +62,12 @@ const VaucherPago = () => {
       if (response.ok) {
         const data = await response.json();
         console.log('Inversiones data:', data);
-        setInversiones(data.inversiones || []);
+        // Filtrar inversiones por usuario actual
+        const currentUserId = parseInt(idUser);
+        const userInversiones = (data.inversiones || []).filter(
+          (inversion: Inversion) => inversion.usuario_id === currentUserId
+        );
+        setInversiones(userInversiones);
       } else {
         console.error('Error fetching inversiones:', response.status);
         setInversiones([]);
