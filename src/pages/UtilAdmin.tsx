@@ -356,7 +356,7 @@ const UtilAdmin: React.FC = () => {
       <div className="space-y-2 w-full">
         <Input
           type="number"
-          placeholder="Porcentaje de utilidad (Ej: 10 para 10%)"
+          placeholder="Agrega el valor de la utilidad"
           value={utilidadPorcentaje}
           onChange={(e) => setUtilidadPorcentaje(e.target.value)}
           className="w-full"
