@@ -143,7 +143,7 @@ const UtilAdmin: React.FC = () => {
 
   const handleAddUtilidad = async () => {
     try {
-      const utilidad = (parseFloat(utilidadPorcentaje) / 100).toString(); // Convertir a porcentaje (de 10 a 0.1)
+      const utilidad = utilidadPorcentaje; // Enviar el valor entero tal como se ingresa
 
       const token = localStorage.getItem('token');
       const response = await fetch(apiUrl('/api/inversiones/validar'), {
