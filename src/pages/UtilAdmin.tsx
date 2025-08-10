@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Search, Download } from 'lucide-react';
+import { Search, Download, File } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import Swal from 'sweetalert2';
 import {
@@ -76,8 +76,8 @@ const UtilAdmin: React.FC = () => {
 
   const filterInversiones = () => {
     const filtered = inversiones.filter(inversion =>
-      inversion.comprobante.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      inversion.monto.includes(searchTerm)
+      (inversion.comprobante && inversion.comprobante.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (inversion.monto && inversion.monto.includes(searchTerm))
     );
     setFilteredInversiones(filtered);
     setCurrentPage(1);
