@@ -213,10 +213,23 @@ const handleDeleteHorario = async (id: number) => {
 
     const formatDateTime = (dateString: string) => {
       try {
+        if (!dateString) return 'No definida';
         const date = new Date(dateString);
+        if (isNaN(date.getTime())) return 'Fecha inválida';
         return format(date, 'dd/MM/yyyy');
       } catch (error) {
-        return dateString;
+        return 'Error en fecha';
+      }
+    };
+
+    const formatTime = (dateString: string) => {
+      try {
+        if (!dateString) return 'No definida';
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return 'Hora inválida';
+        return format(date, 'HH:mm');
+      } catch (error) {
+        return 'Error en hora';
       }
     };
 
@@ -319,9 +332,9 @@ const handleDeleteHorario = async (id: number) => {
           <TableRow key={horario.id}>
             <TableCell>{horario.id}</TableCell>
             <TableCell>{formatDateTime(horario.horario)}</TableCell>
-            <TableCell>{format(new Date(horario.horario), 'HH:mm')}</TableCell>
+            <TableCell>{formatTime(horario.horario)}</TableCell>
             <TableCell>{formatDateTime(horario.horario_fin)}</TableCell>
-            <TableCell>{format(new Date(horario.horario_fin), 'HH:mm')}</TableCell>
+            <TableCell>{formatTime(horario.horario_fin)}</TableCell>
             <TableCell>
               <Badge variant="secondary">{horario.fee}%</Badge>
             </TableCell>
