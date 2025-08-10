@@ -318,10 +318,10 @@ const handleDeleteHorario = async (id: number) => {
         {horarios.map((horario) => (
           <TableRow key={horario.id}>
             <TableCell>{horario.id}</TableCell>
-            <TableCell>{formatDateTime(horario.fecha)}</TableCell> {/* Fecha Inicio */}
-            <TableCell>{horario.hora_inicio}</TableCell> {/* Hora Inicio */}
-            <TableCell>{formatDateTime(horario.horario_fin)}</TableCell> {/* Fecha Fin */}
-            <TableCell>{horario.hora_fin}</TableCell> {/* Hora Fin */}
+            <TableCell>{formatDateTime(horario.horario)}</TableCell>
+            <TableCell>{format(new Date(horario.horario), 'HH:mm')}</TableCell>
+            <TableCell>{formatDateTime(horario.horario_fin)}</TableCell>
+            <TableCell>{format(new Date(horario.horario_fin), 'HH:mm')}</TableCell>
             <TableCell>
               <Badge variant="secondary">{horario.fee}%</Badge>
             </TableCell>
