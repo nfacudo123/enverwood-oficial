@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -14,7 +15,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { File, X } from "lucide-react";
+import { File, X, Upload } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 import { OrganizationLayout } from '@/components/OrganizationLayout';
 import { apiUrl } from '@/lib/config';
 
@@ -40,6 +42,8 @@ const VaucherPago = () => {
   const [loading, setLoading] = useState(true);
   const [isProofModalOpen, setIsProofModalOpen] = useState(false);
   const [selectedComprobante, setSelectedComprobante] = useState<string>('');
+  const [uploadingId, setUploadingId] = useState<number | null>(null);
+  const { toast } = useToast();
 
   const fetchInversiones = async () => {
     try {
@@ -83,6 +87,60 @@ const VaucherPago = () => {
   const handleViewComprobante = (comprobante: string) => {
     setSelectedComprobante(comprobante);
     setIsProofModalOpen(true);
+  };
+
+  const handleUploadComprobante = async (inversionId: number, file: File) => {
+    try {
+      setUploadingId(inversionId);
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        toast({
+          title: "Error",
+          description: "No se encontró token de autenticación",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('comprobante', file);
+
+      const response = await fetch(apiUrl(`/api/inversiones/comprobante/${inversionId}`), {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Éxito",
+          description: "Comprobante subido correctamente",
+        });
+        // Recargar inversiones para mostrar el nuevo comprobante
+        fetchInversiones();
+      } else {
+        throw new Error('Error al subir el comprobante');
+      }
+    } catch (error) {
+      console.error('Error uploading comprobante:', error);
+      toast({
+        title: "Error",
+        description: "No se pudo subir el comprobante",
+        variant: "destructive",
+      });
+    } finally {
+      setUploadingId(null);
+    }
+  };
+
+  const handleFileChange = (inversionId: number, event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      handleUploadComprobante(inversionId, file);
+    }
   };
 
   useEffect(() => {
@@ -139,7 +197,32 @@ const VaucherPago = () => {
               </button>
             </div>
           ) : (
-            <span className="text-red-600">Sin comprobante</span>
+            <div className="flex items-center justify-center gap-2">
+              <input
+                type="file"
+                id={`file-${inversion.id}`}
+                accept="image/*,.pdf"
+                onChange={(e) => handleFileChange(inversion.id, e)}
+                className="hidden"
+                disabled={uploadingId === inversion.id}
+              />
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => document.getElementById(`file-${inversion.id}`)?.click()}
+                disabled={uploadingId === inversion.id}
+                className="text-blue-600 border-blue-600 hover:bg-blue-50"
+              >
+                {uploadingId === inversion.id ? (
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                ) : (
+                  <>
+                    <Upload className="w-4 h-4 mr-1" />
+                    Subir
+                  </>
+                )}
+              </Button>
+            </div>
           )}
         </TableCell>
         <TableCell>{inversion.activo ? 'Realizado' : 'Pendiente'}</TableCell>
