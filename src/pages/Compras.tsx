@@ -287,11 +287,11 @@ export default function Compras() {
   }
 
   return (
-    <OrganizationLayout title="Comprobantes de Depósitos">
+    <OrganizationLayout title="Comprobantes de Inversiones">
       <div className="p-6 space-y-6">
         <div>
           <p className="text-muted-foreground">
-            Comprobantes de depósitos: Aquí puedes verificar los comprobantes de pagos y aprobar los depósitos.
+            Comprobantes de Inversiones: Aquí puedes verificar los comprobantes de pagos y aprobar los depósitos.
           </p>
         </div>
 

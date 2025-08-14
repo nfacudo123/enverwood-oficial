@@ -97,7 +97,7 @@ const menuItems = [
 const adminItems = [
   { title: "Usuarios", icon: Users, url: "/userad" },
   {
-    title: "Compras",
+    title: "Inversiones",
     icon: ShoppingCart,
     url: "/compras"
   },
