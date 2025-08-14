@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { OrganizationLayout } from '@/components/OrganizationLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -32,6 +33,7 @@ interface Inversion {
 }
 
 const UtilAdmin: React.FC = () => {
+  const navigate = useNavigate();
   const [inversiones, setInversiones] = useState<Inversion[]>([]);
   const [filteredInversiones, setFilteredInversiones] = useState<Inversion[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -331,6 +333,17 @@ const UtilAdmin: React.FC = () => {
 
             <div className="mt-4 text-sm text-muted-foreground text-center">
               Mostrando {startIndex + 1} a {Math.min(endIndex, filteredInversiones.length)} de {filteredInversiones.length} inversiones
+            </div>
+            
+            {/* Botón para ir a compras */}
+            <div className="mt-6 flex justify-center">
+              <Button 
+                onClick={() => navigate('/compras')} 
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                Ver Comprobantes de Inversiones
+              </Button>
             </div>
           </CardContent>
         </Card>
