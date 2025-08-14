@@ -226,8 +226,16 @@ const UtilAdmin: React.FC = () => {
             <CardTitle className="flex items-center justify-between">
               Gestión de Inversiones Activas
               <div className="flex items-center gap-2">
+
+            {/* Botón para ir a compras */}
+              <Button 
+                onClick={() => navigate('/compras')} 
+                className="flex items-center gap-2"
+              >
+                Ver Inversiones
+              </Button>
+
                 <Button onClick={exportToExcel} className="flex items-center gap-2">
-                  <Download className="w-4 h-4" />
                   Exportar Excel
                 </Button>
                 <Button onClick={validateUtilidades} className="flex items-center gap-2">
@@ -335,16 +343,6 @@ const UtilAdmin: React.FC = () => {
               Mostrando {startIndex + 1} a {Math.min(endIndex, filteredInversiones.length)} de {filteredInversiones.length} inversiones
             </div>
             
-            {/* Botón para ir a compras */}
-            <div className="mt-6 flex justify-center">
-              <Button 
-                onClick={() => navigate('/compras')} 
-                variant="outline"
-                className="flex items-center gap-2"
-              >
-                Ver Comprobantes de Inversiones
-              </Button>
-            </div>
           </CardContent>
         </Card>
       </div>
