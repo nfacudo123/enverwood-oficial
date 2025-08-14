@@ -21,7 +21,7 @@ import { OrganizationLayout } from '@/components/OrganizationLayout';
 import { apiUrl } from '@/lib/config';
 
 interface Inversion {
-  idax: number;
+  id: number;
   usuario_id: number;
   monto: string;
   activo: boolean;
@@ -226,7 +226,7 @@ const VaucherPago = () => {
             <TableBody>
   {inversiones.length > 0 ? (
     inversiones.map((inversion, index) => (
-      <TableRow key={`${inversion.idax}-${index}`}>
+      <TableRow key={`${inversion.id}-${index}`}>
         <TableCell>{index + 1}</TableCell>
         <TableCell>${parseFloat(inversion.monto).toFixed(2)}</TableCell>
         <TableCell>{inversion.creado_en ? new Date(inversion.creado_en).toLocaleString() : ''}</TableCell>
@@ -246,20 +246,20 @@ const VaucherPago = () => {
             <div className="flex items-center justify-center gap-2">
               <input
                 type="file"
-                id={`file-${inversion.idax}`}
+                id={`file-${inversion.id}`}
                 accept="image/*,.pdf"
-                onChange={(e) => handleFileChange(inversion.idax, e)}
+                onChange={(e) => handleFileChange(inversion.id, e)}
                 className="hidden"
-                disabled={uploadingId === inversion.idax}
+                disabled={uploadingId === inversion.id}
               />
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => document.getElementById(`file-${inversion.idax}`)?.click()}
-                disabled={uploadingId === inversion.idax}
+                onClick={() => document.getElementById(`file-${inversion.id}`)?.click()}
+                disabled={uploadingId === inversion.id}
                 className="text-blue-600 border-blue-600 hover:bg-blue-50"
               >
-                {uploadingId === inversion.idax ? (
+                {uploadingId === inversion.id ? (
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
                 ) : (
                   <>
@@ -272,7 +272,7 @@ const VaucherPago = () => {
               <Button
                 variant="destructive"
                 size="sm"
-                onClick={() => handleDeleteComprobante(inversion.idax)}
+                onClick={() => handleDeleteComprobante(inversion.id)}
                 className="ml-2"
               >
                 <X className="w-4 h-4 mr-1" />
