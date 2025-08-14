@@ -21,7 +21,7 @@ import { OrganizationLayout } from '@/components/OrganizationLayout';
 import { apiUrl } from '@/lib/config';
 
 interface Inversion {
-  id: number;
+  idax: number;
   usuario_id: number;
   monto: string;
   activo: boolean;
@@ -71,7 +71,7 @@ const VaucherPago = () => {
         console.log('Inversiones data:', data);
         // Filtrar inversiones por usuario actual
         const currentUserId = parseInt(idUser);
-        const userInversiones = data.filter(
+        const userInversiones = (data.inversiones || []).filter(
           (inversion: Inversion) => inversion.usuario_id === currentUserId
         );
         setInversiones(userInversiones);
@@ -226,7 +226,7 @@ const VaucherPago = () => {
             <TableBody>
   {inversiones.length > 0 ? (
     inversiones.map((inversion, index) => (
-      <TableRow key={`${inversion.id}-${index}`}>
+      <TableRow key={`${inversion.idax}-${index}`}>
         <TableCell>{index + 1}</TableCell>
         <TableCell>${parseFloat(inversion.monto).toFixed(2)}</TableCell>
         <TableCell>{inversion.creado_en ? new Date(inversion.creado_en).toLocaleString() : ''}</TableCell>
@@ -240,34 +240,26 @@ const VaucherPago = () => {
               >
                 Ver archivo
               </button>
-              <Button
-                variant="destructive"
-                size="sm"
-                onClick={() => handleDeleteComprobante(inversion.id)}
-                className="ml-2"
-              >
-                <X className="w-4 h-4 mr-1" />
-                Eliminar
-              </Button>
+              
             </div>
           ) : (
             <div className="flex items-center justify-center gap-2">
               <input
                 type="file"
-                id={`file-${inversion.id}`}
+                id={`file-${inversion.idax}`}
                 accept="image/*,.pdf"
-                onChange={(e) => handleFileChange(inversion.id, e)}
+                onChange={(e) => handleFileChange(inversion.idax, e)}
                 className="hidden"
-                disabled={uploadingId === inversion.id}
+                disabled={uploadingId === inversion.idax}
               />
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => document.getElementById(`file-${inversion.id}`)?.click()}
-                disabled={uploadingId === inversion.id}
+                onClick={() => document.getElementById(`file-${inversion.idax}`)?.click()}
+                disabled={uploadingId === inversion.idax}
                 className="text-blue-600 border-blue-600 hover:bg-blue-50"
               >
-                {uploadingId === inversion.id ? (
+                {uploadingId === inversion.idax ? (
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
                 ) : (
                   <>
@@ -275,6 +267,16 @@ const VaucherPago = () => {
                     Subir
                   </>
                 )}
+              </Button>
+
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={() => handleDeleteComprobante(inversion.idax)}
+                className="ml-2"
+              >
+                <X className="w-4 h-4 mr-1" />
+                Eliminar
               </Button>
             </div>
           )}
