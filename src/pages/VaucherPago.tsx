@@ -226,7 +226,7 @@ const VaucherPago = () => {
             <TableBody>
   {inversiones.length > 0 ? (
     inversiones.map((inversion, index) => (
-      <TableRow key={inversion.id}>
+      <TableRow key={`${inversion.id}-${index}`}>
         <TableCell>{index + 1}</TableCell>
         <TableCell>${parseFloat(inversion.monto).toFixed(2)}</TableCell>
         <TableCell>{inversion.creado_en ? new Date(inversion.creado_en).toLocaleString() : ''}</TableCell>
