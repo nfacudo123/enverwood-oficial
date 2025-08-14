@@ -57,7 +57,7 @@ const VaucherPago = () => {
         setLoading(false);
         return;
       }
-
+ 
       const response = await fetch(apiUrl('/api/inversiones'), {
         method: 'GET',
         headers: {
