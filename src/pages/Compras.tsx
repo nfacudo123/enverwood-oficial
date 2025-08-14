@@ -214,6 +214,47 @@ export default function Compras() {
     }
   };
 
+  const handleEliminar = async (id: number) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast({
+          title: "Error",
+          description: "No se encontró token de autenticación",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const response = await fetch(apiUrl(`/api/inversiones/${id}`), {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      toast({
+        title: "Éxito",
+        description: "Inversión eliminada correctamente",
+      });
+
+      // Recargar los datos para actualizar la tabla
+      fetchInversiones();
+    } catch (error) {
+      console.error('Error eliminando inversión:', error);
+      toast({
+        title: "Error",
+        description: "No se pudo eliminar la inversión",
+        variant: "destructive",
+      });
+    }
+  };
+
   const InversionTable = ({ inversiones, showAprobar = false }: { inversiones: Inversion[], showAprobar?: boolean }) => (
     <Table>
       <TableHeader>
@@ -259,7 +300,6 @@ export default function Compras() {
                {showAprobar && (
                 <TableCell>
                   <div className="flex flex-col gap-2">
-                      
                       <Button 
                         variant="default" 
                         size="sm"
@@ -267,6 +307,14 @@ export default function Compras() {
                         className="bg-green-600 hover:bg-green-700"
                       >
                         Aprobar comprobante
+                      </Button>
+                      <Button 
+                        variant="destructive" 
+                        size="sm"
+                        onClick={() => handleEliminar(inversion.id)}
+                      >
+                        <X className="h-4 w-4 mr-1" />
+                        Eliminar
                       </Button>
                   </div>
                 </TableCell>
