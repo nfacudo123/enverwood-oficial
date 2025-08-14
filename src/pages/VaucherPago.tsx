@@ -28,6 +28,9 @@ interface Inversion {
   fecha_creacion: string;
   creado_en: string;
   comprobante?: string;
+  total_utilrest: number;
+  name: string;
+  email: string;
 }
 
 const getFileName = (filePath: string) => {
@@ -68,7 +71,7 @@ const VaucherPago = () => {
         console.log('Inversiones data:', data);
         // Filtrar inversiones por usuario actual
         const currentUserId = parseInt(idUser);
-        const userInversiones = (data.inversiones || []).filter(
+        const userInversiones = data.filter(
           (inversion: Inversion) => inversion.usuario_id === currentUserId
         );
         setInversiones(userInversiones);
@@ -143,6 +146,47 @@ const VaucherPago = () => {
     }
   };
 
+  const handleDeleteComprobante = async (inversionId: number) => {
+    try {
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        toast({
+          title: "Error",
+          description: "No se encontró token de autenticación",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const response = await fetch(apiUrl(`/api/inversiones/${inversionId}`), {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Éxito",
+          description: "Comprobante eliminado correctamente",
+        });
+        // Recargar inversiones
+        fetchInversiones();
+      } else {
+        throw new Error('Error al eliminar el comprobante');
+      }
+    } catch (error) {
+      console.error('Error deleting comprobante:', error);
+      toast({
+        title: "Error",
+        description: "No se pudo eliminar el comprobante",
+        variant: "destructive",
+      });
+    }
+  };
+
   useEffect(() => {
     fetchInversiones();
   }, []);
@@ -175,6 +219,7 @@ const VaucherPago = () => {
                 <TableHead className="font-medium text-gray-900">Monto</TableHead>
                 <TableHead className="font-medium text-gray-900">Fecha compra</TableHead>
                 <TableHead className="font-medium text-gray-900">Comprobante</TableHead>
+                <TableHead className="font-medium text-gray-900">Utilidad restante</TableHead>
                 <TableHead className="font-medium text-gray-900">Estado</TableHead>
               </TableRow>
             </TableHeader>
@@ -195,6 +240,15 @@ const VaucherPago = () => {
               >
                 Ver archivo
               </button>
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={() => handleDeleteComprobante(inversion.id)}
+                className="ml-2"
+              >
+                <X className="w-4 h-4 mr-1" />
+                Eliminar
+              </Button>
             </div>
           ) : (
             <div className="flex items-center justify-center gap-2">
@@ -225,12 +279,13 @@ const VaucherPago = () => {
             </div>
           )}
         </TableCell>
+        <TableCell>${inversion.total_utilrest?.toFixed(2) || '0.00'}</TableCell>
         <TableCell>{inversion.activo ? 'Realizado' : 'Pendiente'}</TableCell>
       </TableRow>
     ))
   ) : (
     <TableRow>
-      <TableCell colSpan={5} className="text-center text-gray-500 py-8">
+      <TableCell colSpan={6} className="text-center text-gray-500 py-8">
         No hay compras registradas
       </TableCell>
     </TableRow>
