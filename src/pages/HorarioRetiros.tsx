@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { OrganizationLayout } from "@/components/OrganizationLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -27,7 +26,6 @@ interface HorarioRetiro {
 
 interface FormData {
   fecha: string;
-  fecha_fin: string;
   hora_inicio: string;
   hora_fin: string;
   fee: string;
@@ -42,7 +40,6 @@ const HorarioRetiros = () => {
   const [selectedHorario, setSelectedHorario] = useState<HorarioRetiro | null>(null);
   const [formData, setFormData] = useState<FormData>({
     fecha: '',
-    fecha_fin: '',
     hora_inicio: '',
     hora_fin: '',
     fee: '',
@@ -101,11 +98,10 @@ const handleCreateHorario = async () => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        fecha: formData.fecha + 'T05:00:00.000Z',
-        horario_fin: formData.fecha_fin + 'T05:00:00.000Z',
-        hora_inicio: formData.hora_inicio + ':00',
-        hora_fin: formData.hora_fin + ':00',
-        fee: formData.fee,
+        fecha: formData.fecha,
+        hora_inicio: formData.hora_inicio,
+        hora_fin: formData.hora_fin,
+        fee: parseFloat(formData.fee),
         mensaje_retiro: formData.mensaje_retiro,
       }),
     });
@@ -120,7 +116,7 @@ const handleCreateHorario = async () => {
     });
 
     setIsCreateModalOpen(false);
-    setFormData({ fecha: '', fecha_fin: '', hora_inicio: '', hora_fin: '', fee: '', mensaje_retiro: '' });
+    setFormData({ fecha: '', hora_inicio: '', hora_fin: '', fee: '', mensaje_retiro: '' }); // Limpiar campos
     fetchHorarios();
   } catch (error) {
     console.error('Error:', error);
@@ -131,6 +127,7 @@ const handleCreateHorario = async () => {
     });
   }
 };
+
 
 const handleEditHorario = async () => {
   if (!selectedHorario) return;
@@ -144,11 +141,10 @@ const handleEditHorario = async () => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        fecha: formData.fecha + 'T05:00:00.000Z',
-        horario_fin: formData.fecha_fin + 'T05:00:00.000Z',
-        hora_inicio: formData.hora_inicio + ':00',
-        hora_fin: formData.hora_fin + ':00',
-        fee: formData.fee,
+        fecha: formData.fecha,
+        hora_inicio: formData.hora_inicio,
+        hora_fin: formData.hora_fin,
+        fee: parseFloat(formData.fee),
         mensaje_retiro: formData.mensaje_retiro,
       }),
     });
@@ -164,7 +160,7 @@ const handleEditHorario = async () => {
 
     setIsEditModalOpen(false);
     setSelectedHorario(null);
-    setFormData({ fecha: '', fecha_fin: '', hora_inicio: '', hora_fin: '', fee: '', mensaje_retiro: '' });
+    setFormData({ fecha: '', hora_inicio: '', hora_fin: '', fee: '', mensaje_retiro: '' });
     fetchHorarios();
   } catch (error) {
     console.error('Error:', error);
@@ -214,8 +210,7 @@ const handleDeleteHorario = async (id: number) => {
   const openEditModal = (horario: HorarioRetiro) => {
     setSelectedHorario(horario);
     setFormData({
-      fecha: horario.fecha.split('T')[0],
-      fecha_fin: horario.horario_fin.split('T')[0],
+      fecha: horario.fecha,
       hora_inicio: horario.hora_inicio,
       hora_fin: horario.hora_fin,
       fee: horario.fee,
@@ -274,21 +269,12 @@ const handleDeleteHorario = async (id: number) => {
                 </DialogHeader>
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="fecha">Fecha Inicio</Label>
+                    <Label htmlFor="fecha">Fecha</Label>
                     <Input
                       id="fecha"
                       type="date"
                       value={formData.fecha}
                       onChange={(e) => setFormData({ ...formData, fecha: e.target.value })}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="fecha_fin">Fecha Fin</Label>
-                    <Input
-                      id="fecha_fin"
-                      type="date"
-                      value={formData.fecha_fin}
-                      onChange={(e) => setFormData({ ...formData, fecha_fin: e.target.value })}
                     />
                   </div>
                   <div>
@@ -411,21 +397,12 @@ const handleDeleteHorario = async (id: number) => {
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <Label htmlFor="edit-fecha">Fecha Inicio</Label>
+              <Label htmlFor="edit-fecha">Fecha</Label>
               <Input
                 id="edit-fecha"
                 type="date"
                 value={formData.fecha}
                 onChange={(e) => setFormData({ ...formData, fecha: e.target.value })}
-              />
-            </div>
-            <div>
-              <Label htmlFor="edit-fecha_fin">Fecha Fin</Label>
-              <Input
-                id="edit-fecha_fin"
-                type="date"
-                value={formData.fecha_fin}
-                onChange={(e) => setFormData({ ...formData, fecha_fin: e.target.value })}
               />
             </div>
             <div>
