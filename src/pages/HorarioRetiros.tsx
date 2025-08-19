@@ -16,6 +16,7 @@ import { apiUrl } from '@/lib/config';
 interface HorarioRetiro {
   id: number;
   fecha: string;
+  horario: string;
   horario_fin: string;
   hora_inicio: string;
   hora_fin: string;
@@ -24,9 +25,8 @@ interface HorarioRetiro {
 }
 
 interface FormData {
-  fecha: string;
-  hora_inicio: string;
-  hora_fin: string;
+  horario: string;      // fecha y hora inicio
+  horario_fin: string;  // fecha y hora fin
   fee: string;
   mensaje_retiro: string;
 }
@@ -38,9 +38,8 @@ const HorarioRetiros = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedHorario, setSelectedHorario] = useState<HorarioRetiro | null>(null);
   const [formData, setFormData] = useState<FormData>({
-    fecha: '',
-    hora_inicio: '',
-    hora_fin: '',
+    horario: '',
+    horario_fin: '',
     fee: '',
     mensaje_retiro: ''
   });
@@ -97,40 +96,28 @@ const handleCreateHorario = async () => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        fecha: formData.fecha,
-        hora_inicio: formData.hora_inicio,
-        hora_fin: formData.hora_fin,
+        horario: formData.horario,
         fee: parseFloat(formData.fee),
         mensaje_retiro: formData.mensaje_retiro,
+        horario_fin: formData.horario_fin,
       }),
     });
 
-    if (!response.ok) {
-      throw new Error('Error al crear horario');
-    }
+    if (!response.ok) throw new Error('Error al crear horario');
 
-    toast({
-      title: 'Éxito',
-      description: 'Horario creado correctamente',
-    });
-
+    toast({ title: 'Éxito', description: 'Horario creado correctamente' });
     setIsCreateModalOpen(false);
-    setFormData({ fecha: '', hora_inicio: '', hora_fin: '', fee: '', mensaje_retiro: '' }); // Limpiar campos
+    setFormData({ horario: '', horario_fin: '', fee: '', mensaje_retiro: '' });
     fetchHorarios();
   } catch (error) {
-    console.error('Error:', error);
-    toast({
-      title: 'Error',
-      description: 'No se pudo crear el horario',
-      variant: 'destructive',
-    });
+    console.error(error);
+    toast({ title: 'Error', description: 'No se pudo crear el horario', variant: 'destructive' });
   }
 };
 
 
 const handleEditHorario = async () => {
   if (!selectedHorario) return;
-
   try {
     const token = localStorage.getItem('token');
     const response = await fetch(apiUrl(`/api/tiempo-retiro/${selectedHorario.id}`), {
@@ -140,37 +127,25 @@ const handleEditHorario = async () => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        fecha: formData.fecha,
-        hora_inicio: formData.hora_inicio,
-        hora_fin: formData.hora_fin,
+        horario: formData.horario,
         fee: parseFloat(formData.fee),
         mensaje_retiro: formData.mensaje_retiro,
+        horario_fin: formData.horario_fin,
       }),
     });
 
-    if (!response.ok) {
-      throw new Error('Error al actualizar horario');
-    }
+    if (!response.ok) throw new Error('Error al actualizar horario');
 
-    toast({
-      title: 'Éxito',
-      description: 'Horario actualizado correctamente',
-    });
-
+    toast({ title: 'Éxito', description: 'Horario actualizado correctamente' });
     setIsEditModalOpen(false);
     setSelectedHorario(null);
-    setFormData({ fecha: '', hora_inicio: '', hora_fin: '', fee: '', mensaje_retiro: '' });
+    setFormData({ horario: '', horario_fin: '', fee: '', mensaje_retiro: '' });
     fetchHorarios();
   } catch (error) {
-    console.error('Error:', error);
-    toast({
-      title: 'Error',
-      description: 'No se pudo actualizar el horario',
-      variant: 'destructive',
-    });
+    console.error(error);
+    toast({ title: 'Error', description: 'No se pudo actualizar el horario', variant: 'destructive' });
   }
 };
-
 
 const handleDeleteHorario = async (id: number) => {
   if (!confirm('¿Estás seguro de que quieres eliminar este horario?')) return;
@@ -209,9 +184,8 @@ const handleDeleteHorario = async (id: number) => {
   const openEditModal = (horario: HorarioRetiro) => {
     setSelectedHorario(horario);
     setFormData({
-      fecha: horario.fecha,
-      hora_inicio: horario.hora_inicio,
-      hora_fin: horario.hora_fin,
+      horario: horario.horario,
+      horario_fin: horario.horario_fin,
       fee: horario.fee,
       mensaje_retiro: horario.mensaje_retiro
     });
@@ -223,7 +197,7 @@ const handleDeleteHorario = async (id: number) => {
         if (!dateString) return 'No definida';
         const date = new Date(dateString);
         if (isNaN(date.getTime())) return 'Fecha inválida';
-        return format(date, 'dd/MM/yyyy');
+        return format(date, 'dd/MM/yyyy'); // fecha igual
       } catch (error) {
         return 'Error en fecha';
       }
@@ -234,11 +208,12 @@ const handleDeleteHorario = async (id: number) => {
         if (!dateString) return 'No definida';
         const date = new Date(dateString);
         if (isNaN(date.getTime())) return 'Hora inválida';
-        return format(date, 'HH:mm');
+        return format(date, 'hh:mm a'); // <-- 12 horas con am/pm
       } catch (error) {
         return 'Error en hora';
       }
     };
+
 
   useEffect(() => {
     fetchHorarios();
@@ -265,31 +240,22 @@ const handleDeleteHorario = async (id: number) => {
                 </DialogHeader>
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="fecha">Fecha</Label>
-                    <Input
-                      id="fecha"
-                      type="date"
-                      value={formData.fecha}
-                      onChange={(e) => setFormData({ ...formData, fecha: e.target.value })}
-                    />
+                    <Label htmlFor="horario">Fecha y Hora Inicio</Label>
+                      <Input
+                        id="horario"
+                        type="datetime-local"
+                        value={formData.horario}
+                        onChange={(e) => setFormData({ ...formData, horario: e.target.value })}
+                      />
                   </div>
                   <div>
-                    <Label htmlFor="hora_inicio">Hora Inicio</Label>
-                    <Input
-                      id="hora_inicio"
-                      type="time"
-                      value={formData.hora_inicio}
-                      onChange={(e) => setFormData({ ...formData, hora_inicio: e.target.value })}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="hora_fin">Hora Fin</Label>
-                    <Input
-                      id="hora_fin"
-                      type="time"
-                      value={formData.hora_fin}
-                      onChange={(e) => setFormData({ ...formData, hora_fin: e.target.value })}
-                    />
+                    <Label htmlFor="horario_fin">Fecha y Hora Fin</Label>
+                      <Input
+                        id="horario_fin"
+                        type="datetime-local"
+                        value={formData.horario_fin}
+                        onChange={(e) => setFormData({ ...formData, horario_fin: e.target.value })}
+                      />
                   </div>
 
                   <div>
@@ -393,31 +359,22 @@ const handleDeleteHorario = async (id: number) => {
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <Label htmlFor="edit-fecha">Fecha</Label>
-              <Input
-                id="edit-fecha"
-                type="date"
-                value={formData.fecha}
-                onChange={(e) => setFormData({ ...formData, fecha: e.target.value })}
-              />
+               <Label htmlFor="edit-horario">Fecha y Hora Inicio</Label>
+                <Input
+                  id="edit-horario"
+                  type="datetime-local"
+                  value={formData.horario}
+                  onChange={(e) => setFormData({ ...formData, horario: e.target.value })}
+                />
             </div>
             <div>
-              <Label htmlFor="edit-hora_inicio">Hora Inicio</Label>
-              <Input
-                id="edit-hora_inicio"
-                type="time"
-                value={formData.hora_inicio}
-                onChange={(e) => setFormData({ ...formData, hora_inicio: e.target.value })}
-              />
-            </div>
-            <div>
-              <Label htmlFor="edit-hora_fin">Hora Fin</Label>
-              <Input
-                id="edit-hora_fin"
-                type="time"
-                value={formData.hora_fin}
-                onChange={(e) => setFormData({ ...formData, hora_fin: e.target.value })}
-              />
+              <Label htmlFor="edit-horario_fin">Fecha y Hora Fin</Label>
+                <Input
+                  id="edit-horario_fin"
+                  type="datetime-local"
+                  value={formData.horario_fin}
+                  onChange={(e) => setFormData({ ...formData, horario_fin: e.target.value })}
+                />
             </div>
 
             <div>
