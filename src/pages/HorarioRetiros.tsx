@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Edit, Trash2, Clock } from "lucide-react";
 import { format } from 'date-fns';
+import { formatInTimeZone } from 'date-fns-tz';
 import { apiUrl } from '@/lib/config';
 
 interface HorarioRetiro {
@@ -223,18 +224,21 @@ const handleDeleteHorario = async (id: number) => {
         if (!dateString) return 'No definida';
         const date = new Date(dateString);
         if (isNaN(date.getTime())) return 'Fecha inválida';
-        return format(date, 'dd/MM/yyyy');
+        return formatInTimeZone(date, 'America/Bogota', 'dd/MM/yyyy');
       } catch (error) {
         return 'Error en fecha';
       }
     };
 
-    const formatTime = (dateString: string) => {
+    const formatTimeOnly = (timeString: string) => {
       try {
-        if (!dateString) return 'No definida';
-        const date = new Date(dateString);
-        if (isNaN(date.getTime())) return 'Hora inválida';
-        return format(date, 'HH:mm');
+        if (!timeString) return 'No definida';
+        // timeString viene como "08:00:00" o "16:00:00"
+        const parts = timeString.split(':');
+        if (parts.length >= 2) {
+          return `${parts[0]}:${parts[1]}`;
+        }
+        return timeString;
       } catch (error) {
         return 'Error en hora';
       }
@@ -348,9 +352,9 @@ const handleDeleteHorario = async (id: number) => {
           <TableRow key={horario.id}>
             <TableCell>{horario.id}</TableCell>
             <TableCell>{formatDateTime(horario.fecha)}</TableCell>
-            <TableCell>{horario.hora_inicio}</TableCell>
+            <TableCell>{formatTimeOnly(horario.hora_inicio)}</TableCell>
             <TableCell>{formatDateTime(horario.horario_fin)}</TableCell>
-            <TableCell>{horario.hora_fin}</TableCell>
+            <TableCell>{formatTimeOnly(horario.hora_fin)}</TableCell>
             <TableCell>
               <Badge variant="secondary">{horario.fee}%</Badge>
             </TableCell>
