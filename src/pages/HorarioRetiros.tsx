@@ -101,11 +101,11 @@ const handleCreateHorario = async () => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        fecha: formData.fecha,
-        horario_fin: formData.fecha_fin,
-        hora_inicio: formData.hora_inicio,
-        hora_fin: formData.hora_fin,
-        fee: parseFloat(formData.fee),
+        fecha: formData.fecha + 'T05:00:00.000Z',
+        horario_fin: formData.fecha_fin + 'T05:00:00.000Z',
+        hora_inicio: formData.hora_inicio + ':00',
+        hora_fin: formData.hora_fin + ':00',
+        fee: formData.fee,
         mensaje_retiro: formData.mensaje_retiro,
       }),
     });
@@ -144,11 +144,11 @@ const handleEditHorario = async () => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        fecha: formData.fecha,
-        horario_fin: formData.fecha_fin,
-        hora_inicio: formData.hora_inicio,
-        hora_fin: formData.hora_fin,
-        fee: parseFloat(formData.fee),
+        fecha: formData.fecha + 'T05:00:00.000Z',
+        horario_fin: formData.fecha_fin + 'T05:00:00.000Z',
+        hora_inicio: formData.hora_inicio + ':00',
+        hora_fin: formData.hora_fin + ':00',
+        fee: formData.fee,
         mensaje_retiro: formData.mensaje_retiro,
       }),
     });
