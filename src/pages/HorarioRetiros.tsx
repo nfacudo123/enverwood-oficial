@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Edit, Trash2, Clock } from "lucide-react";
+import { formatInTimeZone } from 'date-fns-tz';
 import { format } from 'date-fns';
 import { apiUrl } from '@/lib/config';
 
@@ -197,18 +198,34 @@ const handleDeleteHorario = async (id: number) => {
         if (!dateString) return 'No definida';
         const date = new Date(dateString);
         if (isNaN(date.getTime())) return 'Fecha inválida';
-        return format(date, 'dd/MM/yyyy'); // fecha igual
+        //return format(date, 'dd/MM/yyyy'); 
+        return formatInTimeZone(date, 'America/Bogota', 'dd/MM/yyyy');
       } catch (error) {
         return 'Error en fecha';
       }
     };
 
-    const formatTime = (dateString: string) => {
+    const formatTimeOnly = (timeString: string) => {
       try {
-        if (!dateString) return 'No definida';
-        const date = new Date(dateString);
-        if (isNaN(date.getTime())) return 'Hora inválida';
-        return format(date, 'hh:mm a'); // <-- 12 horas con am/pm
+        if (!timeString) return 'No definida';
+
+        // Si viene con fecha completa tipo ISO (ej: "2025-07-30T18:00:00")
+        if (timeString.includes('T')) {
+          const timePart = timeString.split('T')[0]; // "18:00:00"
+          const parts = timePart.split(':');
+          if (parts.length >= 2) {
+            return `${parts[0]}:${parts[1]}`;
+          }
+          return timePart;
+        }
+
+        // Si solo viene la hora (ej: "08:00:00")
+        const parts = timeString.split(':');
+        if (parts.length >= 2) {
+          return `${parts[0]}:${parts[1]}`;
+        }
+
+        return timeString;
       } catch (error) {
         return 'Error en hora';
       }
@@ -313,9 +330,9 @@ const handleDeleteHorario = async (id: number) => {
         {horarios.map((horario) => (
           <TableRow key={horario.id}>
             <TableCell>{horario.id}</TableCell>
-            <TableCell>{formatDateTime(horario.fecha)}</TableCell>
+            <TableCell>{formatTimeOnly(horario.fecha)}</TableCell>
             <TableCell>{horario.hora_inicio}</TableCell>
-            <TableCell>{formatDateTime(horario.horario_fin)}</TableCell>
+            <TableCell>{formatTimeOnly(horario.horario_fin)}</TableCell>
             <TableCell>{horario.hora_fin}</TableCell>
             <TableCell>
               <Badge variant="secondary">{horario.fee}%</Badge>
