@@ -11,23 +11,19 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Edit, Trash2, Clock } from "lucide-react";
 import { format } from 'date-fns';
-import { formatInTimeZone } from 'date-fns-tz';
 import { apiUrl } from '@/lib/config';
 
 interface HorarioRetiro {
   id: number;
-  fecha: string;
+  horario: string;
   horario_fin: string;
-  hora_inicio: string;
-  hora_fin: string;
   fee: string;
   mensaje_retiro: string;
 }
 
 interface FormData {
-  fecha: string;
-  hora_inicio: string;
-  hora_fin: string;
+  horario: string;
+  horario_fin: string;
   fee: string;
   mensaje_retiro: string;
 }
@@ -39,9 +35,8 @@ const HorarioRetiros = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedHorario, setSelectedHorario] = useState<HorarioRetiro | null>(null);
   const [formData, setFormData] = useState<FormData>({
-    fecha: '',
-    hora_inicio: '',
-    hora_fin: '',
+    horario: '',
+    horario_fin: '',
     fee: '',
     mensaje_retiro: ''
   });
@@ -98,11 +93,10 @@ const handleCreateHorario = async () => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        fecha: formData.fecha,
-        hora_inicio: formData.hora_inicio,
-        hora_fin: formData.hora_fin,
+        horario: formData.horario,
         fee: parseFloat(formData.fee),
         mensaje_retiro: formData.mensaje_retiro,
+        horario_fin: formData.horario_fin, // Agregar el horario_fin
       }),
     });
 
@@ -116,7 +110,7 @@ const handleCreateHorario = async () => {
     });
 
     setIsCreateModalOpen(false);
-    setFormData({ fecha: '', hora_inicio: '', hora_fin: '', fee: '', mensaje_retiro: '' }); // Limpiar campos
+    setFormData({ horario: '', fee: '', mensaje_retiro: '', horario_fin: '' }); // Limpiar campos
     fetchHorarios();
   } catch (error) {
     console.error('Error:', error);
@@ -141,11 +135,10 @@ const handleEditHorario = async () => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        fecha: formData.fecha,
-        hora_inicio: formData.hora_inicio,
-        hora_fin: formData.hora_fin,
+        horario: formData.horario,
         fee: parseFloat(formData.fee),
         mensaje_retiro: formData.mensaje_retiro,
+        horario_fin: formData.horario_fin, // Asegúrate de incluir horario_fin
       }),
     });
 
@@ -160,7 +153,7 @@ const handleEditHorario = async () => {
 
     setIsEditModalOpen(false);
     setSelectedHorario(null);
-    setFormData({ fecha: '', hora_inicio: '', hora_fin: '', fee: '', mensaje_retiro: '' });
+    setFormData({ horario: '', fee: '', mensaje_retiro: '', horario_fin: '' });
     fetchHorarios();
   } catch (error) {
     console.error('Error:', error);
@@ -210,9 +203,8 @@ const handleDeleteHorario = async (id: number) => {
   const openEditModal = (horario: HorarioRetiro) => {
     setSelectedHorario(horario);
     setFormData({
-      fecha: horario.fecha,
-      hora_inicio: horario.hora_inicio,
-      hora_fin: horario.hora_fin,
+      horario: horario.horario,
+      horario_fin: horario.horario_fin,
       fee: horario.fee,
       mensaje_retiro: horario.mensaje_retiro
     });
@@ -224,21 +216,18 @@ const handleDeleteHorario = async (id: number) => {
         if (!dateString) return 'No definida';
         const date = new Date(dateString);
         if (isNaN(date.getTime())) return 'Fecha inválida';
-        return formatInTimeZone(date, 'America/Bogota', 'dd/MM/yyyy');
+        return format(date, 'dd/MM/yyyy');
       } catch (error) {
         return 'Error en fecha';
       }
     };
 
-    const formatTimeOnly = (timeString: string) => {
+    const formatTime = (dateString: string) => {
       try {
-        if (!timeString) return 'No definida';
-        // timeString viene como "08:00:00" o "16:00:00"
-        const parts = timeString.split(':');
-        if (parts.length >= 2) {
-          return `${parts[0]}:${parts[1]}`;
-        }
-        return timeString;
+        if (!dateString) return 'No definida';
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return 'Hora inválida';
+        return format(date, 'HH:mm');
       } catch (error) {
         return 'Error en hora';
       }
@@ -269,30 +258,21 @@ const handleDeleteHorario = async (id: number) => {
                 </DialogHeader>
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="fecha">Fecha</Label>
+                    <Label htmlFor="horario">Horario</Label>
                     <Input
-                      id="fecha"
-                      type="date"
-                      value={formData.fecha}
-                      onChange={(e) => setFormData({ ...formData, fecha: e.target.value })}
+                      id="horario"
+                      type="datetime-local"
+                      value={formData.horario}
+                      onChange={(e) => setFormData({ ...formData, horario: e.target.value })}
                     />
                   </div>
                   <div>
-                    <Label htmlFor="hora_inicio">Hora Inicio</Label>
+                    <Label htmlFor="horario_fin">Horario Fin</Label>
                     <Input
-                      id="hora_inicio"
-                      type="time"
-                      value={formData.hora_inicio}
-                      onChange={(e) => setFormData({ ...formData, hora_inicio: e.target.value })}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="hora_fin">Hora Fin</Label>
-                    <Input
-                      id="hora_fin"
-                      type="time"
-                      value={formData.hora_fin}
-                      onChange={(e) => setFormData({ ...formData, hora_fin: e.target.value })}
+                      id="horario_fin"
+                      type="datetime-local"
+                      value={formData.horario_fin}
+                      onChange={(e) => setFormData({ ...formData, horario_fin: e.target.value })}
                     />
                   </div>
 
@@ -351,10 +331,10 @@ const handleDeleteHorario = async (id: number) => {
         {horarios.map((horario) => (
           <TableRow key={horario.id}>
             <TableCell>{horario.id}</TableCell>
-            <TableCell>{formatDateTime(horario.fecha)}</TableCell>
-            <TableCell>{formatTimeOnly(horario.hora_inicio)}</TableCell>
+            <TableCell>{formatDateTime(horario.horario)}</TableCell>
+            <TableCell>{formatTime(horario.horario)}</TableCell>
             <TableCell>{formatDateTime(horario.horario_fin)}</TableCell>
-            <TableCell>{formatTimeOnly(horario.hora_fin)}</TableCell>
+            <TableCell>{formatTime(horario.horario_fin)}</TableCell>
             <TableCell>
               <Badge variant="secondary">{horario.fee}%</Badge>
             </TableCell>
@@ -397,32 +377,23 @@ const handleDeleteHorario = async (id: number) => {
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <Label htmlFor="edit-fecha">Fecha</Label>
-              <Input
-                id="edit-fecha"
-                type="date"
-                value={formData.fecha}
-                onChange={(e) => setFormData({ ...formData, fecha: e.target.value })}
-              />
-            </div>
-            <div>
-              <Label htmlFor="edit-hora_inicio">Hora Inicio</Label>
-              <Input
-                id="edit-hora_inicio"
-                type="time"
-                value={formData.hora_inicio}
-                onChange={(e) => setFormData({ ...formData, hora_inicio: e.target.value })}
-              />
-            </div>
-            <div>
-              <Label htmlFor="edit-hora_fin">Hora Fin</Label>
-              <Input
-                id="edit-hora_fin"
-                type="time"
-                value={formData.hora_fin}
-                onChange={(e) => setFormData({ ...formData, hora_fin: e.target.value })}
-              />
-            </div>
+  <Label htmlFor="edit-horario">Horario Inicio</Label>
+  <Input
+    id="edit-horario"
+    type="datetime-local"
+    value={formData.horario}
+    onChange={(e) => setFormData({ ...formData, horario: e.target.value })}
+  />
+</div>
+<div>
+  <Label htmlFor="edit-horario_fin">Horario Fin</Label>
+  <Input
+    id="edit-horario_fin"
+    type="datetime-local"
+    value={formData.horario_fin}
+    onChange={(e) => setFormData({ ...formData, horario_fin: e.target.value })}
+  />
+</div>
 
             <div>
               <Label htmlFor="edit-fee">Fee (%)</Label>
