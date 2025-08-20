@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import Swal from 'sweetalert2';
 import { apiUrl } from '@/lib/config';
 import { format } from 'date-fns';
+import { toZonedTime } from 'date-fns-tz';
 
 interface UserPaymentMethod {
   title: string;
@@ -154,7 +155,7 @@ export const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
     return;
   }
 
-  const now = new Date(); // Hora actual
+  const now = toZonedTime(new Date(), 'America/Bogota'); // Hora actual en zona horaria de Bogotá
   let available = false;
   let fee = 0;
   const futureSchedules: string[] = [];
