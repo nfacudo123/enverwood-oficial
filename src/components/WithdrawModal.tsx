@@ -11,7 +11,8 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Swal from 'sweetalert2';
 import { apiUrl } from '@/lib/config';
-import { format, toZonedTime } from 'date-fns-tz';
+import { format } from 'date-fns';
+import { toZonedTime } from "date-fns-tz";
 
 interface UserPaymentMethod {
   title: string;
@@ -156,23 +157,25 @@ export const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
     return;
   }
 
-  const now = toZonedTime(new Date(), 'America/Bogota'); // Hora actual en zona horaria de Bogotá
+  const now = new Date(); // Hora actual en zona horaria de Bogotá
   let available = false;
   let fee = 0;
   const futureSchedules: string[] = [];
 
   for (const horario of horarios) {
   // Obtener la fecha y hora de inicio y fin
-  const staras = format(toZonedTime(new Date(horario.fecha), 'America/Bogota'),'yyyy-MM-dd');
-  const fitaras = format(toZonedTime(new Date(horario.horario_fin), 'America/Bogota'),'yyyy-MM-dd');
- 
-  // 2. Concatenar con hora (ej: "2025-08-19T08:00:00")
-  const startString = `${staras}T${horario.hora_inicio}`;
-  const endString = `${fitaras}T${horario.hora_fin}`;
+  const staras = format(new Date(horario.fecha), 'yyyy-MM-dd'); 
+  const fitaras = format(new Date(horario.horario_fin), 'yyyy-MM-dd');
 
-  // 3. Crear fechas directamente en Bogotá
-  const startDate = toZonedTime(new Date(startString), timeZone);
-  const endDate = toZonedTime(new Date(endString), timeZone);
+  const startDate = toZonedTime(
+    new Date(`${horario.fecha.split("T")[0]}T${horario.hora_inicio}`),
+    'America/Bogota'
+  );
+
+  const endDate = toZonedTime(
+    new Date(`${horario.horario_fin.split("T")[0]}T${horario.hora_fin}`),
+    'America/Bogota'
+  );
 
   console.log('tesset'+startDate );
 
