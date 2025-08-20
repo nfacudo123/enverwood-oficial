@@ -11,8 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Swal from 'sweetalert2';
 import { apiUrl } from '@/lib/config';
-import { format } from 'date-fns';
-import { toZonedTime } from 'date-fns-tz';
+import { format, toZonedTime } from 'date-fns-tz';
 
 interface UserPaymentMethod {
   title: string;
@@ -86,6 +85,8 @@ export const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
       console.error('Error fetching user info:', error);
     }
   };
+
+  const timeZone = 'America/Bogota';
 
   const fetchWithdrawals = async () => {
     try {
@@ -162,10 +163,18 @@ export const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
 
   for (const horario of horarios) {
   // Obtener la fecha y hora de inicio y fin
-  const staras = format(toZonedTime(new Date(horario.fecha), 'America/Bogota'), 'yyyy-MM-dd');
-  const fitaras = format(toZonedTime(new Date(horario.horario_fin), 'America/Bogota'), 'yyyy-MM-dd');
-  const startDate = toZonedTime(new Date(staras + "T" + horario.hora_inicio), 'America/Bogota');  // Fecha + hora_inicio
-  const endDate = toZonedTime(new Date(fitaras + "T" + horario.hora_fin), 'America/Bogota');  // horario_fin + hora_fin
+  const staras = format(toZonedTime(new Date(horario.fecha), 'America/Bogota'),'yyyy-MM-dd');
+  const fitaras = format(toZonedTime(new Date(horario.horario_fin), 'America/Bogota'),'yyyy-MM-dd');
+ 
+  // 2. Concatenar con hora (ej: "2025-08-19T08:00:00")
+  const startString = `${staras}T${horario.hora_inicio}`;
+  const endString = `${fitaras}T${horario.hora_fin}`;
+
+  // 3. Crear fechas directamente en Bogotá
+  const startDate = toZonedTime(new Date(startString), timeZone);
+  const endDate = toZonedTime(new Date(endString), timeZone);
+
+  console.log('tesset'+startDate );
 
   // Verificar si la hora actual está dentro del rango de fechas de los horarios de retiro
   if (now >= startDate && now <= endDate) {
