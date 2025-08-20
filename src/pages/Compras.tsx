@@ -173,6 +173,10 @@ export default function Compras() {
     }
   };
 
+  const calcularTotal = (invs: Inversion[]) => {
+    return invs.reduce((acc, inv) => acc + parseFloat(inv.monto), 0);
+  };
+
   const handleCaducarCiclo = async (id: number) => {
     try {
       const token = localStorage.getItem('token');
@@ -256,6 +260,7 @@ export default function Compras() {
   };
 
   const InversionTable = ({ inversiones, showAprobar = false }: { inversiones: Inversion[], showAprobar?: boolean }) => (
+    <>
     <Table>
       <TableHeader>
         <TableRow>
@@ -304,6 +309,7 @@ export default function Compras() {
                         variant="default" 
                         size="sm"
                         onClick={() => handleCaducarCiclo(inversion.id)}
+                        disabled={!inversion.comprobante}
                         className="bg-green-600 hover:bg-green-700"
                       >
                         Aprobar comprobante
@@ -324,6 +330,12 @@ export default function Compras() {
         )}
       </TableBody>
     </Table>
+
+     <div className="mt-6 font-bold text-center text-2xl">
+      Total Inversiones: {formatMonto(calcularTotal(inversiones).toString())}
+    </div>
+    </>
+    
   );
 
   if (loading) {

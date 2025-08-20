@@ -20,6 +20,9 @@ interface Retiro {
   fecha: string;
   wallet_usdt: string;
   metodo_pago: string;
+  opdolar: string;
+  converdolar: string;
+  cvdol: string;
 }
 
 interface Totales {
@@ -330,7 +333,14 @@ const Pagos: React.FC = () => {
                             <TableCell>{retiro.id}</TableCell>
                             <TableCell>${retiro.monto}</TableCell>
                             <TableCell className="font-mono text-xs">{retiro.wallet_usdt}</TableCell>
-                            <TableCell>{retiro.metodo_pago}</TableCell>
+                            <TableCell>
+                              {retiro.metodo_pago}{" "}
+                              {retiro.opdolar === "1.00" && retiro.cvdol !== null
+                              ? `($${Number(retiro.cvdol).toLocaleString("es-CO", { maximumFractionDigits: 0 })} COP)`
+                              : ""}
+
+                            </TableCell>
+
                             <TableCell>{formatDate(retiro.fecha)}</TableCell>
                             <TableCell>
                               <div className="flex space-x-2">
