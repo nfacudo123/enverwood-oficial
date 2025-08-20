@@ -162,10 +162,10 @@ export const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
 
   for (const horario of horarios) {
   // Obtener la fecha y hora de inicio y fin
-  const staras = format(horario.fecha, 'yyyy-MM-dd');
-  const fitaras = format(horario.horario_fin, 'yyyy-MM-dd');
-  const startDate = new Date(staras + "T" + horario.hora_inicio);  // Fecha + hora_inicio
-  const endDate = new Date(fitaras + "T" + horario.hora_fin);  // horario_fin + hora_fin
+  const staras = format(toZonedTime(new Date(horario.fecha), 'America/Bogota'), 'yyyy-MM-dd');
+  const fitaras = format(toZonedTime(new Date(horario.horario_fin), 'America/Bogota'), 'yyyy-MM-dd');
+  const startDate = toZonedTime(new Date(staras + "T" + horario.hora_inicio), 'America/Bogota');  // Fecha + hora_inicio
+  const endDate = toZonedTime(new Date(fitaras + "T" + horario.hora_fin), 'America/Bogota');  // horario_fin + hora_fin
 
   // Verificar si la hora actual está dentro del rango de fechas de los horarios de retiro
   if (now >= startDate && now <= endDate) {
