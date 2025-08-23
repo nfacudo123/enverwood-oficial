@@ -175,7 +175,7 @@ const Requests: React.FC = () => {
   }
 
   return (
-    <OrganizationLayout title="Todas mis Liquidaciones">
+    <OrganizationLayout title="Todos mis Retiros">
       <div className="container mx-auto p-6 space-y-6">
         {/* Tarjetas de totales */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -190,7 +190,7 @@ const Requests: React.FC = () => {
           
           <Card>
             <CardHeader>
-              <CardTitle>Total Liquidado</CardTitle>
+              <CardTitle>Total Retirado</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">${filteredRetiros.filter(r => r.estado === "1").reduce((sum, r) => sum + parseFloat(r.monto), 0)}</div>
@@ -201,13 +201,13 @@ const Requests: React.FC = () => {
         {/* Contenido principal */}
         <Card>
           <CardHeader>
-            <CardTitle>Liquidaciones</CardTitle>
+            <CardTitle>Retiros</CardTitle>
           </CardHeader>
           <CardContent>
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="pendientes">Pendientes</TabsTrigger>
-                <TabsTrigger value="realizadas">Realizadas</TabsTrigger>
+                <TabsTrigger value="realizadas">Realizados</TabsTrigger>
               </TabsList>
               
               <TabsContent value="pendientes" className="space-y-4">
