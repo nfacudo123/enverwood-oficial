@@ -16,7 +16,7 @@ interface Retiro {
   id: number;
   usuario_id: number;
   monto: string;
-  estado: number;
+  estado: string;
   fecha: string;
   wallet_usdt: string;
   metodo_pago: string;
@@ -61,9 +61,8 @@ const Requests: React.FC = () => {
       if (response.ok) {
         const data = await response.json();
         // Filtrar solo los retiros del usuario actual
-        const userInfo = JSON.parse(localStorage.getItem('idUser') || '{}');
-        console.log('userInfo:', userInfo);
-        const currentUserId = parseInt(userInfo || '0');
+        const idUser = localStorage.getItem('idUser');
+        const currentUserId = parseInt(idUser || '0');
         console.log('currentUserId:', currentUserId);
         console.log('all retiros:', data);
         const filteredData = data.filter((retiro: Retiro) => retiro.usuario_id === currentUserId);
@@ -112,9 +111,9 @@ const Requests: React.FC = () => {
 
     // Filtrar por estado según el tab activo
     if (activeTab === 'pendientes') {
-      filtered = filtered.filter(retiro => retiro.estado === 0);
+      filtered = filtered.filter(retiro => retiro.estado === "0");
     } else {
-      filtered = filtered.filter(retiro => retiro.estado === 1);
+      filtered = filtered.filter(retiro => retiro.estado === "1");
     }
 
     // Filtrar por término de búsqueda
@@ -137,7 +136,7 @@ const Requests: React.FC = () => {
       'Billetera': retiro.wallet_usdt,
       'Método de Pago': retiro.metodo_pago,
       'Fecha': new Date(retiro.fecha).toLocaleString('es-ES'),
-      'Estado': retiro.estado === 0 ? 'Pendiente' : 'Realizado'
+      'Estado': retiro.estado === "0" ? 'Pendiente' : 'Realizado'
     }));
 
     const ws = XLSX.utils.json_to_sheet(dataToExport);
@@ -185,7 +184,7 @@ const Requests: React.FC = () => {
               <CardTitle>Total Pendiente</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">${filteredRetiros.filter(r => r.estado === 0).reduce((sum, r) => sum + parseFloat(r.monto), 0)}</div>
+              <div className="text-2xl font-bold">${filteredRetiros.filter(r => r.estado === "0").reduce((sum, r) => sum + parseFloat(r.monto), 0)}</div>
             </CardContent>
           </Card>
           
@@ -194,7 +193,7 @@ const Requests: React.FC = () => {
               <CardTitle>Total Liquidado</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">${filteredRetiros.filter(r => r.estado === 1).reduce((sum, r) => sum + parseFloat(r.monto), 0)}</div>
+              <div className="text-2xl font-bold">${filteredRetiros.filter(r => r.estado === "1").reduce((sum, r) => sum + parseFloat(r.monto), 0)}</div>
             </CardContent>
           </Card>
         </div>
