@@ -17,6 +17,7 @@ export function DashboardContent() {
   const [comisionesDetalle, setComisionesDetalle] = useState<any[]>([]);
   const [noticias, setNoticias] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [availableBalance, setAvailableBalance] = useState<number>(0);
   const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
   const currentUrl = window.location.origin;
   const personalRegistrationLink = `${currentUrl}/signup/${userInfo?.username || 'username'}`;
@@ -58,6 +59,20 @@ export function DashboardContent() {
         const token = localStorage.getItem('token');
         const idUser = localStorage.getItem('idUser');
         if (!token || !idUser) return;
+
+        const retirosResponse = await fetch(apiUrl(`/api/retiros/${idUser}`), {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (retirosResponse.ok) {
+          const withdrawals = await retirosResponse.json();
+          const totalRetiros = withdrawals.reduce((sum: number, w: any) => sum + parseFloat(w.monto), 0);
+          const totalDisponible = parseFloat(comisiones.total_disponible || 0);
+          setAvailableBalance(totalDisponible - totalRetiros);
+        }
 
         const response = await fetch(apiUrl(`/api/comisiones/sumatorias/${idUser}`), {
           method: 'GET',
@@ -295,7 +310,7 @@ export function DashboardContent() {
     },
     {
       title: "Disponible para retiro",
-      value: comisiones?.total_disponible ? `$${parseFloat(comisiones.total_disponible).toFixed(2)}` : "$0",
+      value: availableBalance.toFixed ? `$${parseFloat(availableBalance.toFixed(2))}` : "$0",
       icon: DollarSign,
       className: "green-card-2"
     }

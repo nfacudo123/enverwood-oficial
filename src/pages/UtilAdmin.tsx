@@ -190,6 +190,19 @@ const UtilAdmin: React.FC = () => {
     }
   };
 
+  const totalMonto = filteredInversiones.reduce(
+    (acc, inv) => acc + (parseFloat(inv.monto) || 0),
+    0
+  );
+
+  const totalUtilidad = filteredInversiones.reduce(
+    (acc, inv) => acc + (inv.utilrestAjustado || 0),
+    0
+  );
+
+  const formatCurrency = (value: number) =>
+  `$${value.toLocaleString('es-CO', { minimumFractionDigits: 0 })}`;
+
   // Cálculos de paginación
   const totalPages = Math.ceil(filteredInversiones.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -261,6 +274,25 @@ const UtilAdmin: React.FC = () => {
             </div>
 
             <div className="border rounded-lg">
+
+
+              <div className="grid grid-cols-2 gap-4 mb-4">
+                <div className="p-4 bg-gray-100 rounded-lg shadow text-center">
+                  <p className="text-sm font-medium text-gray-600">Total Monto</p>
+                  <p className="text-xl font-bold text-gray-900">
+                    {formatCurrency(totalMonto)}
+                  </p>
+                </div>
+                
+                <div className="p-4 bg-gray-100 rounded-lg shadow text-center">
+                  <p className="text-sm font-medium text-gray-600">Total Utilidad Restante</p>
+                  <p className="text-xl font-bold text-gray-900">
+                    {formatCurrency(totalUtilidad)}
+                  </p>
+                </div>
+              </div>
+
+
               <Table>
                 <TableHeader>
                   <TableRow>
